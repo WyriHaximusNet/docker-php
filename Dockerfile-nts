@@ -15,6 +15,10 @@ RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
 COPY --from=build-uv /uv.so /uv.so
+
+# Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
+RUN apk upgrade --no-cache curl libxml2 openssl
+
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk add \
