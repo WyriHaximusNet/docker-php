@@ -1,4 +1,16 @@
-FROM php:7.3-alpine AS build-uv
+FROM php:7.3-zts-alpine AS build-parallel
+RUN apk update && \
+    apk add --no-cache $PHPIZE_DEPS git
+RUN git clone https://github.com/krakjoe/parallel
+WORKDIR /parallel
+RUN phpize \
+    && ./configure \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/parallel.so" /parallel.so
+RUN sha256sum /parallel.so
+
+FROM php:7.3-zts-alpine AS build-uv
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/bwoebi/php-uv uv
@@ -10,7 +22,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.3-alpine
+FROM php:7.3-zts-alpine
 RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
@@ -45,6 +57,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-install -j$(nproc) bcmath \
     && docker-php-ext-install -j$(nproc) zip \
     && docker-php-ext-install -j$(nproc) gmp \
+    && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
     && curl --silent --fail --location --retry 3 --output /tmp/installer.php --url https://raw.githubusercontent.com/composer/getcomposer.org/cb19f2aa3aeaa2006c0cd69a7ef011eb31463067/web/installer \
     && php -r " \
