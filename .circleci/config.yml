@@ -38,7 +38,7 @@ version: 2.1
 .default_workflow_jobs: &default_workflow_jobs
   - lint
   - lint-shell
-  - build-zts: *build-nts
+  - build-nts: *build-nts
   - build-zts: *build-zts
   - test-zts: *test-nts
   - test-zts: *test-zts
