@@ -1,0 +1,189 @@
+version: 2.1
+
+.scheduled_workflow_jobs: &scheduled_workflow_jobs
+  - lint
+  - lint-shell
+  - build-nts: &build-nts
+      requires:
+        - lint
+        - lint-shell
+  - build-zts: &build-zts
+      requires:
+        - lint
+        - lint-shell
+  - test-zts: &test-nts
+      requires:
+        - build-nts
+        - build-zts
+  - test-zts: &test-zts
+      requires:
+        - build-nts
+        - build-zts
+  - scan-vulnerability: &scan-vulnerability
+      requires:
+        - build-nts
+        - build-zts
+  - push-nts: &push-context
+      context: dockerhub
+      filters:
+        branches:
+          only:
+            - master
+      requires:
+        - test-nts
+        - test-zts
+        - scan-vulnerability
+  - push-zts: *push-context
+
+.default_workflow_jobs: &default_workflow_jobs
+  - lint
+  - lint-shell
+  - build-zts: *build-nts
+  - build-zts: *build-zts
+  - test-zts: *test-nts
+  - test-zts: *test-zts
+  - scan-vulnerability: *scan-vulnerability
+  - push-approval:
+      type: approval
+      filters:
+        branches:
+          only:
+            - master
+      requires:
+        - test-nts
+        - test-zts
+  - push-nts: &push-context-approval
+      context: dockerhub
+      filters:
+        branches:
+          only:
+            - master
+      requires:
+        - push-approval
+  - push-zts: *push-context-approval
+
+workflows:
+  version: 2
+  lint-build-test-push:
+    jobs: *default_workflow_jobs
+  scheduled:
+    jobs: *scheduled_workflow_jobs
+    triggers:
+      - schedule:
+          cron: "0 3 * * 1,4"
+          filters:
+            branches:
+              only:
+                - master
+
+commands:
+  docker_load:
+    description: "Load Docker images from file"
+    parameters:
+      image:
+        type: string
+    steps:
+      - run: docker load -i ./tmp/wyrihaximusnet_php-<< parameters.image >>.tar
+  docker_load_all:
+    description: "Load all available docker images"
+    steps:
+      - docker_load:
+          image: nts
+      - docker_load:
+          image: zts
+
+jobs:
+  lint:
+    machine: true
+    steps:
+      - checkout
+      - run: make lint
+  lint-shell:
+    machine: true
+    steps:
+      - checkout
+      - run: make lint-shell
+  test-nts:
+    machine: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./tmp
+      - docker_load:
+          image: nts
+      - run: make test-nts
+      - store_test_results:
+          path: ./tmp/test-results
+  test-zts:
+    machine: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./tmp
+      - docker_load:
+          image: zts
+      - run: make test-zts
+      - store_test_results:
+          path: ./tmp/test-results
+  scan-vulnerability:
+    machine: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./tmp
+      - run:
+          name: Update Docker Compose
+          command: |
+            sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+      - run:
+          name: Install clair-scanner
+          command: |
+            sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64 -o /usr/local/bin/clair-scanner
+            sudo chmod +x /usr/local/bin/clair-scanner
+      - docker_load_all
+      - run: make ci-scan-vulnerability
+      - store_artifacts:
+          path: ./tmp/clair
+  build-nts:
+    machine: true
+    steps:
+      - checkout
+      - run: make build-nts
+      - run: cat ./tmp/build-nts.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .ContainerConfig.Env 7}}' %
+      - run: docker save wyrihaximusnet/php -o ./tmp/wyrihaximusnet_php-nts.tar
+      - persist_to_workspace:
+          root: ./tmp
+          paths:
+            - wyrihaximusnet_php-nts.tar
+            - build-nts.tags
+  build-zts:
+    machine: true
+    steps:
+      - checkout
+      - run: make build-zts
+      - run: cat ./tmp/build-zts.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .ContainerConfig.Env 7}}' %
+      - run: docker save wyrihaximusnet/php -o ./tmp/wyrihaximusnet_php-zts.tar
+      - persist_to_workspace:
+          root: ./tmp
+          paths:
+            - wyrihaximusnet_php-zts.tar
+            - build-zts.tags
+  push-nts:
+    machine: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./tmp
+      - docker_load:
+          image: nts
+      - run: make ci-push-nts
+  push-zts:
+    machine: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./tmp
+      - docker_load:
+          image: zts
+      - run: make ci-push-zts
