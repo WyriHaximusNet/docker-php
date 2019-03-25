@@ -18,5 +18,5 @@ declare -r WYRIHAXIMUSNEt_TAG="wyrihaximusnet/php:${VERSION_PHP}-${IMAGE}-alpine
 
 declare -r TAG_FILE="./tmp/build-${IMAGE}.tags"
 
-sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNEt_TAG}" --target="${IMAGE}" -f - . \
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNEt_TAG}" -f - . \
     && echo "$WYRIHAXIMUSNEt_TAG" >> "$TAG_FILE"
