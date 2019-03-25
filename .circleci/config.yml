@@ -2,15 +2,12 @@ version: 2.1
 
 .scheduled_workflow_jobs: &scheduled_workflow_jobs
   - lint
-  - lint-shell
   - build-nts: &build-nts
       requires:
         - lint
-        - lint-shell
   - build-zts: &build-zts
       requires:
         - lint
-        - lint-shell
   - test-nts: &test-nts
       requires:
         - build-nts
@@ -37,7 +34,6 @@ version: 2.1
 
 .default_workflow_jobs: &default_workflow_jobs
   - lint
-  - lint-shell
   - build-nts: *build-nts
   - build-zts: *build-zts
   - test-nts: *test-nts
@@ -98,11 +94,6 @@ jobs:
     steps:
       - checkout
       - run: make lint
-  lint-shell:
-    machine: true
-    steps:
-      - checkout
-      - run: make lint-shell
   test-nts:
     machine: true
     steps:

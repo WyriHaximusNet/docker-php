@@ -42,9 +42,6 @@ ci-docker-login:
 lint:
 	docker run -v ${current_dir}:/project:ro --workdir=/project --rm -it hadolint/hadolint:latest-debian hadolint /project/Dockerfile-nts /project/Dockerfile-zts
 
-lint-shell:
-	docker run --rm -v ${current_dir}:/mnt:ro koalaman/shellcheck src/http/nginx/docker* src/php/utils/install-* src/php/utils/docker/* build* test-*
-
 test: test-cli test-fpm test-http
 
 test-nts: ./tmp/build-nts.tags
