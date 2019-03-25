@@ -40,7 +40,7 @@ version: 2.1
   - lint-shell
   - build-nts: *build-nts
   - build-zts: *build-zts
-  - test-zts: *test-nts
+  - test-nts: *test-nts
   - test-zts: *test-zts
   - scan-vulnerability: *scan-vulnerability
   - push-approval:
