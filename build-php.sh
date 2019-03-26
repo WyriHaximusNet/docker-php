@@ -14,7 +14,7 @@ declare -r VERSION_ALPINE=$3
 declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${IMAGE}-alpine3.[0-9]"
 
 declare -r IMAGE_TAG="${VERSION_PHP}-${IMAGE}-alpine${VERSION_ALPINE}"
-declare -r WYRIHAXIMUSNET_TAG="WYRIHAXIMUSNET/php:${VERSION_PHP}-${IMAGE}-alpine${VERSION_ALPINE}"
+declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP}-${IMAGE}-alpine${VERSION_ALPINE}"
 declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
 
 declare -r TAG_FILE="./tmp/build-${IMAGE}.tags"
