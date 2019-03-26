@@ -31,10 +31,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         postgresql-dev \
         libzip-dev \
         libuv-dev \
-        make \
-        git \
-        openssh-client \
-        bash \
         coreutils \
         procps \
     && docker-php-ext-install -j$(nproc) iconv \
@@ -48,7 +44,16 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-install -j$(nproc) bcmath \
     && docker-php-ext-install -j$(nproc) zip \
     && docker-php-ext-install -j$(nproc) gmp \
-    && docker-php-ext-enable uv \
+    && docker-php-ext-enable uv
+
+## NTS-DEV STAGE ##
+FROM nts AS nts-dev
+
+RUN apk add \
+        make \
+        git \
+        openssh-client \
+        bash \
     && curl --silent --fail --location --retry 3 --output /tmp/installer.php --url https://raw.githubusercontent.com/composer/getcomposer.org/cb19f2aa3aeaa2006c0cd69a7ef011eb31463067/web/installer \
     && php -r " \
         \$signature = '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5'; \
