@@ -10,7 +10,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.3-alpine
+FROM php:7.3-alpine AS nts
 RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app

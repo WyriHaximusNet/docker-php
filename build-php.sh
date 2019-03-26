@@ -14,9 +14,13 @@ declare -r VERSION_ALPINE=$3
 declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${IMAGE}-alpine3.[0-9]"
 
 declare -r IMAGE_TAG="${VERSION_PHP}-${IMAGE}-alpine${VERSION_ALPINE}"
-declare -r WYRIHAXIMUSNEt_TAG="wyrihaximusnet/php:${VERSION_PHP}-${IMAGE}-alpine${VERSION_ALPINE}"
+declare -r WYRIHAXIMUSNET_TAG="WYRIHAXIMUSNET/php:${VERSION_PHP}-${IMAGE}-alpine${VERSION_ALPINE}"
+declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
 
 declare -r TAG_FILE="./tmp/build-${IMAGE}.tags"
 
-sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNEt_TAG}" -f - . \
-    && echo "$WYRIHAXIMUSNEt_TAG" >> "$TAG_FILE"
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNET_TAG}" --target="${IMAGE}" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNET_TAG_DEV}" --target="${IMAGE}-dev" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_DEV" >> "$TAG_FILE"
