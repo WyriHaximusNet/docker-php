@@ -48,6 +48,7 @@ version: 2.1
       requires:
         - test-nts
         - test-zts
+        - scan-vulnerability
   - push-nts: &push-context-approval
       context: dockerhub
       filters:
