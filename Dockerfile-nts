@@ -65,4 +65,5 @@ RUN apk add \
         }" \
     && php /tmp/installer.php --no-ansi --install-dir=/usr/bin --filename=composer \
     && composer --ansi --version --no-interaction \
-    && rm -f /tmp/installer.php
+    && rm -f /tmp/installer.php \
+    && composer global require hirak/prestissimo --ansi --no-progress
