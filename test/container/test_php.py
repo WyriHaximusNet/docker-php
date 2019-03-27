@@ -2,6 +2,15 @@ import pytest
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
+def test_php_runs_as_app(host):
+    output = host.run('php -r "echo getmygid();"')
+    assert output.stdout == '1000'
+
+    output = host.run('php -r "echo getmyuid();"')
+    assert output.stdout == '1000'
+
+@pytest.mark.php_nts
+@pytest.mark.php_zts
 def test_php_pcntl_is_enabled(host):
     output = host.run('php -r "exit(function_exists(\'pcntl_signal\') ? 0 : 255);"')
     assert output.rc == 0
