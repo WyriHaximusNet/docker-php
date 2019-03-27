@@ -11,7 +11,7 @@ def test_php_pcntl_is_enabled(host):
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
-def test_php_pcntl_is_enabled(host):
+def test_php_ext_uv_is_enabled(host):
     output = host.run('php -r "exit(function_exists(\'uv_loop_new\') ? 0 : 255);"')
     assert output.rc == 0
 
@@ -19,7 +19,7 @@ def test_php_pcntl_is_enabled(host):
     assert output.rc == 0
 
 @pytest.mark.php_zts
-def test_php_pcntl_is_enabled(host):
+def test_php_ext_parallel_is_enabled(host):
     output = host.run('php -r "exit(class_exists(\'parallel\\Runtime\') ? 0 : 255);"')
     assert output.rc == 0
 
@@ -27,7 +27,7 @@ def test_php_pcntl_is_enabled(host):
     assert output.rc == 0
 
 @pytest.mark.php_nts
-def test_php_pcntl_is_enabled(host):
+def test_php_ext_parallel_is_enabled(host):
     output = host.run('php -r "exit(class_exists(\'parallel\\Runtime\') ? 0 : 255);"')
     assert output.rc == 255
 
