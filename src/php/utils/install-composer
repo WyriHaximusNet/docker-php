@@ -19,6 +19,4 @@ RESULT=$?
 
 rm composer-setup.php
 
-composer global require hirak/prestissimo --ansi --no-progress
-
 exit $RESULT

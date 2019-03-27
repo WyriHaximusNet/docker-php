@@ -71,10 +71,14 @@ RUN install-shush && rm -rf /usr/local/bin/install-shush
 
 STOPSIGNAL SIGTERM
 
+USER app
+
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
 
 ## ZTS-DEV STAGE ##
 FROM zts AS zts-dev
+
+USER root
 
 RUN apk add \
         make \
@@ -85,6 +89,10 @@ RUN apk add \
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN install-composer && rm -rf /usr/local/bin/install-composer
+
+USER app
+
+RUN composer global require hirak/prestissimo --ansi --no-progress
 
 # Change entrypoint back to the default because we don't need shush in development
 ENTRYPOINT ["docker-php-entrypoint"]

@@ -52,14 +52,28 @@ RUN install-shush && rm -rf /usr/local/bin/install-shush
 
 STOPSIGNAL SIGTERM
 
+USER app
+
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
 
 ## NTS-DEV STAGE ##
 FROM nts AS nts-dev
 
+USER root
+
+RUN apk add \
+        make \
+        git \
+        openssh-client \
+        bash
+
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN install-composer && rm -rf /usr/local/bin/install-composer
+
+USER app
+
+RUN composer global require hirak/prestissimo --ansi --no-progress
 
 # Change entrypoint back to the default because we don't need shush in development
 ENTRYPOINT ["docker-php-entrypoint"]
