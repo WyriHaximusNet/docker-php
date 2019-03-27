@@ -26,6 +26,7 @@ FROM php:7.3-zts-alpine AS zts
 RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
+
 COPY --from=build-parallel /parallel.so /parallel.so
 COPY --from=build-uv /uv.so /uv.so
 
@@ -34,7 +35,7 @@ RUN apk upgrade --no-cache curl libxml2 openssl
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
-	apk add \
+	apk add --no-cache \
         freetype-dev \
         libjpeg-turbo-dev \
         libpng-dev \
@@ -64,6 +65,14 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv
 
+# Install shush
+COPY src/php/utils/install-shush /usr/local/bin/
+RUN install-shush && rm -rf /usr/local/bin/install-shush
+
+STOPSIGNAL SIGTERM
+
+ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
+
 ## ZTS-DEV STAGE ##
 FROM zts AS zts-dev
 
@@ -71,17 +80,11 @@ RUN apk add \
         make \
         git \
         openssh-client \
-        bash \
-    && curl --silent --fail --location --retry 3 --output /tmp/installer.php --url https://raw.githubusercontent.com/composer/getcomposer.org/cb19f2aa3aeaa2006c0cd69a7ef011eb31463067/web/installer \
-    && php -r " \
-        \$signature = '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5'; \
-        \$hash = hash('sha384', file_get_contents('/tmp/installer.php')); \
-        if (!hash_equals(\$signature, \$hash)) { \
-          unlink('/tmp/installer.php'); \
-          echo 'Integrity check failed, installer is either corrupt or worse.' . PHP_EOL; \
-          exit(1); \
-        }" \
-    && php /tmp/installer.php --no-ansi --install-dir=/usr/bin --filename=composer \
-    && composer --ansi --version --no-interaction \
-    && rm -f /tmp/installer.php \
-    && composer global require hirak/prestissimo --ansi --no-progress
+        bash
+
+# Install composer
+COPY src/php/utils/install-composer /usr/local/bin/
+RUN install-composer && rm -rf /usr/local/bin/install-composer
+
+# Change entrypoint back to the default because we don't need shush in development
+ENTRYPOINT ["docker-php-entrypoint"]
