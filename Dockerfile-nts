@@ -19,6 +19,12 @@ COPY --from=build-uv /uv.so /uv.so
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
 RUN apk upgrade --no-cache curl libxml2 openssl
 
+# Install docker help scripts
+COPY src/php/utils/docker/ /usr/local/bin/
+
+COPY src/php/conf/ /usr/local/etc/php/conf.d/
+COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
+
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk add --no-cache \
@@ -66,6 +72,10 @@ RUN apk add \
         git \
         openssh-client \
         bash
+
+# Install Xdebug and development specific configuration
+RUN docker-php-dev-mode xdebug \
+    && docker-php-dev-mode config
 
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/

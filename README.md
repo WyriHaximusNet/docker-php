@@ -50,7 +50,7 @@ NTS, or non-thread safe is the PHP version most people use. This image comes wit
 * mbstring
 * mysqlnd
 * openssl
-* pcntl
+* **pcntl**
 * pcre
 * PDO
 * pdo_pgsql
@@ -99,7 +99,7 @@ pthreads or parallel. This image comes with the following extensions:
 * mysqlnd
 * openssl
 * **parallel**
-* pcntl
+* **pcntl**
 * pcre
 * PDO
 * pdo_pgsql
