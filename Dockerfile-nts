@@ -67,6 +67,10 @@ RUN apk add \
         openssh-client \
         bash
 
+# Install Xdebug and development specific configuration
+RUN docker-php-dev-mode xdebug \
+    && docker-php-dev-mode config
+
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN install-composer && rm -rf /usr/local/bin/install-composer
