@@ -56,6 +56,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 COPY src/php/utils/install-shush /usr/local/bin/
 RUN install-shush && rm -rf /usr/local/bin/install-shush
 
+STOPSIGNAL SIGTERM
+
 USER app
 
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
