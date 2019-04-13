@@ -36,10 +36,23 @@ def test_php_ext_parallel_is_enabled(host):
     assert output.rc == 0
 
 @pytest.mark.php_nts
-def test_php_ext_parallel_is_enabled(host):
+def test_php_ext_parallel_is_not_enabled(host):
     output = host.run('php -r "exit(class_exists(\'parallel\\Runtime\') ? 0 : 255);"')
     assert output.rc == 255
 
     output = host.run('php -r "exit(class_exists(\'parallel\\Future\') ? 0 : 255);"')
     assert output.rc == 255
 
+@pytest.mark.php_zts
+def test_php_ext_parallel_is_functional(host):
+    output = host.run('php /tests/container/functional/parallel.php')
+    assert output.rc == 33
+
+    output = host.run('php /tests/container/functional/parallel-multi.php')
+    assert output.rc == 65
+
+@pytest.mark.php_zts
+def test_php_ext_uv_is_functional(host):
+    output = host.run('php /tests/container/functional/uv-timer.php')
+    assert output.stdout == '0123finished'
+    assert output.rc == 0

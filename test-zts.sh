@@ -21,7 +21,7 @@ fi
 
 printf "Starting a container for '%s'\\n" "$DOCKER_TAG"
 
-DOCKER_CONTAINER=$(docker run --rm -t -d "$DOCKER_TAG" php)
+DOCKER_CONTAINER=$(docker run --rm -v "$(pwd)/test:/tests" -t -d "$DOCKER_TAG" php)
 readonly DOCKER_CONTAINER
 
 # Let's register a trap function, if our tests fail, finish or the script gets
