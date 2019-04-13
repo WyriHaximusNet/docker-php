@@ -27,4 +27,4 @@ do {
     echo ".";
 } while (!$futureA->done() || !$futureB->done());
 
-exit($futureA->value() + $futureB);
+exit($futureA->value() + $futureB->value());
