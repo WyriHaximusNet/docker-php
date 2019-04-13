@@ -10,7 +10,7 @@ $futureA = $runtimeA->run(function(){
 
     echo "|||";
 
-    return $i;
+    return 32;
 });
 
 $futureB = $runtimeB->run(function(){
@@ -20,7 +20,7 @@ $futureB = $runtimeB->run(function(){
 
     echo "{}{}{}";
 
-    return $i;
+    return 33;
 });
 
 do {
