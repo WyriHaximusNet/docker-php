@@ -6,7 +6,7 @@ $future = $runtime->run(function(){
     for ($i = 0; $i < 500; $i++)
         echo "*";
 
-    return 0;
+    return $i;
 });
 
 for ($i = 0; $i < 500; $i++) {
