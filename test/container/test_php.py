@@ -1,4 +1,5 @@
 import pytest
+import os
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
@@ -45,8 +46,10 @@ def test_php_ext_parallel_is_not_enabled(host):
 
 @pytest.mark.php_zts
 def test_php_ext_parallel_is_functional(host):
-    output = host.run('php test/container/functional/parallel.php')
+    __dir__ = os.path.split(os.path.realpath(__file__))[0];
+
+    output = host.run('php {__dir__}test/container/functional/parallel.php')
     assert output.rc == 33
 
-    output = host.run('php test/container/functional/parallel-multi.php')
+    output = host.run('php {__dir__}test/container/functional/parallel-multi.php')
     assert output.rc == 65
