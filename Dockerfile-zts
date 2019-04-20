@@ -69,7 +69,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-install -j$(nproc) zip \
     && docker-php-ext-install -j$(nproc) gmp \
     && docker-php-ext-enable parallel \
-    && docker-php-ext-enable uv
+    && docker-php-ext-enable uv \
+    && rm -rf /var/cache/apk/*
 
 # Install shush
 COPY src/php/utils/install-shush /usr/local/bin/
