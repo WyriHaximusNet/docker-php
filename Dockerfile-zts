@@ -57,9 +57,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         bash \
         coreutils \
         procps \
-    && docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo intl pdo_pgsql bcmath zip gmp \
+    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo intl pdo_pgsql bcmath zip gmp iconv \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
     && rm -rf /var/cache/apk/*
