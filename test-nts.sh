@@ -16,7 +16,7 @@ declare TEST_SUITE
 if [[ $DOCKER_TAG == *"-dev" ]]; then
     TEST_SUITE="php_nts or php_dev"
 else
-    TEST_SUITE="php_nts and not php_dev"
+    TEST_SUITE="php_nts or php_no_dev and not php_dev"
 fi
 
 printf "Starting a container for '%s'\\n" "$DOCKER_TAG"
