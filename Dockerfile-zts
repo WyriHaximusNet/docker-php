@@ -1,4 +1,4 @@
-FROM php:7.3-zts-alpine AS build-parallel
+FROM php:7.3-zts-alpine3.9 AS build-parallel
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git
 RUN git clone https://github.com/krakjoe/parallel
@@ -10,7 +10,7 @@ RUN phpize \
     cp "$EXTENSION_DIR/parallel.so" /parallel.so
 RUN sha256sum /parallel.so
 
-FROM php:7.3-zts-alpine AS build-uv
+FROM php:7.3-zts-alpine3.9 AS build-uv
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/bwoebi/php-uv uv
@@ -22,7 +22,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.3-zts-alpine AS zts
+FROM php:7.3-zts-alpine3.9 AS zts
 RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
