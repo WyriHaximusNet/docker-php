@@ -21,8 +21,8 @@ declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
 
 declare -r TAG_FILE="./tmp/build-${DST_IMAGE}.tags"
 
-sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNET_TAG}" --target="${DST_IMAGE}" -f - . \
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --no-cache --pull -t "${WYRIHAXIMUSNET_TAG}" --target="${DST_IMAGE}" -f - . \
     && echo "$WYRIHAXIMUSNET_TAG" >> "$TAG_FILE"
 
-sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --pull -t "${WYRIHAXIMUSNET_TAG_DEV}" --target="${DST_IMAGE}-dev" -f - . \
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --no-cache --pull -t "${WYRIHAXIMUSNET_TAG_DEV}" --target="${DST_IMAGE}-dev" -f - . \
     && echo "$WYRIHAXIMUSNET_TAG_DEV" >> "$TAG_FILE"
