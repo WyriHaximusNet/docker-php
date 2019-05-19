@@ -3,10 +3,10 @@ RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/bwoebi/php-uv uv
 WORKDIR /uv
-RUN phpize
-RUN ./configure
-RUN make install
-RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+RUN phpize \
+    && ./configure \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
