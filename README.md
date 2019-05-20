@@ -31,54 +31,24 @@ The tag naming strategy consists of (Read as a regex):
 
 NTS, or non-thread safe is the PHP version most people use. This image comes with the following extensions:
 
-* bcmath
-* Core
-* ctype
-* curl
-* date
-* dom
-* fileinfo
-* filter
-* ftp
-* gd
-* gmp
-* hash
-* iconv
-* intl
-* json
-* libxml
-* mbstring
-* mysqlnd
-* openssl
-* **pcntl**
-* pcre
-* PDO
-* pdo_pgsql
-* pdo_sqlite
-* pgsql
-* Phar
-* posix
-* readline
-* Reflection
-* session
-* SimpleXML
-* sodium
-* SPL
-* sqlite3
-* standard
-* tokenizer
-* **uv**
-* xml
-* xmlreader
-* xmlwriter
-* zip
-* zlib
+| Extension    | Description                                                |
+|--------------|------------------------------------------------------------|
+| ext-pcntl    | PCNTL OS signals                                           |
+| ext-uv       | LibUV event loop                                           |
 
 ### ZTS
 
 NTS, or zend thread safe is the PHP version that is safe to be used and required my threading extensions such as 
 pthreads or parallel. This image comes with the following extensions:
 
+| Extension    | Description                                                |
+|--------------|------------------------------------------------------------|
+| ext-parallel | A succinct parallel concurrency API for PHP7 using threads |
+| ext-pcntl    | PCNTL OS signals                                           |
+| ext-uv       | LibUV event loop                                           |
+
+Both versions come with the following list of non-non-blocking related (core-) extensions:
+
 * bcmath
 * Core
 * ctype
@@ -98,8 +68,6 @@ pthreads or parallel. This image comes with the following extensions:
 * mbstring
 * mysqlnd
 * openssl
-* **parallel**
-* **pcntl**
 * pcre
 * PDO
 * pdo_pgsql
@@ -116,7 +84,6 @@ pthreads or parallel. This image comes with the following extensions:
 * sqlite3
 * standard
 * tokenizer
-* **uv**
 * xml
 * xmlreader
 * xmlwriter
