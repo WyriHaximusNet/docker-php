@@ -31,10 +31,10 @@ The tag naming strategy consists of (Read as a regex):
 
 NTS, or non-thread safe is the PHP version most people use. This image comes with the following extensions:
 
-| Extension    | Description                                                |
-|--------------|------------------------------------------------------------|
-| ext-pcntl    | PCNTL OS signals                                           |
-| ext-uv       | LibUV event loop                                           |
+| Extension    | Description      |
+|--------------|------------------|
+| ext-pcntl    | PCNTL OS signals |
+| ext-uv       | LibUV event loop |
 
 ### ZTS
 
