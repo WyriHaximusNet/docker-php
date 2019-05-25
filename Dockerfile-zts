@@ -91,6 +91,9 @@ COPY src/php/utils/docker/ /usr/local/bin/
 RUN docker-php-dev-mode xdebug \
     && docker-php-dev-mode config
 
+# Install Docker for Docker Compose
+RUN apk add --no-cache docker
+
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN install-composer && rm -rf /usr/local/bin/install-composer
