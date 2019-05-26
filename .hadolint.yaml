@@ -6,3 +6,4 @@ ignored:
   - DL3022
   - DL3019
   - SC2006
+  - DL3013 # So we can install the latest docker-compose
