@@ -3,7 +3,9 @@ RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git
 RUN git clone https://github.com/krakjoe/parallel
 WORKDIR /parallel
-RUN phpize \
+RUN git fetch \
+    && git pull \
+    && phpize \
     && ./configure \
     && make install \
     && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
@@ -15,7 +17,9 @@ RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/bwoebi/php-uv uv
 WORKDIR /uv
-RUN phpize \
+RUN git fetch \
+    && git pull \
+    && phpize \
     && ./configure \
     && make install \
     && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
