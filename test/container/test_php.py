@@ -56,3 +56,9 @@ def test_php_ext_uv_is_functional(host):
     output = host.run('php /tests/container/functional/uv-timer.php')
     assert output.stdout == '0123finished'
     assert output.rc == 0
+
+@pytest.mark.php_nts
+@pytest.mark.php_zts
+def test_php_ext_vips_is_enabled(host):
+    output = host.run('php -r "exit(function_exists(\'vips_version\') ? 0 : 255);"')
+    assert output.rc == 0
