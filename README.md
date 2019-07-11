@@ -84,6 +84,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * sqlite3
 * standard
 * tokenizer
+* vips
 * xml
 * xmlreader
 * xmlwriter
