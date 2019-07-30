@@ -70,7 +70,9 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
     && docker-php-ext-enable vips \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
+    && chmod +x /bin/wait-for
 
 # Install shush
 COPY src/php/utils/install-shush /usr/local/bin/
