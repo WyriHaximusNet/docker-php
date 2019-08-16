@@ -72,7 +72,8 @@ RUN apk add \
         make \
         git \
         openssh-client \
-        bash
+        bash \
+        strace
 
 # Install Xdebug and development specific configuration
 RUN docker-php-dev-mode xdebug \

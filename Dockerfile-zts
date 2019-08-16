@@ -93,7 +93,8 @@ RUN apk add \
         make \
         git \
         openssh-client \
-        bash
+        bash \
+        strace
 
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
