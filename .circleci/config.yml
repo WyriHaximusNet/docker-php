@@ -39,8 +39,8 @@ version: 2.1
   - test-nts: *test-nts
   - test-zts: *test-zts
   - scan-vulnerability: *scan-vulnerability
-  - push-approval:
-      type: approval
+  - push-nts: &push-context-approval
+      context: dockerhub
       filters:
         branches:
           only:
@@ -49,14 +49,6 @@ version: 2.1
         - test-nts
         - test-zts
         - scan-vulnerability
-  - push-nts: &push-context-approval
-      context: dockerhub
-      filters:
-        branches:
-          only:
-            - master
-      requires:
-        - push-approval
   - push-zts: *push-context-approval
 
 workflows:
