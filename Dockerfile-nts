@@ -12,7 +12,20 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.3-cli-alpine3.10 AS nts
+FROM php:7.3-cli-alpine AS build-meminfo
+RUN apk update && \
+    apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
+    git clone https://github.com/BitOne/php-meminfo.git
+WORKDIR /php-meminfo/extension/php7
+RUN phpize
+RUN ./configure --enable-meminfo
+RUN make install
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
+RUN sha256sum /meminfo.so
+
+FROM php:7.3-alpine AS nts
+
 RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
@@ -74,6 +87,14 @@ RUN apk add \
         openssh-client \
         bash \
         strace
+
+# Install docker help scripts
+COPY src/php/utils/docker/ /usr/local/bin/
+
+COPY --from=build-meminfo /meminfo.so /meminfo.so
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    mv /*.so "$EXTENSION_DIR/" && \
+    docker-php-ext-enable meminfo
 
 # Install Xdebug and development specific configuration
 RUN docker-php-dev-mode xdebug \
