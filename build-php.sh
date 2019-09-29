@@ -18,6 +18,8 @@ declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${SRC_IMAGE}-alpine3.10]"
 declare -r IMAGE_TAG="${VERSION_PHP}-${SRC_IMAGE}-alpine${VERSION_ALPINE}"
 declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP}-${DST_IMAGE}-alpine${VERSION_ALPINE}"
 declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
+declare -r WYRIHAXIMUSNET_TAG_ROOT="${WYRIHAXIMUSNET_TAG}-root"
+declare -r WYRIHAXIMUSNET_TAG_DEV_ROOT="${WYRIHAXIMUSNET_TAG}-dev-root"
 
 declare -r TAG_FILE="./tmp/build-${DST_IMAGE}.tags"
 
@@ -26,3 +28,9 @@ sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | dock
 
 sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --no-cache --pull -t "${WYRIHAXIMUSNET_TAG_DEV}" --target="${DST_IMAGE}-dev" -f - . \
     && echo "$WYRIHAXIMUSNET_TAG_DEV" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --no-cache --pull -t "${WYRIHAXIMUSNET_TAG_ROOT}" --target="${DST_IMAGE}-root" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_ROOT" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --no-cache --pull -t "${WYRIHAXIMUSNET_TAG_DEV_ROOT}" --target="${DST_IMAGE}-dev-root" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_DEV_ROOT" >> "$TAG_FILE"

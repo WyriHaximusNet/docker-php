@@ -1,13 +1,20 @@
 import pytest
 
-@pytest.mark.php_nts
-@pytest.mark.php_zts
+@pytest.mark.php_app
 def test_php_runs_as_app(host):
     output = host.run('php -r "echo getmygid();"')
     assert output.stdout == '1000'
 
     output = host.run('php -r "echo getmyuid();"')
     assert output.stdout == '1000'
+
+@pytest.mark.php_root
+def test_php_runs_as_root(host):
+    output = host.run('php -r "echo getmygid();"')
+    assert output.stdout == '0'
+
+    output = host.run('php -r "echo getmyuid();"')
+    assert output.stdout == '0'
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts

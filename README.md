@@ -7,9 +7,10 @@
 
 # Images
 
-This repo builds two different images, plus a `-dev` image for each containing [`composer`](https://getcomposer.org/), bash, git, ssh, and make. All 
-the images are based on [`Alpine Linux`](https://alpinelinux.org/). All images come with extensions used to increase 
-the performance of [`ReactPHP`](https://reactphp.org/) (such as event loop extensions). Such extensions are highlighted 
+This repo builds two different images, plus a `-dev` image for each containing [`composer`](https://getcomposer.org/), 
+bash, git, ssh, and make, and a `-root` image for all `*(-dev)` images where the default user is root. All the images 
+are based on [`Alpine Linux`](https://alpinelinux.org/). All images come with extensions used to increase the 
+performance of [`ReactPHP`](https://reactphp.org/) (such as event loop extensions). Such extensions are highlighted 
 **build** in the extensions list below.
 
 
@@ -23,7 +24,7 @@ In order to provide upgrade path we intend to keep one or more versions of PHP.
 
 The tag naming strategy consists of (Read as a regex):
 
-- PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine|future supported OSes)(alpineMajor).(alpineMinor)(-dev)?`
+- PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine|future supported OSes)(alpineMajor).(alpineMinor)(-dev)(-root)?`
   - Example: `7.2-fpm-alpine3.8`, `7.2-fpm-alpine3.8-dev`
 
 

@@ -24,7 +24,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
 RUN sha256sum /meminfo.so
 
-FROM php:7.3-alpine AS nts
+FROM php:7.3-alpine AS nts-root
 
 RUN set -x \
     && addgroup -g 1000 app \
@@ -72,14 +72,10 @@ RUN install-shush && rm -rf /usr/local/bin/install-shush
 
 STOPSIGNAL SIGTERM
 
-USER app
-
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
 
 ## NTS-DEV STAGE ##
-FROM nts AS nts-dev
-
-USER root
+FROM nts-root AS nts-dev-root
 
 RUN apk add \
         make \
@@ -108,9 +104,17 @@ RUN apk add --no-cache docker py-pip python-dev libffi-dev openssl-dev gcc libc-
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN install-composer && rm -rf /usr/local/bin/install-composer
 
+# Change entrypoint back to the default because we don't need shush in development
+ENTRYPOINT ["docker-php-entrypoint"]
+
+## NTS-DEV stage ##
+FROM nts-dev-root AS nts-dev
+
 USER app
 
 RUN composer global require hirak/prestissimo --ansi --no-progress
 
-# Change entrypoint back to the default because we don't need shush in development
-ENTRYPOINT ["docker-php-entrypoint"]
+## NTS stage ##
+FROM nts-root AS nts
+
+USER app
