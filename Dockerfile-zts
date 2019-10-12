@@ -108,7 +108,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && mv /*.so "$EXTENSION_DIR/" \
     && docker-php-ext-enable meminfo \
     && apk add --no-cache \
-        docker \
         py-pip \
         python-dev \
         libffi-dev \
@@ -123,8 +122,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
 # Install Xdebug and development specific configuration
     && docker-php-dev-mode xdebug \
     && docker-php-dev-mode config \
-# Install Docker and Docker Compose
-    && pip install docker-compose \
 # Forcefully clear API cache
     && rm -rf /var/cache/apk/*
 
