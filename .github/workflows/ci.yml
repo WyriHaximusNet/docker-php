@@ -1,0 +1,96 @@
+name: Continuous Integration
+env:
+  DOCKER_IMAGE: wyrihaximusnet/php
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  schedule:
+    - cron:  '33 7 * * *'
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [zts, nts]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Lint ${{ matrix.type }}
+        uses: docker://hadolint/hadolint:latest-debian
+        with:
+          entrypoint: hadolint
+          args: Dockerfile-${{ matrix.type }}
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [zts, nts]
+    steps:
+      - uses: actions/checkout@v1
+      - run: mkdir ./docker-image/
+      - run: make build-${{ matrix.type }}
+      - run: cat ./docker-image/build-${{ matrix.type }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .ContainerConfig.Env 7}}' %
+      - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/docker_image-${{ matrix.type }}.tar
+      - uses: actions/upload-artifact@master
+        with:
+          name: docker-image-${{ matrix.type }}
+          path: ./docker-image
+  scan-vulnerability:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [zts, nts]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install clair-scanner
+        run: |
+          sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64 -o /usr/local/bin/clair-scanner
+          sudo chmod +x /usr/local/bin/clair-scanner
+      - uses: actions/download-artifact@master
+        with:
+          name: docker-image-${{ matrix.type }}
+          path: ./docker-image
+      - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
+      - run: mkdir -p "./clair/${DOCKER_IMAGE}"
+      - run: make ci-scan-vulnerability
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [zts, nts]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/download-artifact@master
+        with:
+          name: docker-image-${{ matrix.type }}
+          path: ./docker-image
+      - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
+      - run: make test-${{ matrix.type }}
+      - run: rm -Rf ./docker-image/
+  push:
+    needs:
+      - scan-vulnerability
+      - test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [zts, nts]
+    steps:
+      - uses: actions/checkout@v1
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+      - uses: actions/download-artifact@master
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+        with:
+          name: docker-image-${{ matrix.type }}
+          path: ./docker-image
+      - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+      - run: make ci-push-${{ matrix.type }}
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+        env:
+          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}

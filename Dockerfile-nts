@@ -12,6 +12,7 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
+## Build ext-meminfo
 FROM php:7.3-cli-alpine AS build-meminfo
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
@@ -82,8 +83,10 @@ FROM nts-root AS nts-dev-root
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
 
+RUN true
 # Copy in meminfo extension
 COPY --from=build-meminfo /meminfo.so /meminfo.so
+RUN true
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && mv /*.so "$EXTENSION_DIR/" \
