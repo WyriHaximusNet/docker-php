@@ -81,16 +81,16 @@ jobs:
         type: [zts, nts]
     steps:
       - uses: actions/checkout@v1
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
       - uses: actions/download-artifact@master
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         with:
           name: docker-image-${{ matrix.type }}
           path: ./docker-image
       - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
       - run: make ci-push-${{ matrix.type }}
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/move-to-github-actions'
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
