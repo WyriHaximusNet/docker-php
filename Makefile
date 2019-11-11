@@ -22,16 +22,16 @@ build-zts: clean-tags
 
 .NOTPARALLEL: clean-tags
 clean-tags:
-	rm ${current_dir}/tmp/build-${BUILDINGIMAGE}.tags || true
+	rm ${current_dir}/docker-image/build-${BUILDINGIMAGE}.tags || true
 
 # Docker images push
 push-nts: BUILDINGIMAGE=nts
 push-nts:
-	cat ./tmp/build-${BUILDINGIMAGE}.tags | xargs -I % docker push %
+	cat ./docker-image/build-${BUILDINGIMAGE}.tags | xargs -I % docker push %
 
 push-zts: BUILDINGIMAGE=zts
 push-zts:
-	cat ./tmp/build-${BUILDINGIMAGE}.tags | xargs -I % docker push %
+	cat ./docker-image/build-${BUILDINGIMAGE}.tags | xargs -I % docker push %
 
 # CI dependencies
 ci-docker-login:
@@ -42,21 +42,21 @@ lint:
 
 test: test-cli test-fpm test-http
 
-test-nts: ./tmp/build-nts.tags
-	xargs -I % ./test-nts.sh % < ./tmp/build-nts.tags
+test-nts: ./docker-image/build-nts.tags
+	xargs -I % ./test-nts.sh % < ./docker-image/build-nts.tags
 
-test-zts: ./tmp/build-zts.tags
-	xargs -I % ./test-zts.sh % < ./tmp/build-zts.tags
+test-zts: ./docker-image/build-zts.tags
+	xargs -I % ./test-zts.sh % < ./docker-image/build-zts.tags
 
 scan-vulnerability:
 	docker-compose -f test/security/docker-compose.yml -p clair-ci up -d
 	RETRIES=0 && while ! wget -T 10 -q -O /dev/null http://localhost:6060/v1/namespaces ; do sleep 1 ; echo -n "." ; if [ $${RETRIES} -eq 10 ] ; then echo " Timeout, aborting." ; exit 1 ; fi ; RETRIES=$$(($${RETRIES}+1)) ; done
-	cat ./tmp/build-*.tags | xargs -I % sh -c 'clair-scanner --ip 172.17.0.1 -r "./tmp/clair/%.json" -l ./tmp/clair/clair.log % || echo "% is vulnerable"'
+	cat ./docker-image/build-*.tags | xargs -I % sh -c 'clair-scanner --ip 172.17.0.1 -r "./docker-imageclair/%.json" -l ./clair/clair.log % || echo "% is vulnerable"'
 	docker-compose -f test/security/docker-compose.yml -p clair-ci down
 
 ci-scan-vulnerability:
 	docker-compose -f test/security/docker-compose.yml -p clair-ci up -d
 	RETRIES=0 && while ! wget -T 10 -q -O /dev/null http://localhost:6060/v1/namespaces ; do sleep 1 ; echo -n "." ; if [ $${RETRIES} -eq 10 ] ; then echo " Timeout, aborting." ; exit 1 ; fi ; RETRIES=$$(($${RETRIES}+1)) ; done
-	cat ./tmp/build-*.tags | xargs -I % sh -c 'clair-scanner --ip 172.17.0.1 -r "./tmp/clair/%.json" -l ./tmp/clair/clair.log %'; \
+	cat ./docker-image/build-*.tags | xargs -I % sh -c 'clair-scanner --ip 172.17.0.1 -r "./clair/%.json" -l ./clair/clair.log %'; \
 	XARGS_EXIT=$$?; \
-	if [ $${XARGS_EXIT} -eq 123 ]; then find ./tmp/clair/wyrihaximusnet -type f | sed 's/^/-Fjson=@/' | xargs -d'\n' curl -X POST ${WALLE_REPORT_URL} -F channel=team_oz -F buildUrl=https://circleci.com/gh/wyrihaximusnet/docker-php/${CIRCLE_BUILD_NUM}#artifacts/containers/0; else exit $${XARGS_EXIT}; fi
+	if [ $${XARGS_EXIT} -eq 123 ]; then find ./clair/wyrihaximusnet -type f | sed 's/^/-Fjson=@/' | xargs -d'\n' curl -X POST ${WALLE_REPORT_URL} -F channel=team_oz -F buildUrl=https://circleci.com/gh/wyrihaximusnet/docker-php/${CIRCLE_BUILD_NUM}#artifacts/containers/0; else exit $${XARGS_EXIT}; fi
