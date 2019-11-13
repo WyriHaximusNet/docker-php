@@ -1,4 +1,9 @@
 name: Continuous Integration
+.stepShared: &stepShared
+  runs-on: ubuntu-latest
+  strategy:
+    matrix:
+      type: [zts, nts]
 env:
   DOCKER_IMAGE: wyrihaximusnet/php
 on:
@@ -10,10 +15,7 @@ on:
     - cron:  '33 7 * * *'
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type: [zts, nts]
+    <<: *stepShared
     steps:
       - uses: actions/checkout@v1
       - name: Lint ${{ matrix.type }}
@@ -23,10 +25,7 @@ jobs:
           args: Dockerfile-${{ matrix.type }}
   build:
     needs: lint
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type: [zts, nts]
+    <<: *stepShared
     steps:
       - uses: actions/checkout@v1
       - run: mkdir ./docker-image/
@@ -39,10 +38,7 @@ jobs:
           path: ./docker-image
   scan-vulnerability:
     needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type: [zts, nts]
+    <<: *stepShared
     steps:
       - uses: actions/checkout@v1
       - name: Install clair-scanner
@@ -59,9 +55,7 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type: [zts, nts]
+    <<: *stepShared
     steps:
       - uses: actions/checkout@v1
       - uses: actions/download-artifact@master
@@ -75,10 +69,7 @@ jobs:
     needs:
       - scan-vulnerability
       - test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        type: [zts, nts]
+    <<: *stepShared
     steps:
       - uses: actions/checkout@v1
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
