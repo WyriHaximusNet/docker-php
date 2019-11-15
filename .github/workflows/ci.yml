@@ -56,7 +56,7 @@ jobs:
       - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
       - run: mkdir -p "./clair/${DOCKER_IMAGE}"
       - run: make ci-scan-vulnerability
-      - run: ls -lasth ./clair/
+      - run: ls -lasthR ./clair/
   test:
     needs: build
     runs-on: ubuntu-latest
