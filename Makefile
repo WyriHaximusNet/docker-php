@@ -15,10 +15,12 @@ BUILDINGIMAGE=*
 build-nts: BUILDINGIMAGE=nts
 build-nts: clean-tags
 	./build-php.sh cli nts 7.3 3.10
+	./build-php.sh cli nts 7.4 3.10
 
 build-zts: BUILDINGIMAGE=zts
 build-zts: clean-tags
 	./build-php.sh zts zts 7.3 3.10
+	./build-php.sh zts zts 7.4 3.10
 
 .NOTPARALLEL: clean-tags
 clean-tags:
