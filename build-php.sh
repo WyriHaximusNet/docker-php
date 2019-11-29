@@ -13,7 +13,7 @@ declare -r VERSION_ALPINE=$4
 # I could create a placeholder like php:x.y-image-alpinex.y in the Dockerfile itself,
 # but I think it wouldn't be a good experience if you try to build the image yourself
 # thus that's the way I opted to have dynamic base images
-declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${SRC_IMAGE}-alpine3.10]"
+declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${SRC_IMAGE}-alpine3.10"
 
 declare -r IMAGE_TAG="${VERSION_PHP}-${SRC_IMAGE}-alpine${VERSION_ALPINE}"
 declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP}-${DST_IMAGE}-alpine${VERSION_ALPINE}"
