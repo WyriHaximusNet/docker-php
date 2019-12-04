@@ -25,6 +25,10 @@ def test_iconv_is_loaded(host):
 def test_intl_is_loaded(host):
     assert 'intl' in host.run('php -m').stdout
 
+@pytest.mark.php_dev
+def test_meminfo_is_loaded(host):
+    assert 'meminfo' in host.run('php -m').stdout
+
 @pytest.mark.php_zts
 def test_paralle_is_loaded(host):
     assert 'parallel' in host.run('php -m').stdout
