@@ -33,6 +33,7 @@ jobs:
       - run: make build-${{ matrix.type }}
       - run: cat ./docker-image/build-${{ matrix.type }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .ContainerConfig.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/docker_image-${{ matrix.type }}.tar
+      - run: docker images
       - uses: actions/upload-artifact@master
         with:
           name: docker-image-${{ matrix.type }}
