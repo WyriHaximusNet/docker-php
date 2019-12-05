@@ -13,6 +13,9 @@ are based on [`Alpine Linux`](https://alpinelinux.org/). All images come with ex
 performance of [`ReactPHP`](https://reactphp.org/) (such as event loop extensions). Such extensions are highlighted 
 **build** in the extensions list below.
 
+## Images News
+
+Sometimes big changes happen to images, to stay informed please subscribe to this thread: https://github.com/WyriHaximusNet/docker-php/issues/46
 
 ## The available tags
 
