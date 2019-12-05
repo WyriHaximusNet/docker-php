@@ -66,7 +66,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         libpng-dev \
         gmp-dev \
         zlib-dev \
-        icu-dev \
         postgresql-dev \
         libzip-dev \
         libuv-dev \
@@ -80,7 +79,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         git \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo intl pdo_pgsql bcmath zip gmp iconv \
+    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
     && pecl install vips \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
