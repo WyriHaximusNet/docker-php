@@ -11,10 +11,6 @@ def test_configuration_is_effective(host):
     
     assert u'expose_php => On => On' in configuration
 
-@pytest.mark.php_dev
-def test_xdebug_is_loaded(host):
-    assert 'Xdebug' in host.run('php -m').stdout
-
 @pytest.mark.php_no_dev
 def test_configuration_is_not_present(host):
     assert host.file('/usr/local/etc/php/conf.d/zzz_xdebug.ini').exists is False
@@ -25,10 +21,6 @@ def test_configuration_is_not_effective(host):
     configuration = host.run('php -i').stdout
     
     assert u'expose_php => Off => Off' in configuration
-
-@pytest.mark.php_no_dev
-def test_xdebug_is_not_loaded(host):
-    assert 'Xdebug' not in host.run('php -m').stdout
 
 @pytest.mark.php_dev
 def test_php_meminfo_is_enabled(host):
