@@ -39,7 +39,7 @@ NTS, or non-thread safe is the PHP version most people use. This image comes wit
 
 ### ZTS
 
-NTS, or zend thread safe is the PHP version that is safe to be used and required my threading extensions such as 
+ZTS, or zend thread safe is the PHP version that is safe to be used and required my threading extensions such as 
 pthreads or parallel. This image comes with the following extensions:
 
 | Extension    | Description                                                |
