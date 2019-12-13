@@ -27,6 +27,18 @@ RUN sha256sum /meminfo.so
 
 FROM php:7.3-alpine AS nts-root
 
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="wyrihaximusnet/php" \
+      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
+      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vendor="WyriHaximus.net" \
+      org.label-schema.schema-version="1.0"
+
 RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
