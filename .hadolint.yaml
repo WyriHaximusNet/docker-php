@@ -7,6 +7,3 @@ ignored:
   - DL3019
   - SC2006
   - DL3013 # So we can install the latest docker-compose
-  - SC2126
-  - DL4006
-  - DL3003

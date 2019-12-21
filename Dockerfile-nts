@@ -16,9 +16,7 @@ RUN sha256sum /uv.so
 FROM php:7.4-cli-alpine3.10 AS build-meminfo
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
-    git clone https://github.com/tony2001/php-meminfo.git && \
-    cd php-meminfo && \
-    git checkout -b php74_support origin/php74_support
+    git clone https://github.com/BitOne/php-meminfo.git
 WORKDIR /php-meminfo/extension/php7
 RUN phpize
 RUN ./configure --enable-meminfo
@@ -104,7 +102,7 @@ RUN true
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && mv /*.so "$EXTENSION_DIR/" \
-    && if [ $(php -v | grep 7.4 | wc -l) != 0 ] ; then rm "$EXTENSION_DIR/meminfo.so"; else docker-php-ext-enable meminfo; fi \
+    && docker-php-ext-enable meminfo \
     && apk add --no-cache \
         make \
         git \
