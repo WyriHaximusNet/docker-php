@@ -1,4 +1,4 @@
-FROM php:7.3-zts-alpine3.10 AS build-parallel
+FROM php:7.4-zts-alpine3.10 AS build-parallel
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git
 RUN git clone https://github.com/krakjoe/parallel
@@ -12,7 +12,7 @@ RUN git fetch \
     cp "$EXTENSION_DIR/parallel.so" /parallel.so
 RUN sha256sum /parallel.so
 
-FROM php:7.3-zts-alpine3.10 AS build-uv
+FROM php:7.4-zts-alpine3.10 AS build-uv
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/bwoebi/php-uv uv
@@ -27,10 +27,12 @@ RUN git fetch \
 RUN sha256sum /uv.so
 
 ## Build ext-meminfo
-FROM php:7.3-zts-alpine AS build-meminfo
+FROM php:7.4-zts-alpine3.10 AS build-meminfo
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
-    git clone https://github.com/BitOne/php-meminfo.git
+    git clone https://github.com/tony2001/php-meminfo.git && \
+    cd php-meminfo && \
+    git checkout -b php74_support origin/php74_support
 WORKDIR /php-meminfo/extension/php7
 RUN phpize
 RUN ./configure --enable-meminfo
@@ -39,7 +41,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
 RUN sha256sum /meminfo.so
 
-FROM php:7.3-zts-alpine AS zts-root
+FROM php:7.4-zts-alpine3.10 AS zts-root
 
 # Build-time metadata as defined at http://label-schema.org
 ARG BUILD_DATE
@@ -90,7 +92,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         vips-dev \
         git \
         $PHPIZE_DEPS \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
     && pecl install vips \
     && docker-php-ext-enable parallel \
@@ -124,7 +125,7 @@ RUN true
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && mv /*.so "$EXTENSION_DIR/" \
-    && docker-php-ext-enable meminfo \
+    && if [ $(php -v | grep 7.4 | wc -l) != 0 ] ; then rm "$EXTENSION_DIR/meminfo.so"; else docker-php-ext-enable meminfo; fi \
     && apk add --no-cache \
         make \
         git \
