@@ -24,7 +24,7 @@ def test_configuration_is_not_effective(host):
 
 @pytest.mark.php_dev
 def test_php_meminfo_is_enabled(host):
-    output = host.run('php -r "exit(function_exists(\'meminfo_dump\') ? 0 : 255);')
+    output = host.run('php -r "exit(function_exists(\'meminfo_dump\') ? 0 : 255);"')
     assert output.rc == 0
 
 @pytest.mark.php_no_dev
