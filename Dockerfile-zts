@@ -30,7 +30,9 @@ RUN sha256sum /uv.so
 FROM php:7.4-zts-alpine3.10 AS build-meminfo
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
-    git clone https://github.com/BitOne/php-meminfo.git
+    git clone https://github.com/tony2001/php-meminfo.git && \
+    cd php-meminfo && \
+    git checkout -b php74_support origin/php74_support
 WORKDIR /php-meminfo/extension/php7
 RUN phpize
 RUN ./configure --enable-meminfo
