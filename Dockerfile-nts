@@ -72,6 +72,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         vips-dev \
         git \
         $PHPIZE_DEPS \
+    && if [ $(php -v | grep 7.4 | wc -l) != 0 ] ; then docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/; else docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/; fi \
     && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
     && pecl install vips \
     && docker-php-ext-enable uv \
