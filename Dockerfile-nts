@@ -1,4 +1,4 @@
-FROM php:7.4-cli-alpine3.10 AS build-uv
+FROM php:7.4-cli-alpine3.11 AS build-uv
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/bwoebi/php-uv uv
@@ -13,7 +13,7 @@ RUN git fetch \
 RUN sha256sum /uv.so
 
 ## Build ext-meminfo
-FROM php:7.4-cli-alpine3.10 AS build-meminfo
+FROM php:7.4-cli-alpine3.11 AS build-meminfo
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
     git clone https://github.com/tony2001/php-meminfo.git && \
@@ -27,7 +27,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
 RUN sha256sum /meminfo.so
 
-FROM php:7.4-cli-alpine3.10 AS nts-root
+FROM php:7.4-cli-alpine3.11 AS nts-root
 
 # Build-time metadata as defined at http://label-schema.org
 ARG BUILD_DATE
