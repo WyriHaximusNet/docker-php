@@ -26,23 +26,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        alpine: ['3.10']
+        php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
       - uses: actions/checkout@v1
       - run: mkdir ./docker-image/
-      - run: make build-${{ matrix.type }}
+      - run: ./build-php.sh zts zts ${{ matrix.php }} ${{ matrix.alpine }}
+        if: matrix.type == 'zts'
+      - run: ./build-php.sh cli nts ${{ matrix.php }} ${{ matrix.alpine }}
+        if: matrix.type == 'nts'
       - run: cat ./docker-image/build-${{ matrix.type }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .ContainerConfig.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/docker_image-${{ matrix.type }}.tar
       - run: docker images
       - uses: actions/upload-artifact@master
         with:
-          name: docker-image-${{ matrix.type }}
+          name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
   scan-vulnerability:
     needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        alpine: ['3.10']
+        php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
       - uses: actions/checkout@v1
@@ -52,7 +59,7 @@ jobs:
           sudo chmod +x /usr/local/bin/clair-scanner
       - uses: actions/download-artifact@master
         with:
-          name: docker-image-${{ matrix.type }}
+          name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
       - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
       - run: mkdir -p "./clair/${DOCKER_IMAGE}"
@@ -62,13 +69,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        alpine: ['3.10']
+        php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/download-artifact@master
         with:
-          name: docker-image-${{ matrix.type }}
+          name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
+      - run: ls -lasth ./docker-image
       - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
       - run: make test-${{ matrix.type }}
       - run: rm -Rf ./docker-image/
@@ -79,6 +89,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        alpine: ['3.10']
+        php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
       - uses: actions/checkout@v1
@@ -86,7 +98,7 @@ jobs:
       - uses: actions/download-artifact@master
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         with:
-          name: docker-image-${{ matrix.type }}
+          name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
       - run: docker load --input ./docker-image/docker_image-${{ matrix.type }}.tar
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
