@@ -11,19 +11,6 @@ current_dir := $(abspath $(patsubst %/,%,$(dir $(mkfile_path))))
 
 BUILDINGIMAGE=*
 
-# Docker PHP images build matrix ./build-php.sh (nts/zts) (PHP version) (Alpine version)
-build-nts: BUILDINGIMAGE=nts
-build-nts: clean-tags
-	./build-php.sh cli nts 7.2 3.10
-	./build-php.sh cli nts 7.3 3.10
-	./build-php.sh cli nts 7.4 3.10
-
-build-zts: BUILDINGIMAGE=zts
-build-zts: clean-tags
-	./build-php.sh zts zts 7.2 3.10
-	./build-php.sh zts zts 7.3 3.10
-	./build-php.sh zts zts 7.4 3.10
-
 .NOTPARALLEL: clean-tags
 clean-tags:
 	rm ${current_dir}/docker-image/build-${BUILDINGIMAGE}.tags || true
