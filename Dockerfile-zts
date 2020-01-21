@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:experimental
 FROM php:7.4-zts-alpine3.11 AS build-parallel
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git
