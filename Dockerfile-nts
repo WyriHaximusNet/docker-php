@@ -57,8 +57,8 @@ COPY src/php/conf/ /usr/local/etc/php/conf.d/
 COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-	mv /*.so "$EXTENSION_DIR/" && \
-	apk update && \
+	mv /*.so "$EXTENSION_DIR/"
+RUN apk update && \
 	apk add --no-cache \
         freetype-dev \
         libjpeg-turbo-dev \
@@ -75,15 +75,16 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     && if [ $(php -v | grep 7.4 | wc -l) != 0 ] ; then docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/; else docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/; fi \
     && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
-    && pecl install vips \
-    && docker-php-ext-enable uv \
-    && docker-php-ext-enable vips \
-    && apk del $PHPIZE_DEPS \
-    && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
-    && chmod +x /bin/wait-for \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/* \
-    && rm -rf /usr/lib/python*
+RUN pecl install vips \
+    && docker-php-ext-enable vips
+
+RUN docker-php-ext-enable uv
+RUN apk del $PHPIZE_DEPS
+RUN wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
+    && chmod +x /bin/wait-for
+RUN rm -rf /var/cache/apk/*
+RUN rm -rf /tmp/*
+RUN rm -rf /usr/lib/python*
 
 # Install shush
 COPY src/php/utils/install-shush /usr/local/bin/
