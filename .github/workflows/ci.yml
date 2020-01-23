@@ -1,6 +1,7 @@
 name: Continuous Integration
 env:
   DOCKER_IMAGE: wyrihaximusnet/php
+  DOCKER_BUILDKIT: 1
 on:
   push:
     branches:
@@ -36,7 +37,7 @@ jobs:
         if: matrix.type == 'zts'
       - run: ./build-php.sh cli nts ${{ matrix.php }} ${{ matrix.alpine }}
         if: matrix.type == 'nts'
-      - run: cat ./docker-image/build-${{ matrix.type }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .ContainerConfig.Env 7}}' %
+      - run: cat ./docker-image/build-${{ matrix.type }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/docker_image-${{ matrix.type }}.tar
       - run: docker images
       - uses: actions/upload-artifact@master
