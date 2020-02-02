@@ -103,8 +103,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/* \
-    && rm -rf /usr/lib/python*
+    && rm -rf /tmp/*
 
 # Install shush
 COPY src/php/utils/install-shush /usr/local/bin/
