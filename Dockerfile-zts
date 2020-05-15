@@ -1,18 +1,4 @@
 # syntax=docker/dockerfile:experimental
-FROM php:7.4-zts-alpine3.11 AS build-parallel
-RUN apk update && \
-    apk add --no-cache $PHPIZE_DEPS git
-RUN git clone https://github.com/krakjoe/parallel
-WORKDIR /parallel
-RUN git fetch \
-    && git pull \
-    && phpize \
-    && ./configure \
-    && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-    cp "$EXTENSION_DIR/parallel.so" /parallel.so
-RUN sha256sum /parallel.so
-
 FROM php:7.4-zts-alpine3.11 AS build-uv
 RUN apk update && \
     apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
@@ -60,7 +46,6 @@ RUN set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app
 
-COPY --from=build-parallel /parallel.so /parallel.so
 COPY --from=build-uv /uv.so /uv.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
@@ -96,6 +81,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && if [ $(php -v | grep 7.4 | wc -l) != 0 ] ; then docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/; else docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/; fi \
     && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
     && pecl install vips \
+    && pecl install parallel \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
     && docker-php-ext-enable vips \
