@@ -112,6 +112,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
         openssh-client \
         bash \
         strace \
+        gdb \
 # Install Xdebug and development specific configuration
     && docker-php-dev-mode xdebug \
     && docker-php-dev-mode config \

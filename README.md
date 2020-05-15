@@ -8,7 +8,7 @@
 # Images
 
 This repo builds two different images, plus a `-dev` image for each containing [`composer`](https://getcomposer.org/), 
-bash, git, ssh, and make, and a `-root` image for all `*(-dev)` images where the default user is root. All the images 
+bash, git, ssh, strace, gdb, and make, and a `-root` image for all `*(-dev)` images where the default user is root. All the images 
 are based on [`Alpine Linux`](https://alpinelinux.org/). All images come with extensions used to increase the 
 performance of [`ReactPHP`](https://reactphp.org/) (such as event loop extensions). Such extensions are highlighted 
 **build** in the extensions list below.
