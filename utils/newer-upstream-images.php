@@ -26,14 +26,30 @@ foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
             continue;
         }
 
-        $output[] = ['alpine' => $alpine, 'php' => $php];
+        $output[] = ['os' => 'alpine', 'os_version' => 'alpine' . $alpine, 'os_version_from' => 'alpine3.11', 'php' => $php];
+    }
+}
+
+foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
+    foreach (json_decode(getenv('PHP'), true) as $php) {
+        $name = $php . '-zts-' . $debian;
+
+        if (!array_key_exists($name, $upstreamImages) || !array_key_exists($name, $images)) {
+            continue;
+        }
+
+        if ($upstreamImages[$name] < $images[$name]) {
+            continue;
+        }
+
+        $output[] = ['os' => 'debian', 'os_version' => $debian, 'os_version_from' => 'buster', 'php' => $php];
     }
 }
 
 $line = [];
 foreach ($output as $image) {
-    $line[] = 'zts-zts-' . $image['php'] . '-' . $image['alpine'];
-    $line[] = 'cli-nts-' . $image['php'] . '-' . $image['alpine'];
+    $line[] = 'zts-zts-' . $image['php'] . '-' . $image['os'] . '-' . $image['os_version'] . '-' . $image['os_version_from'];
+    $line[] = 'cli-nts-' . $image['php'] . '-' . $image['os'] . '-' . $image['os_version'] . '-' . $image['os_version_from'];
 }
 
 echo 'Found the following newer images to build: ', implode(', ', $line), PHP_EOL;
