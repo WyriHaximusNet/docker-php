@@ -10,12 +10,59 @@ on:
   schedule:
     - cron:  '33 7 * * *'
 jobs:
+  generate-alpine-strategy:
+    name: Generate Alpine
+    runs-on: ubuntu-latest
+    outputs:
+      alpine: ${{ steps.generate-alpine-strategy.outputs.alpine }}
+    steps:
+      - uses: actions/checkout@v1
+      - id: generate-alpine-strategy
+        name: Generate Alpine
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ] ; then
+            echo "::set-output name=alpine::[\"3.10\", \"3.11\"]"
+            exit 0
+          fi
+          echo "::set-output name=alpine::[\"3.10\", \"3.11\"]"
+  generate-php-strategy:
+    name: Generate PHP
+    runs-on: ubuntu-latest
+    outputs:
+      php: ${{ steps.generate-php-strategy.outputs.php }}
+    steps:
+      - uses: actions/checkout@v1
+      - id: generate-php-strategy
+        name: Generate PHP
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ] ; then
+            echo "::set-output name=php::[\"7.2\", \"7.3\", \"7.4\"]"
+            exit 0
+          fi
+          echo "::set-output name=php::[\"7.2\", \"7.3\", \"7.4\"]"
+  generate-type-strategy:
+    name: Generate Type
+    runs-on: ubuntu-latest
+    outputs:
+      type: ${{ steps.generate-type-strategy.outputs.type }}
+    steps:
+      - uses: actions/checkout@v1
+      - id: generate-type-strategy
+        name: Generate Type
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ] ; then
+            echo "::set-output name=type::[\"zts\", \"nts\"]"
+            exit 0
+          fi
+          echo "::set-output name=type::[\"zts\", \"nts\"]"
   lint:
     runs-on: ubuntu-latest
+    needs:
+      - generate-type-strategy
     strategy:
       fail-fast: false
       matrix:
-        type: [zts, nts]
+        type: ${{ fromJson(needs.generate-type-strategy.outputs.type) }}
     steps:
       - uses: actions/checkout@v2
       - name: Lint ${{ matrix.type }}
@@ -24,14 +71,18 @@ jobs:
           entrypoint: hadolint
           args: Dockerfile-${{ matrix.type }}
   build:
-    needs: lint
+    needs:
+      - lint
+      - generate-alpine-strategy
+      - generate-php-strategy
+      - generate-type-strategy
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        alpine: ['3.10', '3.11', '3.12']
-        php: [7.2, 7.3, 7.4]
-        type: [zts, nts]
+        alpine: ${{ fromJson(needs.generate-alpine-strategy.outputs.alpine) }}
+        php: ${{ fromJson(needs.generate-php-strategy.outputs.php) }}
+        type: ${{ fromJson(needs.generate-type-strategy.outputs.type) }}
     steps:
       - uses: actions/checkout@v2
       - run: mkdir ./docker-image/
@@ -47,14 +98,18 @@ jobs:
           name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
   scan-vulnerability:
-    needs: build
+    needs:
+      - build
+      - generate-alpine-strategy
+      - generate-php-strategy
+      - generate-type-strategy
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        alpine: ['3.10', '3.11', '3.12']
-        php: [7.2, 7.3, 7.4]
-        type: [zts, nts]
+        alpine: ${{ fromJson(needs.generate-alpine-strategy.outputs.alpine) }}
+        php: ${{ fromJson(needs.generate-php-strategy.outputs.php) }}
+        type: ${{ fromJson(needs.generate-type-strategy.outputs.type) }}
     steps:
       - uses: actions/checkout@v2
       - name: Install clair-scanner
@@ -69,14 +124,18 @@ jobs:
       - run: mkdir -p "./clair/${DOCKER_IMAGE}"
       - run: make ci-scan-vulnerability
   test:
-    needs: build
+    needs:
+      - build
+      - generate-alpine-strategy
+      - generate-php-strategy
+      - generate-type-strategy
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        alpine: ['3.10', '3.11', '3.12']
-        php: [7.2, 7.3, 7.4]
-        type: [zts, nts]
+        alpine: ${{ fromJson(needs.generate-alpine-strategy.outputs.alpine) }}
+        php: ${{ fromJson(needs.generate-php-strategy.outputs.php) }}
+        type: ${{ fromJson(needs.generate-type-strategy.outputs.type) }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -91,13 +150,16 @@ jobs:
     needs:
       - scan-vulnerability
       - test
+      - generate-alpine-strategy
+      - generate-php-strategy
+      - generate-type-strategy
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        alpine: ['3.10', '3.11', '3.12']
-        php: [7.2, 7.3, 7.4]
-        type: [zts, nts]
+        alpine: ${{ fromJson(needs.generate-alpine-strategy.outputs.alpine) }}
+        php: ${{ fromJson(needs.generate-php-strategy.outputs.php) }}
+        type: ${{ fromJson(needs.generate-type-strategy.outputs.type) }}
     steps:
       - uses: actions/checkout@v2
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
