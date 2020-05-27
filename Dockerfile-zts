@@ -42,14 +42,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vendor="WyriHaximus.net" \
       org.label-schema.schema-version="1.0"
 
-RUN set -x \
-    && addgroup -g 1000 app \
-    && adduser -u 1000 -D -G app app
-
 COPY --from=build-uv /uv.so /uv.so
-
-# Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
-RUN apk upgrade --no-cache curl libxml2 openssl
 
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
@@ -57,10 +50,18 @@ COPY src/php/utils/docker/ /usr/local/bin/
 COPY src/php/conf/ /usr/local/etc/php/conf.d/
 COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
 
-RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-	mv /*.so "$EXTENSION_DIR/" && \
-	apk update && \
-	apk add --no-cache \
+# Install shush
+COPY src/php/utils/install-shush /usr/local/bin/
+
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+    && set -x \
+	&& mv /*.so "$EXTENSION_DIR/" \
+	&& addgroup -g 1000 app \
+    && adduser -u 1000 -D -G app app \
+	&& apk update \
+	# Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
+	&& apk upgrade curl libxml2 openssl \
+	&& apk add \
         freetype-dev \
         libjpeg-turbo-dev \
         libpng-dev \
@@ -89,11 +90,9 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/*
-
-# Install shush
-COPY src/php/utils/install-shush /usr/local/bin/
-RUN install-shush && rm -rf /usr/local/bin/install-shush
+    && rm -rf /tmp/* \
+    && install-shush \
+    && rm -rf /usr/local/bin/install-shush
 
 STOPSIGNAL SIGTERM
 
@@ -105,10 +104,11 @@ FROM zts-root AS zts-dev-root
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
 
-RUN true
 # Copy in meminfo extension
 COPY --from=build-meminfo /meminfo.so /meminfo.so
-RUN true
+
+# Install composer
+COPY src/php/utils/install-composer /usr/local/bin/
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && mv /*.so "$EXTENSION_DIR/" \
@@ -124,11 +124,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && docker-php-dev-mode xdebug \
     && docker-php-dev-mode config \
 # Forcefully clear API cache
-    && rm -rf /var/cache/apk/*
-
-# Install composer
-COPY src/php/utils/install-composer /usr/local/bin/
-RUN install-composer \
+    && rm -rf /var/cache/apk/* \
+    && install-composer \
     && rm -rf /usr/local/bin/install-composer \
     && composer global require hirak/prestissimo --ansi --no-progress \
     && composer clear-cache
