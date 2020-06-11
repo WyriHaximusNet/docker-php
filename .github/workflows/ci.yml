@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        alpine: ['3.10', '3.11']
+        alpine: ['3.10', '3.11', '3.12']
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        alpine: ['3.10', '3.11']
+        alpine: ['3.10', '3.11', '3.12']
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        alpine: ['3.10', '3.11']
+        alpine: ['3.10', '3.11', '3.12']
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        alpine: ['3.10', '3.11']
+        alpine: ['3.10', '3.11', '3.12']
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
