@@ -3,6 +3,7 @@ env:
   DOCKER_IMAGE: wyrihaximusnet/php
   DOCKER_BUILDKIT: 1
   DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING: '{"ghcr.io":"GHCR_TOKEN","docker.io":"HUB_PASSCODE"}'
+  DOCKER_CLI_EXPERIMENTAL: enabled
 on:
   push:
     branches:
@@ -129,6 +130,12 @@ jobs:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+          qemu-version: latest
       - run: mkdir ./docker-image/
       - run: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ')
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %

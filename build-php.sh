@@ -44,10 +44,19 @@ declare -a target=(
   "-slim-dev-root"
 )
 
+declare -a arch=(
+  "linux/amd64"
+  "linux/arm64"
+  "linux/arm/v7"
+)
+
 docker pull "php:${IMAGE_TAG}"
 
 for buildTarget in "${target[@]}"
 do
-  sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}" --target="${DST_IMAGE}${buildTarget}" -f - .
+  for buildArch in "${arch[@]}"
+  do
+    sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker buildx build --platform "${buildArch}" --output "type=docker"  --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}" --target="${DST_IMAGE}${buildTarget}" -f - .
+  done
   echo "${WYRIHAXIMUSNET_TAG}${buildTarget}" >> "$TAG_FILE"
 done
