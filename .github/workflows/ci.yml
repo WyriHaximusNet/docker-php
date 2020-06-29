@@ -35,11 +35,7 @@ jobs:
       - id: generate-php-strategy
         name: Generate PHP
         run: |
-          if [ "${{ github.event_name }}" == "schedule" ] ; then
-            echo "::set-output name=php::[\"7.2\", \"7.3\", \"7.4\"]"
-            exit 0
-          fi
-          echo "::set-output name=php::[\"7.2\", \"7.3\", \"7.4\"]"
+          php utils/currently-supported-php-versions.php
   generate-type-strategy:
     name: Generate Type
     runs-on: ubuntu-latest
