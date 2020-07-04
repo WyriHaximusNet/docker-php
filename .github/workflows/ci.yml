@@ -13,6 +13,8 @@ jobs:
   generate-alpine-strategy:
     name: Generate Alpine
     runs-on: ubuntu-latest
+    container:
+      image: wyrihaximusnet/php:7.4-nts-alpine3.12-root
     outputs:
       alpine: ${{ steps.generate-alpine-strategy.outputs.alpine }}
     steps:
@@ -20,11 +22,7 @@ jobs:
       - id: generate-alpine-strategy
         name: Generate Alpine
         run: |
-          if [ "${{ github.event_name }}" == "schedule" ] ; then
-            echo "::set-output name=alpine::[\"3.10\", \"3.11\"]"
-            exit 0
-          fi
-          echo "::set-output name=alpine::[\"3.10\", \"3.11\"]"
+          php utils/currently-supported-alpine-versions.php
   generate-php-strategy:
     name: Generate PHP
     runs-on: ubuntu-latest
