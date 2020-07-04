@@ -44,10 +44,6 @@ jobs:
       - id: generate-type-strategy
         name: Generate Type
         run: |
-          if [ "${{ github.event_name }}" == "schedule" ] ; then
-            echo "::set-output name=type::[\"zts\", \"nts\"]"
-            exit 0
-          fi
           echo "::set-output name=type::[\"zts\", \"nts\"]"
   lint:
     runs-on: ubuntu-latest
