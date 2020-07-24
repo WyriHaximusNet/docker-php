@@ -16,7 +16,7 @@ jobs:
       matrix:
         type: [zts, nts]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Lint ${{ matrix.type }}
         uses: docker://hadolint/hadolint:latest-debian
         with:
@@ -31,7 +31,7 @@ jobs:
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: mkdir ./docker-image/
       - run: ./build-php.sh zts zts ${{ matrix.php }} ${{ matrix.alpine }}
         if: matrix.type == 'zts'
@@ -40,7 +40,7 @@ jobs:
       - run: cat ./docker-image/build-${{ matrix.type }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/docker_image-${{ matrix.type }}.tar
       - run: docker images
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v2
         with:
           name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
@@ -53,12 +53,12 @@ jobs:
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Install clair-scanner
         run: |
           sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64 -o /usr/local/bin/clair-scanner
           sudo chmod +x /usr/local/bin/clair-scanner
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
@@ -74,8 +74,8 @@ jobs:
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/download-artifact@master
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
           path: ./docker-image
@@ -94,9 +94,9 @@ jobs:
         php: [7.2, 7.3, 7.4]
         type: [zts, nts]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@v2
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         with:
           name: docker-image-${{ matrix.alpine }}-${{ matrix.php }}-${{ matrix.type }}
