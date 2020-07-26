@@ -33,11 +33,11 @@ lint:
 
 test: test-cli test-fpm test-http
 
-test-nts: ./docker-image/build-nts.tags
-	xargs -I % ./test-nts.sh % < ./docker-image/build-nts.tags
+test-nts: ./docker-image/image.tags
+	xargs -I % ./test-nts.sh % < ./docker-image/image.tags
 
-test-zts: ./docker-image/build-zts.tags
-	xargs -I % ./test-zts.sh % < ./docker-image/build-zts.tags
+test-zts: ./docker-image/image.tags
+	xargs -I % ./test-zts.sh % < ./docker-image/image.tags
 
 scan-vulnerability:
 	docker-compose -f test/security/docker-compose.yml -p clair-ci up -d

@@ -21,7 +21,7 @@ declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
 declare -r WYRIHAXIMUSNET_TAG_ROOT="${WYRIHAXIMUSNET_TAG}-root"
 declare -r WYRIHAXIMUSNET_TAG_DEV_ROOT="${WYRIHAXIMUSNET_TAG}-dev-root"
 
-declare -r TAG_FILE="./docker-image/build-${DST_IMAGE}.tags"
+declare -r TAG_FILE="./docker-image/image.tags"
 
 sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}" | docker build --no-cache --pull --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}" --target="${DST_IMAGE}" -f - . \
     && echo "$WYRIHAXIMUSNET_TAG" >> "$TAG_FILE"
