@@ -8,7 +8,7 @@ on:
       - master
   pull_request:
   schedule:
-    - cron:  '33 7 * * *'
+    - cron:  '33 */4 * * *'
 jobs:
   generate-alpine-strategy:
     name: Generate Alpine
