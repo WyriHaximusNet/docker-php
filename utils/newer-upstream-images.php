@@ -1,7 +1,7 @@
 <?php
 
 $upstreamImages = [];
-foreach (range(1, 5) as $i) {
+foreach (range(1, 10) as $i) {
     $upstreamJson = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/library/php/tags?page_size=100&page=' . $i), true);
     foreach ($upstreamJson['results'] as $image) {
         $upstreamImages[$image['name']] = new DateTimeImmutable($image['last_updated']);
