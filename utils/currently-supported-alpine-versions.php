@@ -21,6 +21,10 @@ foreach ((new DOMXPath($d))->query('//tr') as $row) {
     }
 
     $versions[] = $version;
+    
+    if (count($versions) >= 3) {
+        break;
+    }
 }
 
 echo 'Found the following versions: ', implode(', ', $versions), PHP_EOL;
