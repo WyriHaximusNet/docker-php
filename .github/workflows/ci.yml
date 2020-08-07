@@ -98,7 +98,20 @@ jobs:
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/image.tar
       - run: docker images
-      - uses: actions/upload-artifact@v2
+      - name: Upload Images (attempt #1)
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Upload Images (attempt #2)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Upload Images (attempt #3)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
@@ -117,7 +130,20 @@ jobs:
         run: |
           sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64 -o /usr/local/bin/clair-scanner
           sudo chmod +x /usr/local/bin/clair-scanner
-      - uses: actions/download-artifact@v2
+      - name: Download Images (attempt #1)
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Download Images (attempt #2)
+        if: ${{ failure() }}
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Download Images (attempt #3)
+        if: ${{ failure() }}
+        uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
@@ -135,7 +161,20 @@ jobs:
         image: ${{ fromJson(needs.generate-combined-strategy.outputs.image) }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - name: Download Images (attempt #1)
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Download Images (attempt #2)
+        if: ${{ failure() }}
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Download Images (attempt #3)
+        if: ${{ failure() }}
+        uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
@@ -156,8 +195,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-      - uses: actions/download-artifact@v2
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+      - name: Download Images (attempt #1)
+        if: ${{ failure() }} && (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Download Images (attempt #2)
+        if: ${{ failure() }} && (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - name: Download Images (attempt #3)
+        if: ${{ failure() }} && (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+        uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
