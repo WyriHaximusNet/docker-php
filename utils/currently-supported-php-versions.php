@@ -3,7 +3,7 @@
 $versions = [];
 
 $d = new DOMDocument();
-@$d->loadHTML(file_get_contents('https://php.wyrihaximus.net/supported-versions')); // the variable $ads contains the HTML code above
+@$d->loadHTML(file_get_contents('https://php.net/supported-versions')); // the variable $ads contains the HTML code above
 
 foreach ((new DOMXPath($d))->query('//a') as $link) {
     $url = $link->getAttribute('href');
