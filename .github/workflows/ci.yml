@@ -130,19 +130,7 @@ jobs:
         run: |
           sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64 -o /usr/local/bin/clair-scanner
           sudo chmod +x /usr/local/bin/clair-scanner
-      - name: Download Images (attempt #1)
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Download Images (attempt #2)
-        if: ${{ failure() }}
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Download Images (attempt #3)
-        if: ${{ failure() }}
+      - name: Download Images
         uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
@@ -161,19 +149,7 @@ jobs:
         image: ${{ fromJson(needs.generate-combined-strategy.outputs.image) }}
     steps:
       - uses: actions/checkout@v2
-      - name: Download Images (attempt #1)
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Download Images (attempt #2)
-        if: ${{ failure() }}
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Download Images (attempt #3)
-        if: ${{ failure() }}
+      - name: Download Images
         uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
@@ -195,20 +171,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-      - name: Download Images (attempt #1)
-        if: ${{ failure() }} && (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Download Images (attempt #2)
-        if: ${{ failure() }} && (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Download Images (attempt #3)
-        if: ${{ failure() }} && (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+      - name: Download Images
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
