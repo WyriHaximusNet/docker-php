@@ -42,16 +42,11 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
 RUN sha256sum /meminfo.so
 
-FROM php:7.4-zts-alpine3.11 AS zts-root
+FROM php:7.4-zts-alpine3.11 AS build-zts-root
 
-# Build-time metadata as defined at http://label-schema.org
-ARG BUILD_DATE
-ARG VCS_REF
-LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="wyrihaximusnet/php" \
+LABEL org.label-schema.name="wyrihaximusnet/php" \
       org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
       org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
-      org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
       org.label-schema.vendor="WyriHaximus.net" \
       org.label-schema.schema-version="1.0"
@@ -116,7 +111,7 @@ STOPSIGNAL SIGTERM
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
 
 ## ZTS-DEV STAGE ##
-FROM zts-root AS zts-dev-root
+FROM build-zts-root AS build-zts-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
@@ -156,7 +151,7 @@ RUN install-composer \
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## ZTS-DEV stage ##
-FROM zts-dev-root AS zts-dev
+FROM build-zts-dev-root AS build-zts-dev
 
 USER app
 
@@ -164,6 +159,40 @@ RUN composer global require hirak/prestissimo --ansi --no-progress \
     && composer clear-cache
 
 ## ZTS stage ##
-FROM zts-root AS zts
+FROM build-zts-root AS build-zts
 
 USER app
+
+FROM build-zts-root AS zts-root
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
+
+FROM build-zts-dev-root AS zts-dev-root
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
+
+
+FROM build-zts-dev AS zts-dev
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
+
+
+FROM build-zts AS zts
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF

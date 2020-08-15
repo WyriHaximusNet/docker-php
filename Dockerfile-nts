@@ -28,16 +28,11 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
 RUN sha256sum /meminfo.so
 
-FROM php:7.4-cli-alpine3.11 AS nts-root
+FROM php:7.4-cli-alpine3.11 AS build-nts-root
 
-# Build-time metadata as defined at http://label-schema.org
-ARG BUILD_DATE
-ARG VCS_REF
-LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="wyrihaximusnet/php" \
+LABEL org.label-schema.name="wyrihaximusnet/php" \
       org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
       org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
-      org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
       org.label-schema.vendor="WyriHaximus.net" \
       org.label-schema.schema-version="1.0"
@@ -95,7 +90,7 @@ STOPSIGNAL SIGTERM
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
 
 ## NTS-DEV STAGE ##
-FROM nts-root AS nts-dev-root
+FROM build-nts-root AS build-nts-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
@@ -135,7 +130,7 @@ RUN install-composer \
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## NTS-DEV stage ##
-FROM nts-dev-root AS nts-dev
+FROM build-nts-dev-root AS build-nts-dev
 
 USER app
 
@@ -143,6 +138,40 @@ RUN composer global require hirak/prestissimo --ansi --no-progress \
     && composer clear-cache
 
 ## NTS stage ##
-FROM nts-root AS nts
+FROM build-nts-root AS build-nts
 
 USER app
+
+FROM build-nts-root AS nts-root
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
+
+FROM build-nts-dev-root AS nts-dev-root
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
+
+
+FROM build-nts-dev AS nts-dev
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
+
+
+FROM build-nts AS nts
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF
