@@ -1,7 +1,7 @@
 qa: lint lint-shell build test scan-vulnerability
 build: clean-tags build-nts build-zts
 push: build push
-ci-push: ci-docker-login push
+ci-push: ci-docker-login push-from-tags
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(abspath $(patsubst %/,%,$(dir $(mkfile_path))))
@@ -15,7 +15,7 @@ clean-tags:
 	rm ${current_dir}/docker-image/build.tags || true
 
 # Docker images push
-push:
+push-from-tags:
 	cat ./docker-image/build.tags | xargs -I % docker push %
 
 # CI dependencies
