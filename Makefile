@@ -13,16 +13,11 @@ BUILDINGIMAGE=*
 
 .NOTPARALLEL: clean-tags
 clean-tags:
-	rm ${current_dir}/docker-image/build-${BUILDINGIMAGE}.tags || true
+	rm ${current_dir}/docker-image/build.tags || true
 
 # Docker images push
-push-nts: BUILDINGIMAGE=nts
-push-nts:
-	cat ./docker-image/build-${BUILDINGIMAGE}.tags | xargs -I % docker push %
-
-push-zts: BUILDINGIMAGE=zts
-push-zts:
-	cat ./docker-image/build-${BUILDINGIMAGE}.tags | xargs -I % docker push %
+push:
+	cat ./docker-image/build.tags | xargs -I % docker push %
 
 # CI dependencies
 ci-docker-login:
