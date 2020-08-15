@@ -1,8 +1,7 @@
 qa: lint lint-shell build test scan-vulnerability
 build: clean-tags build-nts build-zts
-push: build push-nts push-zts
-ci-push-nts: ci-docker-login push-nts
-ci-push-zts: ci-docker-login push-zts
+push: build push
+ci-push: ci-docker-login push
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(abspath $(patsubst %/,%,$(dir $(mkfile_path))))
