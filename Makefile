@@ -1,5 +1,5 @@
-qa: lint lint-shell build test scan-vulnerability
-build: clean-tags build-nts build-zts
+qa: lint build test scan-vulnerability
+build: clean-tags build-all
 push: build push
 ci-push: ci-docker-login push-from-tags
 
@@ -24,6 +24,15 @@ ci-docker-login:
 
 lint:
 	docker run -v ${current_dir}:/project:ro --workdir=/project --rm -it hadolint/hadolint:latest-debian hadolint /project/Dockerfile-nts /project/Dockerfile-zts
+
+build-all:
+	PHP=$(shell docker run --rm wyrihaximusgithubactions/supported-php-versions:v1 | php -r 'echo explode("::set-output name=versions::", stream_get_contents(STDIN))[1];') \
+	ALPINE=$(shell docker run --rm wyrihaximusgithubactions/supported-alpine-linux-versions:v1 | php -r 'echo explode("::set-output name=versions::", stream_get_contents(STDIN))[1];') \
+	php utils/all-images.php  | \
+	php -r 'echo explode("::set-output name=image::", stream_get_contents(STDIN))[1];' | jq -r '.[]' | \
+	tr '-' ' ' | \
+	xargs -I {} -t bash -c './build-php.sh {}'
+
 
 test: test-cli test-fpm test-http
 
