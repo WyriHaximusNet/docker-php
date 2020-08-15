@@ -68,20 +68,19 @@ jobs:
           ALPINE: ${{ needs.generate-alpine-strategy.outputs.alpine }}
           PHP: ${{ needs.generate-php-strategy.outputs.php }}
   lint:
+    name: Lint Dockerfiles
     runs-on: ubuntu-latest
     needs:
       - generate-type-strategy
     strategy:
       fail-fast: false
-      matrix:
-        type: ${{ fromJson(needs.generate-type-strategy.outputs.type) }}
     steps:
       - uses: actions/checkout@v2
       - name: Lint ${{ matrix.type }}
         uses: docker://hadolint/hadolint:latest-debian
         with:
           entrypoint: hadolint
-          args: Dockerfile-${{ matrix.type }}
+          args: Dockerfile-*
   build:
     needs:
       - lint
