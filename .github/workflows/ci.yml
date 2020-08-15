@@ -179,7 +179,7 @@ jobs:
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-      - run: make push
+      - run: make ci-push
         if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
