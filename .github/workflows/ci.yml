@@ -96,7 +96,7 @@ jobs:
       - run: mkdir ./docker-image/
       - run: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ')
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
-      - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/image.tar
+      - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
       - run: docker images
       - name: Upload Images (attempt #1)
         uses: actions/upload-artifact@v2
