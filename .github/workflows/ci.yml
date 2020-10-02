@@ -16,24 +16,22 @@ jobs:
     container:
       image: wyrihaximusnet/php:7.4-nts-alpine3.12-root
     outputs:
-      alpine: ${{ steps.generate-alpine-strategy.outputs.alpine }}
+      alpine: ${{ steps.generate-alpine-strategy.outputs.versions }}
     steps:
       - uses: actions/checkout@v1
       - id: generate-alpine-strategy
         name: Generate Alpine
-        run: |
-          php utils/currently-supported-alpine-versions.php
+        uses: wyrihaximus/github-action-supported-alpine-linux-versions@v1
   generate-php-strategy:
     name: Generate PHP
     runs-on: ubuntu-latest
     outputs:
-      php: ${{ steps.generate-php-strategy.outputs.php }}
+      php: ${{ steps.generate-php-strategy.outputs.versions }}
     steps:
       - uses: actions/checkout@v1
       - id: generate-php-strategy
         name: Generate PHP
-        run: |
-          php utils/currently-supported-php-versions.php
+        uses: wyrihaximus/github-action-supported-php-versions@v1
   generate-type-strategy:
     name: Generate Type
     runs-on: ubuntu-latest
