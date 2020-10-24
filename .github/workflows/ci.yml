@@ -157,6 +157,7 @@ jobs:
       - run: make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
       - run: rm -Rf ./docker-image/
   push:
+    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - scan-vulnerability
       - test
@@ -168,17 +169,13 @@ jobs:
         image: ${{ fromJson(needs.generate-combined-strategy.outputs.image) }}
     steps:
       - uses: actions/checkout@v2
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
       - name: Download Images
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
       - run: make ci-push
-        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
