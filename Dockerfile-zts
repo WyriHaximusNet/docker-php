@@ -129,9 +129,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN install-composer \
-    && rm -rf /usr/local/bin/install-composer \
-    && composer global require hirak/prestissimo --ansi --no-progress \
-    && composer clear-cache
+    && rm -rf /usr/local/bin/install-composer
 
 # Change entrypoint back to the default because we don't need shush in development
 ENTRYPOINT ["docker-php-entrypoint"]
@@ -140,9 +138,6 @@ ENTRYPOINT ["docker-php-entrypoint"]
 FROM zts-dev-root AS zts-dev
 
 USER app
-
-RUN composer global require hirak/prestissimo --ansi --no-progress \
-    && composer clear-cache
 
 ## ZTS stage ##
 FROM zts-root AS zts
