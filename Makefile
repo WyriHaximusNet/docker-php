@@ -20,7 +20,7 @@ push-from-tags:
 
 # CI dependencies
 ci-docker-login:
-	docker login --username $$DOCKER_USER --password $$DOCKER_PASSWORD
+	docker login $$DOCKER_REGISTRY --username $$DOCKER_USER --password $$DOCKER_PASSWORD
 
 lint:
 	docker run -v ${current_dir}:/project:ro --workdir=/project --rm -it hadolint/hadolint:latest-debian hadolint /project/Dockerfile-nts /project/Dockerfile-zts
