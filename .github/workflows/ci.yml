@@ -156,7 +156,7 @@ jobs:
       - run: docker load --input ./docker-image/image.tar
       - run: make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
       - run: rm -Rf ./docker-image/
-  push:
+  push-docker-hub:
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - scan-vulnerability
