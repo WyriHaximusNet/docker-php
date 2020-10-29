@@ -186,3 +186,29 @@ jobs:
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
+          DOCKER_REGISTRY:
+  push-github-container-registry:
+    name: Pushing "${{ matrix.image }}" to GitHub Container Registry
+    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+    needs:
+      - scan-vulnerability
+      - test
+      - image-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Images
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}
+          path: ./docker-image
+      - run: docker load --input ./docker-image/image.tar
+      - run: make ci-push
+        env:
+          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.GHCR_TOKEN }}
+          DOCKER_REGISTRY: ghcr.io
