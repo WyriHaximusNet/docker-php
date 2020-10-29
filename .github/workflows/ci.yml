@@ -207,6 +207,7 @@ jobs:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
+      - run: cat ./docker-image/image.tags | xargs -I % docker tag % ghcr.io/%
       - run: make ci-push
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
