@@ -42,7 +42,9 @@ jobs:
       - id: image-type-matrix
         name: Generate Type
         run: |
-          echo "::set-output name=type::[\"zts\", \"nts\"]"
+          ls Dockerfile-* | jq -csR '. | rtrimstr("\n") | split("\n")' | php -r "echo str_replace('Dockerfile-', '', stream_get_contents(STDIN));" > types.list
+          cat types.list
+          echo "::set-output name=type::$(cat types.list)"
   image-matrix:
     name: Create Image Matrix
     runs-on: ubuntu-latest
