@@ -16,7 +16,7 @@ clean-tags:
 
 # Docker images push
 push-from-tags:
-	cat ./docker-image/image.tags | xargs -I % docker push %
+	cat ./docker-image/image.tags | xargs -I % docker push $$DOCKER_REGISTRY/%
 
 # CI dependencies
 ci-docker-login:
