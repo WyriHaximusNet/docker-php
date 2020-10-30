@@ -141,6 +141,7 @@ jobs:
       - run: docker load --input ./docker-image/image.tar
       - run: mkdir -p "./clair/${DOCKER_IMAGE}"
       - run: make ci-scan-vulnerability
+      - run: ls -lasthR ./clair/
   test:
     name: Testing "${{ matrix.image }}"
     needs:
