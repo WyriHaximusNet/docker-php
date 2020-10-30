@@ -105,7 +105,7 @@ RUN true
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
     && mv /*.so "$EXTENSION_DIR/" \
-    && if [ $(php -v | grep 7.4 | wc -l) != 0 ] ; then rm "$EXTENSION_DIR/meminfo.so"; else docker-php-ext-enable meminfo; fi \
+    && docker-php-ext-enable meminfo \
     && apk add --no-cache \
         make \
         git \
