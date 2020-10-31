@@ -33,6 +33,17 @@ jobs:
       - id: supported-php-versions
         name: Generate PHP
         uses: wyrihaximus/github-action-supported-php-versions@v1
+  registry-matrix:
+    name: Extract registries from registry secret mapping
+    runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.registry-matrix.outputs.registry }}
+    steps:
+      - uses: actions/checkout@v1
+      - id: registry-matrix
+        name: Extract registries from registry secret mapping
+        run: |
+          echo "::set-output name=registry::$(printenv DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING | jq -c 'keys')"
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest
@@ -169,13 +180,14 @@ jobs:
     needs:
       - scan-vulnerability
       - test
+      - registry-matrix
       - image-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        registry: ["docker.io","ghcr.io"]
+        registry: ${{ fromJson(needs.registry-matrix.outputs.registry) }}
     steps:
       - uses: actions/checkout@v2
       - name: Download Images
