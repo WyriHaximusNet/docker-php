@@ -2,6 +2,7 @@ name: Continuous Integration
 env:
   DOCKER_IMAGE: wyrihaximusnet/php
   DOCKER_BUILDKIT: 1
+  DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING: '{"ghcr.io":"GHCR_TOKEN","docker.io":"HUB_PASSCODE"}'
 on:
   push:
     branches:
@@ -162,8 +163,8 @@ jobs:
       - run: docker load --input ./docker-image/image.tar
       - run: make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
       - run: rm -Rf ./docker-image/
-  push-docker-hub:
-    name: Pushing "${{ matrix.image }}" to Docker Hub
+  push:
+    name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }}
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - scan-vulnerability
@@ -174,6 +175,7 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        registry: ["docker.io","ghcr.io"]
     steps:
       - uses: actions/checkout@v2
       - name: Download Images
@@ -182,34 +184,9 @@ jobs:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
+      - run: cat ./docker-image/image.tags | xargs -I % docker tag % ${{ matrix.registry }}/%
       - run: make ci-push
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
-          DOCKER_REGISTRY: docker.io
-  push-github-container-registry:
-    name: Pushing "${{ matrix.image }}" to GitHub Container Registry
-    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-    needs:
-      - scan-vulnerability
-      - test
-      - image-matrix
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download Images
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - run: docker load --input ./docker-image/image.tar
-      - run: cat ./docker-image/image.tags | xargs -I % docker tag % ghcr.io/%
-      - run: make ci-push
-        env:
-          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.GHCR_TOKEN }}
-          DOCKER_REGISTRY: ghcr.io
+          DOCKER_PASSWORD: ${{ secrets[fromJson(env.DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING)[matrix.registry]] }}
+          DOCKER_REGISTRY: ${{ matrix.registry }}
