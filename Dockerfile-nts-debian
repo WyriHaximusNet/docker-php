@@ -1,0 +1,130 @@
+# syntax=docker/dockerfile:experimental
+FROM php:7.4-cli-buster AS build-uv
+RUN apt-get update && \
+    yes | apt-get install $PHPIZE_DEPS git libuv1-dev && \
+    git clone https://github.com/bwoebi/php-uv uv
+WORKDIR /uv
+RUN git fetch \
+    && git pull \
+    && phpize \
+    && ./configure \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/uv.so" /uv.so
+RUN sha256sum /uv.so
+
+FROM php:7.4-cli-buster AS nts-root
+
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="wyrihaximusnet/php" \
+      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
+      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vendor="WyriHaximus.net" \
+      org.label-schema.schema-version="1.0"
+
+RUN set -x \
+    && addgroup --gid 1000 app \
+    && adduser --uid 1000 --gid 1000 --disabled-password app \
+    && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
+
+COPY --from=build-uv /uv.so /uv.so
+
+# Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
+RUN apt-get update && \
+    yes | apt-get upgrade curl libxml2 openssl
+
+# Install docker help scripts
+COPY src/php/utils/docker/debian/ /usr/local/bin/
+
+COPY src/php/conf/ /usr/local/etc/php/conf.d/
+COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
+
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+	mv /*.so "$EXTENSION_DIR/" && \
+	apt-get update && \
+	yes | apt-get upgrade && \
+    yes | apt-get install \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        libgmp-dev \
+        zlib1g-dev \
+        libpq-dev \
+        libzip-dev \
+        libuv1-dev \
+        make \
+        git \
+        openssh-client \
+        bash \
+        coreutils \
+        procps \
+        libvips-dev \
+        git \
+        wget \
+        gdb \
+        $PHPIZE_DEPS \
+    && (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/) \
+    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
+    && pecl install vips \
+    && docker-php-ext-enable uv \
+    && docker-php-ext-enable vips \
+    && wget -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
+    && yes | apt-get purge wget $PHPIZE_DEPS \
+    && chmod +x /bin/wait-for \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
+
+# Install shush
+COPY src/php/utils/install-shush /usr/local/bin/
+RUN install-shush && rm -rf /usr/local/bin/install-shush
+
+STOPSIGNAL SIGTERM
+
+ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
+
+## nts-DEV STAGE ##
+FROM nts-root AS nts-dev-root
+
+RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
+
+# Install docker help scripts
+COPY src/php/utils/docker/ /usr/local/bin/
+
+RUN apt-get update \
+    && yes | apt-get install \
+        make \
+        git \
+        openssh-client \
+        bash \
+        strace \
+# Install Xdebug and development specific configuration
+    && docker-php-dev-mode xdebug \
+    && docker-php-dev-mode config \
+# Forcefully clear API cache
+    && rm -rf /var/cache/apk/*
+
+# Install composer
+COPY src/php/utils/install-composer /usr/local/bin/
+RUN apt-get update \
+    && yes | apt-get install wget \
+    && install-composer \
+    && yes | apt-get purge wget \
+    && rm -rf /usr/local/bin/install-composer
+
+# Change entrypoint back to the default because we don't need shush in development
+ENTRYPOINT ["docker-php-entrypoint"]
+
+## nts-DEV stage ##
+FROM nts-dev-root AS nts-dev
+
+USER app
+
+## nts stage ##
+FROM nts-root AS nts
+
+USER app

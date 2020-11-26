@@ -1,0 +1,124 @@
+# syntax=docker/dockerfile:experimental
+FROM php:7.4-zts-alpine3.11 AS build-uv
+RUN apk update && \
+    apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
+    git clone https://github.com/bwoebi/php-uv uv
+WORKDIR /uv
+RUN git fetch \
+    && git pull \
+    && phpize \
+    && ./configure \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/uv.so" /uv.so
+RUN sha256sum /uv.so
+
+FROM php:7.4-zts-alpine3.11 AS zts-root
+
+# Build-time metadata as defined at http://label-schema.org
+LABEL org.label-schema.name="wyrihaximusnet/php" \
+      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
+      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vendor="WyriHaximus.net" \
+      org.label-schema.schema-version="1.0"
+
+RUN set -x \
+    && addgroup -g 1000 app \
+    && adduser -u 1000 -D -G app app \
+    && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
+
+COPY --from=build-uv /uv.so /uv.so
+
+# Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
+RUN apk upgrade --no-cache curl libxml2 openssl
+
+# Install docker help scripts
+COPY src/php/utils/docker/alpine/ /usr/local/bin/
+
+COPY src/php/conf/ /usr/local/etc/php/conf.d/
+COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
+
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+	mv /*.so "$EXTENSION_DIR/" && \
+	apk update && \
+	apk add --no-cache \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        gmp-dev \
+        zlib-dev \
+        postgresql-dev \
+        libzip-dev \
+        libuv-dev \
+        make \
+        git \
+        openssh-client \
+        bash \
+        coreutils \
+        procps \
+        vips-dev \
+        git \
+        $PHPIZE_DEPS \
+    ## Install PECL
+    && wget pear.php.net/go-pear.phar && php go-pear.phar \
+    ## Initially this was an if statement to check for PHP 7.4, but since then the situation change so we're just going to try both to avoid the conditional growing out of hand
+    && (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/) \
+    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
+    && pecl install vips \
+    && pecl install parallel \
+    && docker-php-ext-enable parallel \
+    && docker-php-ext-enable uv \
+    && docker-php-ext-enable vips \
+    && apk del $PHPIZE_DEPS \
+    && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
+    && chmod +x /bin/wait-for \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
+
+# Install shush
+COPY src/php/utils/install-shush /usr/local/bin/
+RUN install-shush && rm -rf /usr/local/bin/install-shush
+
+STOPSIGNAL SIGTERM
+
+ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
+
+## ZTS-DEV STAGE ##
+FROM zts-root AS zts-dev-root
+
+RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
+
+# Install docker help scripts
+COPY src/php/utils/docker/alpine/ /usr/local/bin/
+
+RUN apk add --no-cache \
+        make \
+        git \
+        openssh-client \
+        bash \
+        strace \
+        gdb \
+# Install Xdebug and development specific configuration
+    && docker-php-dev-mode xdebug \
+    && docker-php-dev-mode config \
+# Forcefully clear API cache
+    && rm -rf /var/cache/apk/*
+
+# Install composer
+COPY src/php/utils/install-composer /usr/local/bin/
+RUN install-composer \
+    && rm -rf /usr/local/bin/install-composer
+
+# Change entrypoint back to the default because we don't need shush in development
+ENTRYPOINT ["docker-php-entrypoint"]
+
+## ZTS-DEV stage ##
+FROM zts-dev-root AS zts-dev
+
+USER app
+
+## ZTS stage ##
+FROM zts-root AS zts
+
+USER app

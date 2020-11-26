@@ -23,7 +23,7 @@ ci-docker-login:
 	docker login $$DOCKER_REGISTRY --username $$DOCKER_USER --password $$DOCKER_PASSWORD
 
 lint:
-	docker run -v ${current_dir}:/project:ro --workdir=/project --rm -it hadolint/hadolint:latest-debian hadolint /project/Dockerfile-nts /project/Dockerfile-zts
+	docker run -v ${current_dir}:/project:ro --workdir=/project --rm -it hadolint/hadolint:latest-debian hadolint /project/Dockerfile-*
 
 build-all:
 	PHP=$(shell docker run --rm wyrihaximusgithubactions/supported-php-versions:v1 | php -r 'echo explode("::set-output name=versions::", stream_get_contents(STDIN))[1];') \

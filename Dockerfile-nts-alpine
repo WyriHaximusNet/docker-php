@@ -83,7 +83,7 @@ FROM nts-root AS nts-dev-root
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
 # Install docker help scripts
-COPY src/php/utils/docker/ /usr/local/bin/
+COPY src/php/utils/docker/alpine/ /usr/local/bin/
 
 RUN apk add --no-cache \
         make \
