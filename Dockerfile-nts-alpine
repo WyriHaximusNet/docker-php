@@ -13,6 +13,19 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
+## Build ext-meminfo
+FROM php:7.4-cli-alpine3.11 AS build-meminfo
+RUN apk update && \
+    apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
+    git clone https://github.com/BitOne/php-meminfo.git
+WORKDIR /php-meminfo/extension/php7
+RUN phpize
+RUN ./configure --enable-meminfo
+RUN make install
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/meminfo.so" /meminfo.so
+RUN sha256sum /meminfo.so
+
 FROM php:7.4-cli-alpine3.11 AS nts-root
 
 # Build-time metadata as defined at http://label-schema.org
@@ -85,7 +98,15 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/ /usr/local/bin/
 
-RUN apk add --no-cache \
+# Copy in meminfo extension
+RUN true
+COPY --from=build-meminfo /meminfo.so /meminfo.so
+RUN true
+
+RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+    && mv /*.so "$EXTENSION_DIR/" \
+    && docker-php-ext-enable meminfo\
+    && apk add --no-cache \
         make \
         git \
         openssh-client \
