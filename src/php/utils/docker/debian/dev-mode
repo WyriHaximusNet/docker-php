@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -xe
+
+apt-get update
+yes | apt-get install make git openssh-client bash strace
+# Install Xdebug and development specific configuration
+docker-php-dev-mode xdebug
+docker-php-dev-mode config
+# Forcefully clear API cache
+rm -rf /var/cache/apk/*

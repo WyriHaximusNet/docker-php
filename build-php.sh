@@ -24,6 +24,10 @@ declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP}-${DST_IMAGE}-${
 declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
 declare -r WYRIHAXIMUSNET_TAG_ROOT="${WYRIHAXIMUSNET_TAG}-root"
 declare -r WYRIHAXIMUSNET_TAG_DEV_ROOT="${WYRIHAXIMUSNET_TAG}-dev-root"
+declare -r WYRIHAXIMUSNET_TAG_SLIM="${WYRIHAXIMUSNET_TAG}-slim"
+declare -r WYRIHAXIMUSNET_TAG_SLIM_DEV="${WYRIHAXIMUSNET_TAG}-slim-dev"
+declare -r WYRIHAXIMUSNET_TAG_SLIM_ROOT="${WYRIHAXIMUSNET_TAG}-slim-root"
+declare -r WYRIHAXIMUSNET_TAG_SLIM_DEV_ROOT="${WYRIHAXIMUSNET_TAG}-slim-dev-root"
 
 declare -r TAG_FILE="./docker-image/image.tags"
 
@@ -38,3 +42,15 @@ sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" 
 
 sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --pull --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG_DEV_ROOT}" --target="${DST_IMAGE}-dev-root" -f - . \
     && echo "$WYRIHAXIMUSNET_TAG_DEV_ROOT" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --pull --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG_SLIM}" --target="${DST_IMAGE}-slim" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_SLIM" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --pull --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG_SLIM_DEV}" --target="${DST_IMAGE}-slim-dev" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_SLIM_DEV" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --pull --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG_SLIM_ROOT}" --target="${DST_IMAGE}-slim-root" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_SLIM_ROOT" >> "$TAG_FILE"
+
+sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --pull --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG_SLIM_DEV_ROOT}" --target="${DST_IMAGE}-slim-dev-root" -f - . \
+    && echo "$WYRIHAXIMUSNET_TAG_SLIM_DEV_ROOT" >> "$TAG_FILE"

@@ -28,8 +28,8 @@ In order to provide upgrade path we intend to keep one or more versions of PHP.
 
 The tag naming strategy consists of (Read as a regex):
 
-- PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine(alpineMajor).(alpineMinor)|buster|strech)(-dev)(-root)?`
-  - Example: `7.2-fpm-alpine3.8`, `7.2-fpm-alpine3.8-dev`, `8.0-zts-buster`
+- PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine(alpineMajor).(alpineMinor)|buster|strech)(-slim)(-dev)(-root)?`
+  - Example: `7.2-fpm-alpine3.8`, `7.2-fpm-alpine3.8-dev`, `8.0-zts-buster-slim`
 
 
 ### NTS
@@ -94,6 +94,13 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * xmlwriter
 * zip
 * zlib
+
+# Slim images
+
+Slim images include all the above extensions except the following, as those notoriously require heavy dependencies:
+
+* gd
+* vips
 
 # Credits
 
