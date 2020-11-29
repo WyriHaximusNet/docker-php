@@ -13,7 +13,7 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.4-cli-alpine3.11 AS nts-root
+FROM php:7.4-cli-alpine3.11 AS nts-slim-root
 
 # Build-time metadata as defined at http://label-schema.org
 LABEL org.label-schema.name="wyrihaximusnet/php" \
@@ -42,9 +42,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk update && \
 	apk add --no-cache \
-        freetype-dev \
-        libjpeg-turbo-dev \
-        libpng-dev \
         gmp-dev \
         zlib-dev \
         postgresql-dev \
@@ -52,17 +49,12 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         libuv-dev \
         coreutils \
         procps \
-        vips-dev \
         git \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget pear.php.net/go-pear.phar && php go-pear.phar \
-    ## Initially this was an if statement to check for PHP 7.4, but since then the situation change so we're just going to try both to avoid the conditional growing out of hand
-    && (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/) \
-    && docker-php-ext-install -j$(nproc) gd pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
-    && pecl install vips \
+    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
     && docker-php-ext-enable uv \
-    && docker-php-ext-enable vips \
     && apk del $PHPIZE_DEPS \
     && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
@@ -78,40 +70,56 @@ STOPSIGNAL SIGTERM
 ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
 
 ## NTS-DEV STAGE ##
+FROM nts-slim-root AS nts-root
+
+# Install ext-gd and ext-vips
+COPY src/php/utils/docker/alpine/install-gd-and-vips /usr/local/bin/install-gd-and-vips
+RUN install-gd-and-vips && rm -rf /usr/local/bin/install-gd-and-vips
+
+## NTS-DEV STAGE ##
+FROM nts-slim-root AS nts-slim-dev-root
+
+RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
+
+# Install docker help scripts
+COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
+COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
+RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
+
+# Install composer
+COPY src/php/utils/install-composer /usr/local/bin/
+RUN install-composer && rm -rf /usr/local/bin/install-composer
+
+# Change entrypoint back to the default because we don't need shush in development
+ENTRYPOINT ["docker-php-entrypoint"]
+
+## NTS-DEV STAGE ##
 FROM nts-root AS nts-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
 # Install docker help scripts
-COPY src/php/utils/docker/alpine/ /usr/local/bin/
-
-RUN apk add --no-cache \
-        make \
-        git \
-        openssh-client \
-        bash \
-        strace \
-        gdb \
-# Install Xdebug and development specific configuration
-    && docker-php-dev-mode xdebug \
-    && docker-php-dev-mode config \
-# Forcefully clear API cache
-    && rm -rf /var/cache/apk/*
+COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
+COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
+RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
 
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
-RUN install-composer \
-    && rm -rf /usr/local/bin/install-composer
+RUN install-composer && rm -rf /usr/local/bin/install-composer
 
 # Change entrypoint back to the default because we don't need shush in development
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## NTS-DEV stage ##
-FROM nts-dev-root AS nts-dev
+FROM nts-slim-dev-root AS nts-slim-dev
+USER app
 
+FROM nts-dev-root AS nts-dev
 USER app
 
 ## NTS stage ##
-FROM nts-root AS nts
+FROM nts-slim-root AS nts-slim
+USER app
 
+FROM nts-root AS nts
 USER app

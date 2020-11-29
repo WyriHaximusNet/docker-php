@@ -19,6 +19,12 @@ else
     TEST_SUITE="php_zts or php_no_dev and not php_dev"
 fi
 
+if [[ $DOCKER_TAG == *"-slim"* ]]; then
+    TEST_SUITE="php_slim or $TEST_SUITE"
+else
+    TEST_SUITE="php_not_slim or $TEST_SUITE"
+fi
+
 if [[ $DOCKER_TAG == *"-root"* ]]; then
     TEST_SUITE="php_root or $TEST_SUITE"
 else
