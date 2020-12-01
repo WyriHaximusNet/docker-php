@@ -18,11 +18,11 @@ foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
     foreach (json_decode(getenv('PHP'), true) as $php) {
         $name = $php . '-zts-alpine' . $alpine;
 
-        if (!array_key_exists($name, $upstreamImages) || !array_key_exists($name, $images)) {
+        if (!array_key_exists($name, $upstreamImages)) {
             continue;
         }
 
-        if ($upstreamImages[$name] < $images[$name]) {
+        if (array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name]) {
             continue;
         }
 
@@ -34,11 +34,11 @@ foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
     foreach (json_decode(getenv('PHP'), true) as $php) {
         $name = $php . '-zts-' . $debian;
 
-        if (!array_key_exists($name, $upstreamImages) || !array_key_exists($name, $images)) {
+        if (!array_key_exists($name, $upstreamImages)) {
             continue;
         }
 
-        if ($upstreamImages[$name] < $images[$name]) {
+        if (array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name]) {
             continue;
         }
 
