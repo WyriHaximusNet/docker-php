@@ -68,6 +68,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-enable uv \
     && wget -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && yes | apt-get purge wget $PHPIZE_DEPS \
+    && yes | apt-get install make \
     && chmod +x /bin/wait-for \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
@@ -103,6 +104,7 @@ RUN apt-get update \
     && yes | apt-get install wget \
     && install-composer \
     && yes | apt-get purge wget \
+    && yes | apt-get install make \
     && rm -rf /usr/local/bin/install-composer
 
 # Change entrypoint back to the default because we don't need shush in development
@@ -124,6 +126,7 @@ RUN apt-get update \
     && yes | apt-get install wget \
     && install-composer \
     && yes | apt-get purge wget \
+    && yes | apt-get install make \
     && rm -rf /usr/local/bin/install-composer
 
 # Change entrypoint back to the default because we don't need shush in development
