@@ -126,19 +126,7 @@ jobs:
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
       - run: docker images
-      - name: Upload Images (attempt #1)
-        uses: actions/upload-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Upload Images (attempt #2)
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - name: Upload Images (attempt #3)
-        if: ${{ failure() }}
+      - name: Upload Images
         uses: actions/upload-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
