@@ -117,7 +117,7 @@ RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-p
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN apt-get update \
-    && yes | apt-get install wget \
+    && yes | apt-get install wget unzip \
     && install-composer \
     && yes | apt-get purge wget \
     && yes | apt-get install make \
@@ -139,7 +139,7 @@ RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-p
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
 RUN apt-get update \
-    && yes | apt-get install wget \
+    && yes | apt-get install wget unzip \
     && install-composer \
     && yes | apt-get purge wget \
     && yes | apt-get install make \
