@@ -13,6 +13,20 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
+FROM php:7.4-zts-alpine3.11 AS build-fiber
+RUN apk update && \
+    apk add --no-cache $PHPIZE_DEPS git && \
+    git clone https://github.com/amphp/ext-fiber fiber
+WORKDIR /fiber
+RUN git fetch \
+    && git pull \
+    && phpize \
+    && ./configure \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/fiber.so" /fiber.so
+RUN sha256sum /fiber.so
+
 FROM php:7.4-zts-alpine3.11 AS zts-slim-root
 
 # Build-time metadata as defined at http://label-schema.org
@@ -29,6 +43,7 @@ RUN set -x \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
 
 COPY --from=build-uv /uv.so /uv.so
+COPY --from=build-fiber /fiber.so /fiber.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
 RUN apk upgrade --no-cache curl libxml2 openssl
@@ -62,6 +77,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && pecl install parallel \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
+    && docker-php-ext-enable fiber \
     && apk del $PHPIZE_DEPS \
     && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \

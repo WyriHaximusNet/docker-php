@@ -27,6 +27,20 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
+FROM php:7.4-zts-buster AS build-fiber
+RUN apt-get update && \
+    yes | apt-get install $PHPIZE_DEPS git libuv1-dev && \
+    git clone https://github.com/amphp/ext-fiber fiber
+WORKDIR /fiber
+RUN git fetch \
+    && git pull \
+    && phpize \
+    && ./configure \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
+    cp "$EXTENSION_DIR/fiber.so" /fiber.so
+RUN sha256sum /fiber.so
+
 FROM php:7.4-zts-buster AS zts-slim-root
 
 # Build-time metadata as defined at http://label-schema.org
@@ -48,6 +62,7 @@ RUN set -x \
 
 COPY --from=build-parallel /parallel.so /parallel.so
 COPY --from=build-uv /uv.so /uv.so
+COPY --from=build-fiber /fiber.so /fiber.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
 RUN apt-get update && \
@@ -82,6 +97,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
+    && docker-php-ext-enable fiber \
     && wget -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && yes | apt-get purge wget $PHPIZE_DEPS \
