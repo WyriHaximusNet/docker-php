@@ -14,24 +14,18 @@ jobs:
   supported-alpine-versions:
     name: Supported Alpine versions
     runs-on: ubuntu-latest
-    container:
-      image: wyrihaximusnet/php:7.4-nts-alpine3.12-root
     outputs:
       alpine: ${{ steps.supported-alpine-versions.outputs.versions }}
     steps:
-      - uses: actions/checkout@v1
       - id: supported-alpine-versions
         name: Generate Alpine
         uses: wyrihaximus/github-action-supported-alpine-linux-versions@v1
   supported-debian-versions:
     name: Supported Debian versions
     runs-on: ubuntu-latest
-    container:
-      image: wyrihaximusnet/php:7.4-nts-alpine3.12-root
     outputs:
       debian: ${{ steps.supported-debian-versions.outputs.versions }}
     steps:
-      - uses: actions/checkout@v1
       - id: supported-debian-versions
         name: Generate Debian
         uses: wyrihaximus/github-action-supported-debian-linux-versions@v1
@@ -41,7 +35,6 @@ jobs:
     outputs:
       php: ${{ steps.supported-php-versions.outputs.versions }}
     steps:
-      - uses: actions/checkout@v1
       - id: supported-php-versions
         name: Generate PHP
         uses: wyrihaximus/github-action-supported-php-versions@v1
@@ -51,7 +44,6 @@ jobs:
     outputs:
       registry: ${{ steps.registry-matrix.outputs.registry }}
     steps:
-      - uses: actions/checkout@v1
       - id: registry-matrix
         name: Extract registries from registry secret mapping
         run: |
