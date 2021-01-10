@@ -7,10 +7,13 @@ foreach (range(1, 10) as $i) {
         $upstreamImages[$image['name']] = new DateTimeImmutable($image['last_updated']);
     }
 }
+
 $images = [];
-$json = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/wyrihaximusnet/php/tags?page_size=100'), true);
-foreach ($json['results'] as $image) {
-    $images[$image['name']] = new DateTimeImmutable($image['last_updated']);
+foreach (range(1, 10) as $i) {
+    $json = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/wyrihaximusnet/php/tags?page_size=100&page=' . $i), true);
+    foreach ($json['results'] as $image) {
+        $images[$image['name']] = new DateTimeImmutable($image['last_updated']);
+    }
 }
 
 $output = [];
