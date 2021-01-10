@@ -52,5 +52,5 @@ foreach ($output as $image) {
     $line[] = 'cli-nts-' . $image['php'] . '-' . $image['os'] . '-' . $image['os_version'] . '-' . $image['os_version_from'];
 }
 
-echo 'Found the following newer images to build: ', implode(', ', $line), PHP_EOL;
+echo 'Found the following newer images to build: ', PHP_EOL, '- ', implode(PHP_EOL . '- ', $line), PHP_EOL;
 echo '::set-output name=image::', json_encode($line), PHP_EOL;;
