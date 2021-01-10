@@ -196,8 +196,7 @@ jobs:
     name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }}
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
-      - scan-vulnerability
-      - test
+      - check-mark
       - registry-matrix
       - image-matrix
     runs-on: ubuntu-latest
