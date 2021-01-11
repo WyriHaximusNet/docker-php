@@ -41,6 +41,8 @@ jobs:
   registry-matrix:
     name: Extract registries from registry secret mapping
     runs-on: ubuntu-latest
+    needs:
+      - check-mark
     outputs:
       registry: ${{ steps.registry-matrix.outputs.registry }}
     steps:
