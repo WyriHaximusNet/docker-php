@@ -1,8 +1,25 @@
 # syntax=docker/dockerfile:experimental
-FROM php:7.4-cli-alpine3.11 AS build-uv
-RUN apk update && \
-    apk add --no-cache $PHPIZE_DEPS git libuv-dev && \
-    git clone https://github.com/bwoebi/php-uv uv
+FROM php:7.4-cli-alpine3.11 AS base
+
+# Build-time metadata as defined at http://label-schema.org
+LABEL org.label-schema.name="wyrihaximusnet/php" \
+      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
+      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vendor="WyriHaximus.net" \
+      org.label-schema.schema-version="1.0"
+
+RUN apk update \
+    && set -x \
+    && addgroup -g 1000 app \
+    && adduser -u 1000 -D -G app app \
+    && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
+
+FROM base AS base-build
+RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev
+
+FROM base-build AS build-uv
+RUN git clone https://github.com/bwoebi/php-uv uv
 WORKDIR /uv
 RUN git fetch \
     && git pull \
@@ -13,20 +30,8 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.4-cli-alpine3.11 AS nts-slim-root
+FROM base AS nts-slim-root
 
-# Build-time metadata as defined at http://label-schema.org
-LABEL org.label-schema.name="wyrihaximusnet/php" \
-      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
-      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
-      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
-      org.label-schema.vendor="WyriHaximus.net" \
-      org.label-schema.schema-version="1.0"
-
-RUN set -x \
-    && addgroup -g 1000 app \
-    && adduser -u 1000 -D -G app app \
-    && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
 COPY --from=build-uv /uv.so /uv.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
@@ -40,7 +45,6 @@ COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
-	apk update && \
 	apk add --no-cache \
         gmp-dev \
         zlib-dev \
