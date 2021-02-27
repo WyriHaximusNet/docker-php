@@ -140,19 +140,14 @@ jobs:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
     steps:
       - uses: actions/checkout@v2
-        if: contains(matrix.image, 'alpine')
       - name: Download Images
-        if: contains(matrix.image, 'alpine')
         uses: actions/download-artifact@v2
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
-        if: contains(matrix.image, 'alpine')
       - run: mkdir -p "./clair/${DOCKER_IMAGE}"
-        if: contains(matrix.image, 'alpine')
       - run: make ci-scan-vulnerability
-        if: contains(matrix.image, 'alpine')
   test:
     name: Testing "${{ matrix.image }}"
     needs:
