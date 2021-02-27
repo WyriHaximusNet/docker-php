@@ -1,8 +1,26 @@
 # syntax=docker/dockerfile:experimental
-FROM php:7.4-cli-buster AS build-uv
-RUN apt-get update && \
-    yes | apt-get install $PHPIZE_DEPS git libuv1-dev && \
-    git clone https://github.com/bwoebi/php-uv uv
+FROM php:7.4-cli-buster AS base
+
+# Build-time metadata as defined at http://label-schema.org
+LABEL org.label-schema.name="wyrihaximusnet/php" \
+      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
+      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
+      org.label-schema.vendor="WyriHaximus.net" \
+      org.label-schema.schema-version="1.0"
+
+RUN apt-get update \
+    && yes | apt-get upgrade \
+    && set -x \
+    && addgroup --gid 1000 app \
+    && adduser --uid 1000 --gid 1000 --disabled-password app \
+    && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
+
+FROM base AS base-build
+RUN yes | apt-get install $PHPIZE_DEPS git libuv1-dev
+
+FROM base-build AS build-uv
+RUN git clone https://github.com/bwoebi/php-uv uv
 WORKDIR /uv
 RUN git fetch \
     && git pull \
@@ -13,30 +31,12 @@ RUN git fetch \
     cp "$EXTENSION_DIR/uv.so" /uv.so
 RUN sha256sum /uv.so
 
-FROM php:7.4-cli-buster AS nts-slim-root
-
-# Build-time metadata as defined at http://label-schema.org
-ARG BUILD_DATE
-ARG VCS_REF
-LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="wyrihaximusnet/php" \
-      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
-      org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
-      org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
-      org.label-schema.vendor="WyriHaximus.net" \
-      org.label-schema.schema-version="1.0"
-
-RUN set -x \
-    && addgroup --gid 1000 app \
-    && adduser --uid 1000 --gid 1000 --disabled-password app \
-    && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
+FROM base AS nts-slim-root
 
 COPY --from=build-uv /uv.so /uv.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
-RUN apt-get update && \
-    yes | apt-get upgrade curl libxml2 openssl
+RUN yes | apt-get upgrade curl libxml2 openssl
 
 # Install docker help scripts
 COPY src/php/utils/docker/debian/ /usr/local/bin/
@@ -46,8 +46,6 @@ COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
-	apt-get update && \
-	yes | apt-get upgrade && \
     yes | apt-get install \
         libgmp-dev \
         zlib1g-dev \
@@ -100,8 +98,7 @@ RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-p
 
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
-RUN apt-get update \
-    && yes | apt-get install wget unzip \
+RUN yes | apt-get install wget unzip \
     && install-composer \
     && yes | apt-get purge wget \
     && yes | apt-get install make \
@@ -122,8 +119,7 @@ RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-p
 
 # Install composer
 COPY src/php/utils/install-composer /usr/local/bin/
-RUN apt-get update \
-    && yes | apt-get install wget unzip \
+RUN yes | apt-get install wget unzip \
     && install-composer \
     && yes | apt-get purge wget \
     && yes | apt-get install make \
