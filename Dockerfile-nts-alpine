@@ -10,6 +10,7 @@ LABEL org.label-schema.name="wyrihaximusnet/php" \
       org.label-schema.schema-version="1.0"
 
 RUN apk update \
+    && apk upgrade \
     && set -x \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app \
@@ -33,9 +34,6 @@ RUN sha256sum /uv.so
 FROM base AS nts-slim-root
 
 COPY --from=build-uv /uv.so /uv.so
-
-# Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
-RUN apk upgrade --no-cache curl libxml2 openssl
 
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
