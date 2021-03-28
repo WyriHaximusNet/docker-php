@@ -54,8 +54,6 @@ jobs:
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest
-    needs:
-      - image-matrix
     outputs:
       type: ${{ steps.image-type-matrix.outputs.type }}
     steps:
