@@ -54,11 +54,11 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         git \
         $PHPIZE_DEPS \
     ## Install PECL
-    && wget pear.php.net/go-pear.phar && php go-pear.phar \
+    && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
     && docker-php-ext-enable uv \
     && apk del $PHPIZE_DEPS \
-    && wget -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
+    && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*

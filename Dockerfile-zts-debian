@@ -78,7 +78,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
-    && wget -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
+    && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && yes | apt-get purge wget $PHPIZE_DEPS \
     && yes | apt-get install make \
