@@ -19,18 +19,6 @@ RUN apt-get update \
 FROM base AS base-build
 RUN yes | apt-get install $PHPIZE_DEPS git libuv1-dev
 
-FROM base-build AS build-parallel
-RUN git clone https://github.com/krakjoe/parallel
-WORKDIR /parallel
-RUN git fetch \
-    && git pull \
-    && phpize \
-    && ./configure \
-    && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-    cp "$EXTENSION_DIR/parallel.so" /parallel.so
-RUN sha256sum /parallel.so
-
 FROM base-build AS build-uv
 RUN git clone https://github.com/bwoebi/php-uv uv
 WORKDIR /uv
@@ -45,7 +33,6 @@ RUN sha256sum /uv.so
 
 FROM base AS zts-slim-root
 
-COPY --from=build-parallel /parallel.so /parallel.so
 COPY --from=build-uv /uv.so /uv.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
@@ -76,6 +63,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         gdb \
         $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
+    && pecl install parallel \
     && docker-php-ext-enable parallel \
     && docker-php-ext-enable uv \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
