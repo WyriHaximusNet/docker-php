@@ -38,6 +38,9 @@ COPY --from=build-uv /uv.so /uv.so
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
 
+# ext-fibers install script
+COPY src/php/utils/install-fibers /usr/local/bin/
+
 COPY src/php/conf/ /usr/local/etc/php/conf.d/
 COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
 
@@ -57,6 +60,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
     && docker-php-ext-enable uv \
+    && install-fibers \
+    && rm -rf /usr/local/bin/install-fibers \
     && apk del $PHPIZE_DEPS \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
