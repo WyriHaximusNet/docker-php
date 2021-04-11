@@ -37,7 +37,9 @@ jobs:
     steps:
       - id: supported-php-versions
         name: Generate PHP
-        uses: wyrihaximus/github-action-supported-php-versions@v1
+        run: |
+          echo "Found the following versions: ["7.3", "7.4"]\r\n"
+          echo "::set-output name=versions::["7.3", "7.4"]"
   registry-matrix:
     name: Extract registries from registry secret mapping
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
