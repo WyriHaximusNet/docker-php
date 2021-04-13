@@ -1,9 +1,5 @@
 <?php
 
-if (PHP_VERSION_ID >= 80000) {
-    exit(65);
-}
-
 $runtimeA = new \parallel\Runtime();
 $runtimeB = new \parallel\Runtime();
 
