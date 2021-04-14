@@ -36,10 +36,11 @@ The tag naming strategy consists of (Read as a regex):
 
 NTS, or non-thread safe is the PHP version most people use. This image comes with the following extensions:
 
-| Extension    | Description      |
-|--------------|------------------|
-| ext-pcntl    | PCNTL OS signals |
-| ext-uv       | LibUV event loop |
+| Extension    | Description                              |
+|--------------|------------------------------------------|
+| ext-eio      | Provides interface to the libeio library |
+| ext-pcntl    | PCNTL OS signals                         |
+| ext-uv       | LibUV event loop                         |
 
 ### ZTS
 
@@ -48,6 +49,7 @@ pthreads or parallel. This image comes with the following extensions:
 
 | Extension    | Description                                                |
 |--------------|------------------------------------------------------------|
+| ext-eio      | Provides interface to the libeio library                   |
 | ext-parallel | A succinct parallel concurrency API for PHP7 using threads |
 | ext-pcntl    | PCNTL OS signals                                           |
 | ext-uv       | LibUV event loop                                           |
