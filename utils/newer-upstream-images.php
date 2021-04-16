@@ -16,43 +16,43 @@ foreach (range(1, 10) as $i) {
     }
 }
 
-$output = [];
+$line = [];
 foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
     foreach (json_decode(getenv('PHP'), true) as $php) {
         $name = $php . '-zts-alpine' . $alpine;
 
-        if (!array_key_exists($name, $upstreamImages)) {
-            continue;
+        if (array_key_exists($name, $upstreamImages)) {
+            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
+                $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $alpine . '-alpine3.11';
+            }
         }
+        $name = $php . '-cli-alpine' . $alpine;
 
-        if (array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name]) {
-            continue;
+        if (array_key_exists($name, $upstreamImages)) {
+            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
+                $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $alpine . '-alpine3.11';
+            }
         }
-
-        $output[] = ['os' => 'alpine', 'os_version' => 'alpine' . $alpine, 'os_version_from' => 'alpine3.11', 'php' => $php];
     }
 }
 
 foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
     foreach (json_decode(getenv('PHP'), true) as $php) {
-        $name = $php . '-zts-' . $debian;
+        $name = $php . '-zts-debian' . $debian;
 
-        if (!array_key_exists($name, $upstreamImages)) {
-            continue;
+        if (array_key_exists($name, $upstreamImages)) {
+            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
+                $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-buster';
+            }
         }
+        $name = $php . '-cli-debian' . $debian;
 
-        if (array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name]) {
-            continue;
+        if (array_key_exists($name, $upstreamImages)) {
+            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
+                $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-buster';
+            }
         }
-
-        $output[] = ['os' => 'debian', 'os_version' => $debian, 'os_version_from' => 'buster', 'php' => $php];
     }
-}
-
-$line = [];
-foreach ($output as $image) {
-    $line[] = 'zts-zts-' . $image['php'] . '-' . $image['os'] . '-' . $image['os_version'] . '-' . $image['os_version_from'];
-    $line[] = 'cli-nts-' . $image['php'] . '-' . $image['os'] . '-' . $image['os_version'] . '-' . $image['os_version_from'];
 }
 
 echo 'Found the following newer images to build: ', PHP_EOL, '- ', implode(PHP_EOL . '- ', $line), PHP_EOL;
