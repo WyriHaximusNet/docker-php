@@ -75,13 +75,9 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
 
-# Install shush
-COPY src/php/utils/install-shush /usr/local/bin/
-RUN install-shush && rm -rf /usr/local/bin/install-shush
-
 STOPSIGNAL SIGTERM
 
-ENTRYPOINT ["/usr/local/bin/shush", "exec", "docker-php-entrypoint"]
+ENTRYPOINT ["docker-php-entrypoint"]
 
 ## ZTS-DEV STAGE ##
 FROM zts-slim-root AS zts-root
@@ -108,7 +104,7 @@ RUN yes | apt-get install wget unzip \
     && yes | apt-get install make \
     && rm -rf /usr/local/bin/install-composer
 
-# Change entrypoint back to the default because we don't need shush in development
+
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## ZTS-DEV STAGE ##
@@ -129,7 +125,7 @@ RUN yes | apt-get install wget unzip \
     && yes | apt-get install make \
     && rm -rf /usr/local/bin/install-composer
 
-# Change entrypoint back to the default because we don't need shush in development
+
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## ZTS-DEV stage ##
