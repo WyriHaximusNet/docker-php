@@ -118,15 +118,16 @@ jobs:
           entrypoint: hadolint
           args: Dockerfile-${{ matrix.type }}
   build:
-    name: Building "${{ matrix.image }}"
+    name: Building "${{ matrix.image }}" on ${{ matrix.runner }}
     needs:
       - lint
       - image-matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        runner: [ubuntu-latest, ARM, ARM64]
     steps:
       - uses: actions/checkout@v2
       - run: mkdir ./docker-image/
@@ -137,18 +138,19 @@ jobs:
       - name: Upload Images
         uses: actions/upload-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.runner }}-${{ matrix.image }}
           path: ./docker-image
   scan-vulnerability:
-    name: Scanning "${{ matrix.image }}" for vulnerabilities
+    name: Scanning "${{ matrix.image }}" for vulnerabilities on ${{ matrix.runner }}
     needs:
       - build
       - image-matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        runner: [ubuntu-latest, ARM, ARM64]
     steps:
       - uses: actions/checkout@v2
         if: contains(matrix.image, 'alpine')
@@ -156,7 +158,7 @@ jobs:
         if: contains(matrix.image, 'alpine')
         uses: actions/download-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.runner }}-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
         if: contains(matrix.image, 'alpine')
@@ -165,21 +167,22 @@ jobs:
       - run: make ci-scan-vulnerability
         if: contains(matrix.image, 'alpine')
   test:
-    name: Testing "${{ matrix.image }}"
+    name: Testing "${{ matrix.image }}" on ${{ matrix.runner }}
     needs:
       - build
       - image-matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        runner: [ubuntu-latest, ARM, ARM64]
     steps:
       - uses: actions/checkout@v2
       - name: Download Images
         uses: actions/download-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.runner }}-${{ matrix.image }}
           path: ./docker-image
       - run: ls -lasth ./docker-image
       - run: docker load --input ./docker-image/image.tar
@@ -196,24 +199,25 @@ jobs:
     steps:
       - run: echo "✔️"
   push:
-    name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }}
+    name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }} on ${{ matrix.runner }}
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - check-mark
       - registry-matrix
       - image-matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         registry: ${{ fromJson(needs.registry-matrix.outputs.registry) }}
+        runner: [ubuntu-latest, ARM, ARM64]
     steps:
       - uses: actions/checkout@v2
       - name: Download Images
         uses: actions/download-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.runner }}-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
       - run: cat ./docker-image/image.tags | xargs -I % docker tag % ${{ matrix.registry }}/%
