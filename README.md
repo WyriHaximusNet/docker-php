@@ -18,6 +18,15 @@ if any are found. The `Debian Linux` containers easily a few hundred so those ar
 
 Sometimes big changes happen to images, to stay informed please subscribe to this thread: https://github.com/WyriHaximusNet/docker-php/issues/46
 
+### CVE Matrix
+
+Currently Alpine and Debian images are treated differently, this matrix defines the differences between Alpine and Debian images:
+
+| Base Image | Description                                                      |
+|------------|------------------------------------------------------------------|
+| Alpine     | Don't push when CVE's are found when building                    |
+| Debian     | Not scanned for CVE's due to the ton of low CVE's found in there |
+
 ## The available tags
 
 The docker registry prefix is `wyrihaximusnet/php`, thus `wyrihaximusnet/php:OUR-TAGS`
