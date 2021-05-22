@@ -79,10 +79,23 @@ jobs:
         name: Generate Combined Image Matrix
         run: |
           if [ "${{ github.event_name }}" == "schedule" ] ; then
+            echo "This is a scheduled run, scanning for CVE's"
+            php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress  % > /dev/null || echo "%"' > images_with.cves
+
+            if [ -s "images_with.cves" ]
+            then
+              cat images_with.cves
+              echo "Found images with CVE's in them, rebuilding all images"
+              php utils/all-images.php
+              exit 0
+            fi
+
+            echo "No CVE's found, looking for newer upstream images"
             php utils/newer-upstream-images.php
             exit 0
           fi
 
+          echo "Not in a scheduled run, building all images"
           php utils/all-images.php
         env:
           ALPINE: ${{ needs.supported-alpine-versions.outputs.alpine }}
