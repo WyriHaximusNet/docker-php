@@ -4,7 +4,7 @@ import pytest
 def test_user_app(host):
     userName = 'app'
     groupName = 'app'
-    homeDir = '/home/app'
+    homeDir = '/opt/app'
 
     usr = host.user(userName)
     assert userName in usr.name

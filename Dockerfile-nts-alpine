@@ -13,7 +13,7 @@ RUN apk update \
     && apk upgrade \
     && set -x \
     && addgroup -g 1000 app \
-    && adduser -u 1000 -D -G app app \
+    && adduser -u 1000 -D -G app app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
 
 FROM base AS base-build
@@ -27,9 +27,9 @@ RUN git fetch \
     && phpize \
     && ./configure \
     && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-    cp "$EXTENSION_DIR/uv.so" /uv.so
-RUN sha256sum /uv.so
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+    && cp "$EXTENSION_DIR/uv.so" /uv.so \
+    && sha256sum /uv.so
 
 FROM base AS nts-slim-root
 
