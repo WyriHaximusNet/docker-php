@@ -13,7 +13,7 @@ RUN apt-get update \
     && yes | apt-get upgrade \
     && set -x \
     && addgroup --gid 1000 app \
-    && adduser --uid 1000 --gid 1000 --disabled-password app \
+    && adduser --uid 1000 --gid 1000 --disabled-password app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
 
 FROM base AS base-build
@@ -27,9 +27,9 @@ RUN git fetch \
     && phpize \
     && ./configure \
     && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-    cp "$EXTENSION_DIR/uv.so" /uv.so
-RUN sha256sum /uv.so
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+    && cp "$EXTENSION_DIR/uv.so" /uv.so \
+    && sha256sum /uv.so
 
 FROM base AS zts-slim-root
 
