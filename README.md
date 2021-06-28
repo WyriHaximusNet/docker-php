@@ -40,6 +40,38 @@ The tag naming strategy consists of (Read as a regex):
 - PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine(alpineMajor).(alpineMinor)|buster|strech)(-slim)(-dev)(-root)?`
   - Example: `7.3-fpm-alpine3.12`, `7.4-fpm-alpine3.13-dev`, `8.0-zts-buster-slim`
 
+## Example usage
+
+The following example has two build staging, the first for leading in any required dependencies, and the second the 
+actual image we'd want to use. In the second stage we copy the dependencies in without needing composer in the 
+production image. We create the image with the following command:
+
+```bash
+docker build . -t IMAGE_NAME:TAG --target=runtime
+```
+
+```dockerfile
+FROM wyrihaximusnet/php:7.4-zts-alpine3.13-slim-dev AS install-dependencies
+
+WORKDIR /opt/app
+
+COPY ./composer.lock /opt/app/composer.lock
+COPY ./composer.json /opt/app/composer.json
+COPY ./src/ /opt/app/src/
+RUN composer install --ansi --no-interaction --prefer-dist --no-dev -o
+
+FROM wyrihaximusnet/php:7.4-zts-alpine3.13-slim AS runtime
+
+WORKDIR /opt/app
+
+COPY ./composer.lock /opt/app/composer.lock
+COPY ./composer.json /opt/app/composer.json
+COPY --from=install-dependencies /opt/app/vendor/ /opt/app/vendor/
+COPY ./src/ /opt/app/src/
+COPY ./app.php /opt/app/app.php
+
+ENTRYPOINT ["php", "/opt/app/app.php"]
+```
 
 ### NTS
 
