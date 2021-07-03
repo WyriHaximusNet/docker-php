@@ -16,6 +16,8 @@ RUN apt-get update \
     && adduser --uid 1000 --gid 1000 --disabled-password app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
 
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
 FROM base AS base-build
 RUN yes | apt-get install $PHPIZE_DEPS git libuv1-dev
 
