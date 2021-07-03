@@ -12,7 +12,9 @@ declare -r OS=$4
 
 declare -r VERSION_OS=$5
 
-declare -r VERSION_OS_FROM=$6
+declare -r VERSION_OS_TAG=$6
+
+declare -r VERSION_OS_FROM=$7
 
 # I could create a placeholder like php:x.y-image-alpinex.y in the Dockerfile itself,
 # but I think it wouldn't be a good experience if you try to build the image yourself
@@ -20,7 +22,7 @@ declare -r VERSION_OS_FROM=$6
 declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${SRC_IMAGE}-${VERSION_OS_FROM}"
 
 declare -r IMAGE_TAG="${VERSION_PHP}-${SRC_IMAGE}-${VERSION_OS}"
-declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP}-${DST_IMAGE}-${VERSION_OS}"
+declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP}-${DST_IMAGE}-${VERSION_OS_TAG}"
 declare -r WYRIHAXIMUSNET_TAG_DEV="${WYRIHAXIMUSNET_TAG}-dev"
 declare -r WYRIHAXIMUSNET_TAG_ROOT="${WYRIHAXIMUSNET_TAG}-root"
 declare -r WYRIHAXIMUSNET_TAG_DEV_ROOT="${WYRIHAXIMUSNET_TAG}-dev-root"
