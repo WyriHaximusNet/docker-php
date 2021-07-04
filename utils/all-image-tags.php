@@ -21,14 +21,25 @@ foreach (range(1, 10) as $i) {
 //}
 
 $list = [];
-foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
-    foreach (json_decode(getenv('PHP'), true) as $php) {
+foreach (json_decode(getenv('PHP'), true) as $php) {
+    $latestOSVersion = '1.0';
+    foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
+        if (version_compare($alpine, $latestOSVersion, ">=")) {
+            $latestOSVersion = $alpine;
+        }
         if (array_key_exists($php . '-zts-alpine' . $alpine, $upstreamImages)) {
             $list[] = $php . '-zts-alpine' . $alpine;
         }
         if (array_key_exists($php . '-cli-alpine' . $alpine, $upstreamImages)) {
             $list[] = $php . '-nts-alpine' . $alpine;
         }
+    }
+
+    if (array_key_exists($php . '-zts-alpine' . $latestOSVersion, $upstreamImages)) {
+        $list[] = $php . '-zts-alpine';
+    }
+    if (array_key_exists($php . '-cli-alpine' . $latestOSVersion, $upstreamImages)) {
+        $list[] = $php . '-nts-alpine';
     }
 }
 
