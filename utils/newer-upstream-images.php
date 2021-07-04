@@ -44,7 +44,7 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
                 $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-buster';
                 if ($debian === 'buster') {
-                    $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-buster-buster';
+                    $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-debian-buster';
                 }
             }
         }
@@ -54,7 +54,7 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
                 $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-buster';
                 if ($debian === 'buster') {
-                    $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-buster-buster';
+                    $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-debian-buster';
                 }
             }
         }
