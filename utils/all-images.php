@@ -44,13 +44,13 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
         if (array_key_exists($php . '-zts-' . $debian, $upstreamImages)) {
             $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-' . $debian . '-buster';
             if ($debian === 'buster') {
-                $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-buster-buster';
+                $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-debian-buster';
             }
         }
         if (array_key_exists($php . '-cli-' . $debian, $upstreamImages)) {
             $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-' . $debian . '-buster';
             if ($debian === 'buster') {
-                $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-buster-buster';
+                $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-debian-buster';
             }
         }
     }
