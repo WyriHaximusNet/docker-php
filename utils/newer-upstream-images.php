@@ -17,20 +17,32 @@ foreach (range(1, 10) as $i) {
 }
 
 $line = [];
+$latestOSVersion = '1.0';
+foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
+    if (version_compare($alpine, $latestOSVersion, ">=")) {
+        $latestOSVersion = $alpine;
+    }
+}
 foreach (json_decode(getenv('PHP'), true) as $php) {
     foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
         $name = $php . '-zts-alpine' . $alpine;
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-alpine' . $alpine . '-alpine-alpine3.11';
+                $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+                if ($alpine === $latestOSVersion) {
+                    $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
+                }
             }
         }
         $name = $php . '-cli-alpine' . $alpine;
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-alpine' . $alpine . '-alpine-alpine3.11';
+                $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+                if ($alpine === $latestOSVersion) {
+                    $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
+                }
             }
         }
     }
