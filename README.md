@@ -51,7 +51,7 @@ docker build . -t IMAGE_NAME:TAG --target=runtime
 ```
 
 ```dockerfile
-FROM wyrihaximusnet/php:7.4-zts-alpine3.13-slim-dev AS install-dependencies
+FROM wyrihaximusnet/php:7.4-zts-alpine-slim-dev AS install-dependencies
 
 WORKDIR /opt/app
 
@@ -60,7 +60,7 @@ COPY ./composer.json /opt/app/composer.json
 COPY ./src/ /opt/app/src/
 RUN composer install --ansi --no-interaction --prefer-dist --no-dev -o
 
-FROM wyrihaximusnet/php:7.4-zts-alpine3.13-slim AS runtime
+FROM wyrihaximusnet/php:7.4-zts-alpine-slim AS runtime
 
 WORKDIR /opt/app
 
