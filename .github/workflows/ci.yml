@@ -9,7 +9,7 @@ on:
       - master
   pull_request:
   schedule:
-    - cron:  '33 */4 * * *'
+    - cron:  '13 4 * * *'
 jobs:
   supported-alpine-versions:
     name: Supported Alpine versions
