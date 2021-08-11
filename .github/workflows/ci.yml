@@ -3,6 +3,7 @@ env:
   DOCKER_IMAGE: wyrihaximusnet/php
   DOCKER_BUILDKIT: 1
   DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING: '{"ghcr.io":"GHCR_TOKEN","docker.io":"HUB_PASSCODE"}'
+  DOCKER_CLI_EXPERIMENTAL: enabled
 on:
   push:
     branches:
@@ -195,8 +196,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "✔️"
-  push:
-    name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }}
+#  push:
+#    name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }}
+#    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+#    needs:
+#      - check-mark
+#      - registry-matrix
+#      - image-matrix
+#    runs-on: ubuntu-latest
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+#        registry: ${{ fromJson(needs.registry-matrix.outputs.registry) }}
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Download Images
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: docker-image-${{ matrix.image }}
+#          path: ./docker-image
+#      - run: docker load --input ./docker-image/image.tar
+#      - run: cat ./docker-image/image.tags | xargs -I % docker tag % ${{ matrix.registry }}/%
+#      - run: make ci-push
+#        env:
+#          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
+#          DOCKER_PASSWORD: ${{ secrets[fromJson(env.DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING)[matrix.registry]] }}
+#          DOCKER_REGISTRY: ${{ matrix.registry }}
+  build-and-push-all-archs:
+    name: Building and Pushing "${{ matrix.image }}" to ${{ matrix.registry }} for all additional archs
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - check-mark
@@ -210,15 +238,14 @@ jobs:
         registry: ${{ fromJson(needs.registry-matrix.outputs.registry) }}
     steps:
       - uses: actions/checkout@v2
-      - name: Download Images
-        uses: actions/download-artifact@v2
+      - name: Set up Docker Buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
         with:
-          name: docker-image-${{ matrix.image }}
-          path: ./docker-image
-      - run: docker load --input ./docker-image/image.tar
-      - run: cat ./docker-image/image.tags | xargs -I % docker tag % ${{ matrix.registry }}/%
-      - run: make ci-push
+          buildx-version: latest
+          qemu-version: latest
+      - run: make ci-docker-login
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets[fromJson(env.DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING)[matrix.registry]] }}
           DOCKER_REGISTRY: ${{ matrix.registry }}
+      - run: ./buildx-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') ${{ matrix.registry }}

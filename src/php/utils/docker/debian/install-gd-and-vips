@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -xe
 
@@ -6,6 +6,7 @@ apt-get update
 yes | apt-get install  libfreetype6-dev libjpeg62-turbo-dev libpng-dev libvips-dev $PHPIZE_DEPS
 ## Initially this was an if statement to check for PHP 7.4, but since then the situation change so we're just going to try both to avoid the conditional growing out of hand
 (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/)
-install-php-extensions gd vips
+install-php-extensions gd
+[ "x86_64" == "$(arch)" ] && install-php-extensions vips
 rm -rf /var/cache/apt/*
 rm -rf /tmp/*
