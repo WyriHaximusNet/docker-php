@@ -22,7 +22,7 @@ FROM base AS base-build
 RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev
 
 FROM base-build AS build-uv
-RUN git clone https://github.com/bwoebi/php-uv uv
+RUN git clone https://github.com/amphp/php-uv uv
 WORKDIR /uv
 RUN git fetch \
     && git pull \
