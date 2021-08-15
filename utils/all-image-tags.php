@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . DIRECTORY_SEPARATOR . 'cleaned-up-version.php';
+
 $upstreamImages = [];
 foreach (range(1, 10) as $i) {
     $upstreamJson = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/library/php/tags?page_size=100&page=' . $i), true);
@@ -22,6 +24,7 @@ foreach (range(1, 10) as $i) {
 
 $list = [];
 foreach (json_decode(getenv('PHP'), true) as $php) {
+
     $latestOSVersion = '1.0';
     foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
         if (version_compare($alpine, $latestOSVersion, ">=")) {
