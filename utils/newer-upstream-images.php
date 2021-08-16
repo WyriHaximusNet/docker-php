@@ -29,9 +29,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+                $line[] = 'zts-zts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
                 if ($alpine === $latestOSVersion) {
-                    $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
+                    $line[] = 'zts-zts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
                 }
             }
         }
@@ -39,9 +39,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+                $line[] = 'cli-nts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
                 if ($alpine === $latestOSVersion) {
-                    $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
+                    $line[] = 'cli-nts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
                 }
             }
         }
@@ -54,9 +54,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-buster';
+                $line[] = 'zts-zts-' . $php . '-' . $php . '-debian-' . $debian . '-buster';
                 if ($debian === 'buster') {
-                    $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-debian-buster';
+                    $line[] = 'zts-zts-' . $php . '-' . $php . '-debian-' . $debian . '-debian-buster';
                 }
             }
         }
@@ -64,9 +64,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-buster';
+                $line[] = 'cli-nts-' . $php . '-' . $php . '-debian-' . $debian . '-buster';
                 if ($debian === 'buster') {
-                    $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-debian-buster';
+                    $line[] = 'cli-nts-' . $php . '-' . $php . '-debian-' . $debian . '-debian-buster';
                 }
             }
         }

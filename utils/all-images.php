@@ -24,33 +24,33 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
             $latestOSVersion = $alpine;
         }
         if (array_key_exists($php . '-zts-alpine' . $alpine, $upstreamImages)) {
-            $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+            $line[] = 'zts-zts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
         }
         if (array_key_exists($php . '-cli-alpine' . $alpine, $upstreamImages)) {
-            $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+            $line[] = 'cli-nts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
         }
     }
 
     if (array_key_exists($php . '-zts-alpine' . $latestOSVersion, $upstreamImages)) {
-        $line[] = 'zts-zts-' . $php . '-alpine-alpine' . $latestOSVersion . '-alpine-alpine3.11';
+        $line[] = 'zts-zts-' . $php . '-' . $php . '-alpine-alpine' . $latestOSVersion . '-alpine-alpine3.11';
     }
     if (array_key_exists($php . '-cli-alpine' . $latestOSVersion, $upstreamImages)) {
-        $line[] = 'cli-nts-' . $php . '-alpine-alpine' . $latestOSVersion . '-alpine-alpine3.11';
+        $line[] = 'cli-nts-' . $php . '-' . $php . '-alpine-alpine' . $latestOSVersion . '-alpine-alpine3.11';
     }
 }
 
 foreach (json_decode(getenv('PHP'), true) as $php) {
     foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
         if (array_key_exists($php . '-zts-' . $debian, $upstreamImages)) {
-            $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-' . $debian . '-buster';
+            $line[] = 'zts-zts-' . $php . '-' . $php . '-debian-' . $debian . '-' . $debian . '-buster';
             if ($debian === 'buster') {
-                $line[] = 'zts-zts-' . $php . '-debian-' . $debian . '-debian-buster';
+                $line[] = 'zts-zts-' . $php . '-' . $php . '-debian-' . $debian . '-debian-buster';
             }
         }
         if (array_key_exists($php . '-cli-' . $debian, $upstreamImages)) {
-            $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-' . $debian . '-buster';
+            $line[] = 'cli-nts-' . $php . '-' . $php . '-debian-' . $debian . '-' . $debian . '-buster';
             if ($debian === 'buster') {
-                $line[] = 'cli-nts-' . $php . '-debian-' . $debian . '-debian-buster';
+                $line[] = 'cli-nts-' . $php . '-' . $php . '-debian-' . $debian . '-debian-buster';
             }
         }
     }
