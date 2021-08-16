@@ -28,18 +28,18 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
             $latestOSVersion = $alpine;
         }
         if (array_key_exists($php . '-zts-alpine' . $alpine, $upstreamImages)) {
-            $list[] = $php . '-zts-alpine' . $alpine;
+            $list[] = $php . '-' . $php . '-zts-alpine' . $alpine;
         }
         if (array_key_exists($php . '-cli-alpine' . $alpine, $upstreamImages)) {
-            $list[] = $php . '-nts-alpine' . $alpine;
+            $list[] = $php . '-' . $php . '-nts-alpine' . $alpine;
         }
     }
 
     if (array_key_exists($php . '-zts-alpine' . $latestOSVersion, $upstreamImages)) {
-        $list[] = $php . '-zts-alpine';
+        $list[] = $php . '-' . $php . '-zts-alpine';
     }
     if (array_key_exists($php . '-cli-alpine' . $latestOSVersion, $upstreamImages)) {
-        $list[] = $php . '-nts-alpine';
+        $list[] = $php . '-' . $php . '-nts-alpine';
     }
 }
 
