@@ -85,8 +85,7 @@ COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-d
 RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
 
 # Install composer
-COPY src/php/utils/install-composer /usr/local/bin/
-RUN install-composer && rm -rf /usr/local/bin/install-composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 
 ENTRYPOINT ["docker-php-entrypoint"]
@@ -102,8 +101,7 @@ COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-d
 RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
 
 # Install composer
-COPY src/php/utils/install-composer /usr/local/bin/
-RUN install-composer && rm -rf /usr/local/bin/install-composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 
 ENTRYPOINT ["docker-php-entrypoint"]

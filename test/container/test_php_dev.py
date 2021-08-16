@@ -21,3 +21,10 @@ def test_configuration_is_not_effective(host):
     configuration = host.run('php -i').stdout
     
     assert u'expose_php => Off => Off' in configuration
+
+@pytest.mark.php_dev
+def composer_is_functional(host):
+    output = host.run('composer about')
+    assert output.strerr == ''
+    assert u'version 2' in output.stdout
+    assert output.rc == 0
