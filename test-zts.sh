@@ -13,6 +13,8 @@ declare -r DOCKER_TAG="$1"
 
 declare TEST_SUITE
 
+TEST_SUITE="php_$IMAGE_ARCH"
+
 if [[ $DOCKER_TAG == *"-dev"* && $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"* ]]; then
     TEST_SUITE="php_zts or php_dev"
 else
@@ -20,9 +22,9 @@ else
 fi
 
 if [[ $DOCKER_TAG == *"-slim"* ]]; then
-    TEST_SUITE="php_slim or $TEST_SUITE"
+    TEST_SUITE="php_slim or php_slim_$IMAGE_ARCH or $TEST_SUITE"
 else
-    TEST_SUITE="php_not_slim or $TEST_SUITE"
+    TEST_SUITE="php_not_slim or php_not_slim_$IMAGE_ARCH or $TEST_SUITE"
 fi
 
 if [[ $DOCKER_TAG == *"-root"* ]]; then

@@ -18,6 +18,8 @@ declare -r VERSION_OS_TAG=$7
 
 declare -r VERSION_OS_FROM=$8
 
+declare -r TARGET_ARCH=$9
+
 # I could create a placeholder like php:x.y-image-alpinex.y in the Dockerfile itself,
 # but I think it wouldn't be a good experience if you try to build the image yourself
 # thus that's the way I opted to have dynamic base images
@@ -50,6 +52,6 @@ docker pull "php:${IMAGE_TAG}"
 
 for buildTarget in "${target[@]}"
 do
-  sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}" --target="${DST_IMAGE}${buildTarget}" -f - .
-  echo "${WYRIHAXIMUSNET_TAG}${buildTarget}" >> "$TAG_FILE"
+  sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --platform ${TARGET_ARCH} --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" --target="${DST_IMAGE}${buildTarget}" -f - .
+  echo "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" >> "$TAG_FILE"
 done
