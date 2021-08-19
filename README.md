@@ -37,7 +37,7 @@ In order to provide upgrade path we intend to keep one or more versions of PHP.
 
 The tag naming strategy consists of (Read as a regex):
 
-- PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine(alpineMajor).(alpineMinor)|buster|strech)(-slim)(-dev)(-root)?`
+- PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine((alpineMajor).(alpineMinor))|bullseye|buster|strech)(-slim)(-dev)(-root)?`
   - Example: `7.3-fpm-alpine3.12`, `7.4-fpm-alpine3.13-dev`, `8.0-zts-buster-slim`
 
 ## Example usage
