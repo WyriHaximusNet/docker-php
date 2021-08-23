@@ -22,7 +22,7 @@ FROM base AS base-build
 RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev
 
 FROM base-build AS build-uv
-RUN git clone https://github.com/amphp/php-uv uv
+RUN git clone https://github.com/amphp/ext-uv uv
 WORKDIR /uv
 RUN git fetch \
     && git pull \
@@ -82,7 +82,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
+RUN if [ $(php -v | grep "PHP 8.1" | wc -l) != 0 ] ; then true ; else dev-mode; fi && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
@@ -98,7 +98,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN dev-mode && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
+RUN if [ $(php -v | grep "PHP 8.1" | wc -l) != 0 ] ; then true ; else dev-mode; fi && rm -rf /usr/local/bin/dev-mode && rm -rf /usr/local/bin/docker-php-dev-mode
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer

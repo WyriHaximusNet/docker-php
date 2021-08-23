@@ -1,5 +1,6 @@
 <?php
 
+require __DIR__ . DIRECTORY_SEPARATOR . 'cleaned-up-version.php';
 $upstreamImages = [];
 foreach (range(1, 10) as $i) {
     $upstreamJson = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/library/php/tags?page_size=100&page=' . $i), true);
@@ -29,9 +30,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+                $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
                 if ($alpine === $latestOSVersion) {
-                    $line[] = 'zts-zts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
+                    $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
                 }
             }
         }
@@ -39,9 +40,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
+                $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
                 if ($alpine === $latestOSVersion) {
-                    $line[] = 'cli-nts-' . $php . '-' . $php . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
+                    $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
                 }
             }
         }
@@ -54,9 +55,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-' . $php . '-debian-' . $debian . '-buster';
+                $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-buster';
                 if ($debian === 'buster') {
-                    $line[] = 'zts-zts-' . $php . '-' . $php . '-debian-' . $debian . '-debian-buster';
+                    $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian-buster';
                 }
             }
         }
@@ -64,9 +65,9 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
 
         if (array_key_exists($name, $upstreamImages)) {
             if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-' . $php . '-debian-' . $debian . '-buster';
+                $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-buster';
                 if ($debian === 'buster') {
-                    $line[] = 'cli-nts-' . $php . '-' . $php . '-debian-' . $debian . '-debian-buster';
+                    $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian-buster';
                 }
             }
         }

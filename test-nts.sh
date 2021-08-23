@@ -13,7 +13,7 @@ declare -r DOCKER_TAG="$1"
 
 declare TEST_SUITE
 
-if [[ $DOCKER_TAG == *"-dev"* ]]; then
+if [[ $DOCKER_TAG == *"-dev"* && $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"* ]]; then
     TEST_SUITE="php_nts or php_dev"
 else
     TEST_SUITE="php_nts or php_no_dev and not php_dev"

@@ -39,6 +39,8 @@ jobs:
       - id: supported-php-versions
         name: Generate PHP
         uses: wyrihaximus/github-action-supported-php-versions@v1
+        with:
+          upcomingReleases: true
   registry-matrix:
     name: Extract registries from registry secret mapping
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
@@ -184,7 +186,7 @@ jobs:
           path: ./docker-image
       - run: ls -lasth ./docker-image
       - run: docker load --input ./docker-image/image.tar
-      - run: make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
+      - run: IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
       - run: rm -Rf ./docker-image/
   check-mark:
     name: ✔️
