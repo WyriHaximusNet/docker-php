@@ -1,7 +1,6 @@
 qa: lint build test scan-vulnerability
 build: clean-tags build-all
 push: build push
-ci-push: ci-docker-login push-from-tags
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(abspath $(patsubst %/,%,$(dir $(mkfile_path))))
@@ -13,14 +12,6 @@ BUILDINGIMAGE=*
 .NOTPARALLEL: clean-tags
 clean-tags:
 	rm ${current_dir}/docker-image/build.tags || true
-
-# Docker images push
-push-from-tags:
-	cat ./docker-image/image.tags | xargs -I % docker push $$DOCKER_REGISTRY/%
-
-# CI dependencies
-ci-docker-login:
-	docker login $$DOCKER_REGISTRY --username $$DOCKER_USER --password $$DOCKER_PASSWORD
 
 lint:
 	docker run -v ${current_dir}:/project:ro --workdir=/project --rm -it hadolint/hadolint:latest-debian hadolint /project/Dockerfile-*

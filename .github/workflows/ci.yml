@@ -41,19 +41,17 @@ jobs:
         uses: wyrihaximus/github-action-supported-php-versions@v1
         with:
           upcomingReleases: true
-  registry-matrix:
-    name: Extract registries from registry secret mapping
-    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+  supported-arch-matrix:
+    name: Supported processor architectures
     runs-on: ubuntu-latest
-    needs:
-      - check-mark
     outputs:
-      registry: ${{ steps.registry-matrix.outputs.registry }}
+      arch: ${{ steps.supported-arch-matrix.outputs.arch }}
     steps:
-      - id: registry-matrix
-        name: Extract registries from registry secret mapping
+      - uses: actions/checkout@v1
+      - id: supported-arch-matrix
+        name: Generate Arch
         run: |
-          echo "::set-output name=registry::$(printenv DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING | jq -c 'keys')"
+          echo "::set-output name=arch::[\"amd64\",\"arm64\",\"arm\"]"
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest
@@ -121,45 +119,52 @@ jobs:
           entrypoint: hadolint
           args: Dockerfile-${{ matrix.type }}
   build:
-    name: Building "${{ matrix.image }}"
+    name: Building "${{ matrix.image }}" on ${{ matrix.arch }}
     needs:
       - lint
       - image-matrix
+      - supported-arch-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
     steps:
       - uses: actions/checkout@v2
+      - uses: dbhi/qus/action@main
       - run: mkdir ./docker-image/
-      - run: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ')
+      - run: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') ${{ matrix.arch }}
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
       - run: docker images
       - name: Upload Images
         uses: actions/upload-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
           path: ./docker-image
   scan-vulnerability:
-    name: Scanning "${{ matrix.image }}" for vulnerabilities
+    name: Scanning "${{ matrix.image }}" for vulnerabilities on ${{ matrix.arch }}
     needs:
       - build
       - image-matrix
+      - supported-arch-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
     steps:
       - uses: actions/checkout@v2
+        if: contains(matrix.image, 'alpine')
+      - uses: dbhi/qus/action@main
         if: contains(matrix.image, 'alpine')
       - name: Download Images
         if: contains(matrix.image, 'alpine')
         uses: actions/download-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
         if: contains(matrix.image, 'alpine')
@@ -168,25 +173,30 @@ jobs:
       - run: make ci-scan-vulnerability
         if: contains(matrix.image, 'alpine')
   test:
-    name: Testing "${{ matrix.image }}"
+    name: Testing "${{ matrix.image }}" on ${{ matrix.arch }}
     needs:
       - build
       - image-matrix
+      - supported-arch-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
     steps:
       - uses: actions/checkout@v2
+      - uses: dbhi/qus/action@main
       - name: Download Images
         uses: actions/download-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}
+          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
           path: ./docker-image
       - run: ls -lasth ./docker-image
       - run: docker load --input ./docker-image/image.tar
       - run: IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
+        env:
+          IMAGE_ARCH: ${{ matrix.arch }}
       - run: rm -Rf ./docker-image/
   check-mark:
     name: ✔️
@@ -198,56 +208,75 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "✔️"
-#  push:
-#    name: Pushing "${{ matrix.image }}" to ${{ matrix.registry }}
-#    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-#    needs:
-#      - check-mark
-#      - registry-matrix
-#      - image-matrix
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-#        registry: ${{ fromJson(needs.registry-matrix.outputs.registry) }}
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Download Images
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: docker-image-${{ matrix.image }}
-#          path: ./docker-image
-#      - run: docker load --input ./docker-image/image.tar
-#      - run: cat ./docker-image/image.tags | xargs -I % docker tag % ${{ matrix.registry }}/%
-#      - run: make ci-push
-#        env:
-#          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-#          DOCKER_PASSWORD: ${{ secrets[fromJson(env.DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING)[matrix.registry]] }}
-#          DOCKER_REGISTRY: ${{ matrix.registry }}
-  build-and-push-all-archs:
-    name: Building and Pushing "${{ matrix.image }}" to ${{ matrix.registry }} for all additional archs
+  push:
+    name: Pushing "${{ matrix.image }}" for ${{ matrix.arch }}
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - check-mark
-      - registry-matrix
       - image-matrix
+      - supported-arch-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        registry: ${{ fromJson(needs.registry-matrix.outputs.registry) }}
+        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: crazy-max/ghaction-docker-buildx@v3
+      - uses: dbhi/qus/action@main
+      - name: Download Images
+        uses: actions/download-artifact@v2
         with:
-          buildx-version: latest
-          qemu-version: latest
-      - run: make ci-docker-login
+          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
+          path: ./docker-image
+      - run: docker load --input ./docker-image/image.tar
+      - name: Login to container registries
+        run: |
+          (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets[fromJson(env.DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING)[matrix.registry]] }}
-          DOCKER_REGISTRY: ${{ matrix.registry }}
-      - run: ./buildx-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') ${{ matrix.registry }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          HUB_PASSCODE: ${{ secrets.HUB_PASSCODE }}
+      - name: Retag
+        run: |
+          (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker tag % " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+      - name: Push tags
+        run: |
+          (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker push " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+  push-manifest:
+    name: Push ${{ matrix.image }} manifest
+    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+    needs:
+      - push
+      - image-matrix
+      - supported-arch-matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dbhi/qus/action@main
+      - name: Download Images
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-${{ matrix.image }}-amd64
+          path: ./docker-image
+      - name: Login to container registries
+        run: |
+          (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+        env:
+          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          HUB_PASSCODE: ${{ secrets.HUB_PASSCODE }}
+      - name: Docker info
+        run: docker info
+      - name: Push manifest to registries
+        run: |
+          touch command.sh
+          (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % php utils/create-manifest-command.php " + .key + " %") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+          chmod +x command.sh
+          ./command.sh
+        env:
+          TARGET_ARCHS: ${{ needs.supported-arch-matrix.outputs.arch }}
