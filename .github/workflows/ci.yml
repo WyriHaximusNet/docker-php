@@ -134,7 +134,12 @@ jobs:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
       - run: mkdir ./docker-image/
-      - run: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') ${{ matrix.arch }}
+      - uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') ${{ matrix.arch }}
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
       - run: docker images
@@ -231,18 +236,33 @@ jobs:
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
       - name: Login to container registries
-        run: |
-          (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           HUB_PASSCODE: ${{ secrets.HUB_PASSCODE }}
       - name: Retag
-        run: |
-          (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker tag % " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker tag % " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
       - name: Push tags
-        run: |
-          (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker push " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker push " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
   push-manifest:
     name: Push ${{ matrix.image }} manifest
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
@@ -264,8 +284,13 @@ jobs:
           name: docker-image-${{ matrix.image }}-amd64
           path: ./docker-image
       - name: Login to container registries
-        run: |
-          (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
@@ -273,10 +298,15 @@ jobs:
       - name: Docker info
         run: docker info
       - name: Push manifest to registries
-        run: |
-          touch command.sh
-          (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % php utils/create-manifest-command.php " + .key + " %") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
-          chmod +x command.sh
-          ./command.sh
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            touch command.sh
+            (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % php utils/create-manifest-command.php " + .key + " %") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+            chmod +x command.sh
+            ./command.sh
         env:
           TARGET_ARCHS: ${{ needs.supported-arch-matrix.outputs.arch }}
