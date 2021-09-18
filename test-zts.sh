@@ -15,7 +15,7 @@ declare TEST_SUITE
 
 TEST_SUITE="php_$IMAGE_ARCH"
 
-if [[ $DOCKER_TAG == *"-dev"* && $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"* ]]; then
+if [[ $DOCKER_TAG == *"-dev"* && $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"*  && $IMAGE_BASE_VERSION != *"ALPHA"* && $IMAGE_BASE_VERSION != *"BETA"* && $IMAGE_BASE_VERSION != *"RC"* ]]; then
     TEST_SUITE="php_zts or php_dev"
 else
     TEST_SUITE="php_zts or php_no_dev and not php_dev"
