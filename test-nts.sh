@@ -46,6 +46,7 @@ function tearDown {
 trap tearDown EXIT TERM ERR
 
 # Finally, run the tests!
+echo "Running test suite: $TEST_SUITE"
 docker run --rm -t \
     -v "$(pwd)/test:/tests" \
     -v "$(pwd)/tmp/test-results:/results" \

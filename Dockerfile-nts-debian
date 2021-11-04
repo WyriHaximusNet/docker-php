@@ -84,7 +84,8 @@ FROM nts-slim-root AS nts-root
 
 # Install ext-gd and ext-vips
 COPY src/php/utils/docker/debian/install-gd-and-vips /usr/local/bin/install-gd-and-vips
-RUN install-gd-and-vips && rm -rf /usr/local/bin/install-gd-and-vips
+RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
+     && rm -rf /usr/local/bin/install-gd-and-vips
 
 ## NTS-DEV STAGE ##
 FROM nts-slim-root AS nts-slim-dev-root
