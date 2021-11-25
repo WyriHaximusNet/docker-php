@@ -5,9 +5,9 @@ import pytest
 def test_bcmath_is_loaded(host):
     assert 'bcmath' in host.run('php -m').stdout
 
-# @pytest.mark.php_not_slim
-# def test_gd_is_loaded(host):
-#     assert 'gd' in host.run('php -m').stdout
+@pytest.mark.php_not_slim
+def test_gd_is_loaded(host):
+    assert 'gd' in host.run('php -m').stdout
 
 @pytest.mark.php_zts
 @pytest.mark.php_nts
@@ -44,9 +44,9 @@ def test_pgsql_is_loaded(host):
 def test_uv_is_loaded(host):
     assert 'uv' in host.run('php -m').stdout
 
-# @pytest.mark.php_not_slim_amd64
-# def test_vips_is_loaded(host):
-#     assert 'vips' in host.run('php -m').stdout
+@pytest.mark.php_not_slim_amd64
+def test_vips_is_loaded(host):
+    assert 'vips' in host.run('php -m').stdout
 
 @pytest.mark.php_dev
 def test_xdebug_is_loaded(host):
