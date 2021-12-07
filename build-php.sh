@@ -38,10 +38,10 @@ declare -r WYRIHAXIMUSNET_TAG_SLIM_DEV_ROOT="${WYRIHAXIMUSNET_TAG}-slim-dev-root
 declare -r TAG_FILE="./docker-image/image.tags"
 
 declare -a target=(
-  ""
-  "-dev"
-  "-root"
-  "-dev-root"
+#  ""
+#  "-dev"
+#  "-root"
+#  "-dev-root"
   "-slim"
   "-slim-dev"
   "-slim-root"
