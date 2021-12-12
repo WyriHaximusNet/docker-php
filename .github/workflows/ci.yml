@@ -132,6 +132,25 @@ jobs:
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
+        exclude:
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
     steps:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
@@ -162,6 +181,25 @@ jobs:
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
+        exclude:
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
     steps:
       - uses: actions/checkout@v2
         if: contains(matrix.image, 'alpine')
@@ -191,6 +229,25 @@ jobs:
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
+        exclude:
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
     steps:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
@@ -228,6 +285,25 @@ jobs:
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
+        exclude:
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
     steps:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
