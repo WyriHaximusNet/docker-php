@@ -47,6 +47,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk add --no-cache \
         libuv-dev \
+        icu-dev \
         make \
         git \
         openssh-client \
@@ -57,7 +58,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl \
     && pecl install parallel || (cd /tmp && apk add --no-cache $PHPIZE_DEPS git && git clone https://github.com/WyriHaximus-labs/parallel && cd parallel && git fetch && git checkout php-8.1-part-2 && git pull && phpize && ./configure && make install && cd) \
     && docker-php-ext-enable parallel \
     && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else pecl install eio; fi \

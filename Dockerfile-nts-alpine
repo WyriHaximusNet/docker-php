@@ -47,13 +47,14 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk add --no-cache \
         libuv-dev \
+        icu-dev \
         coreutils \
         procps \
         git \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl \
     && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else pecl install eio; fi \
     && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else docker-php-ext-enable eio; fi \
     && docker-php-ext-enable uv \
