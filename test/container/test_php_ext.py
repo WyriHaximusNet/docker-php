@@ -20,6 +20,11 @@ def test_iconv_is_loaded(host):
     assert 'iconv' in host.run('php -m').stdout
 
 @pytest.mark.php_zts
+@pytest.mark.php_nts
+def test_iconv_is_loaded(host):
+    assert 'intl' in host.run('php -m').stdout
+
+@pytest.mark.php_zts
 def test_parallel_is_loaded(host):
     assert 'parallel' in host.run('php -m').stdout
 

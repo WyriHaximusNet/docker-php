@@ -54,6 +54,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         libpq-dev \
         libzip-dev \
         libuv1-dev \
+        libicu-dev \
         make \
         git \
         openssh-client \
@@ -64,7 +65,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         wget \
         gdb \
         $PHPIZE_DEPS \
-    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv \
+    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl \
     && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else pecl install eio; fi \
     && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else docker-php-ext-enable eio; fi \
     && docker-php-ext-enable uv \
