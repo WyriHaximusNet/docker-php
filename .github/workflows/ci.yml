@@ -67,6 +67,17 @@ jobs:
           ls Dockerfile-* | jq -csR '. | rtrimstr("\n") | split("\n")' | php -r "echo str_replace('Dockerfile-', '', stream_get_contents(STDIN));" > types.list
           cat types.list
           echo "::set-output name=type::$(cat types.list)"
+  exclude-matrix:
+    name: Create Exclude Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      exclude: ${{ steps.exclude-matrix.outputs.exclude }}
+    steps:
+      - uses: actions/checkout@v1
+      - id: exclude-matrix
+        name: Generate Exclude
+        run: |
+          php utils/exclude-list.php
   image-matrix:
     name: Create Image Matrix
     runs-on: ubuntu-latest
@@ -126,41 +137,14 @@ jobs:
       - lint
       - image-matrix
       - supported-arch-matrix
+      - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
-        exclude:
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11"
-          - arch: arm64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11"
-          - arch: amd64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
@@ -185,41 +169,14 @@ jobs:
       - build
       - image-matrix
       - supported-arch-matrix
+      - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
-        exclude:
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: arm64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: amd64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v2
         if: contains(matrix.image, 'alpine')
@@ -243,41 +200,14 @@ jobs:
       - build
       - image-matrix
       - supported-arch-matrix
+      - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
-        exclude:
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: arm64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: amd64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
@@ -309,41 +239,14 @@ jobs:
       - check-mark
       - image-matrix
       - supported-arch-matrix
+      - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
-        exclude:
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: arm64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: amd64
-            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "cli-nts-8.1-8.1-debian-buster-debian-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-bullseye-bullseye-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-buster-buster"
-          - arch: arm
-            image: "zts-zts-8.1-8.1-debian-buster-debian-buster"
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v2
       - uses: dbhi/qus/action@main
