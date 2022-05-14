@@ -134,6 +134,16 @@ jobs:
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude:
           - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11"
+          - arch: arm64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11"
+          - arch: amd64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11"
+          - arch: arm
             image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
           - arch: arm
             image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
@@ -183,6 +193,16 @@ jobs:
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude:
           - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: arm64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: amd64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: arm
             image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
           - arch: arm
             image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
@@ -230,6 +250,16 @@ jobs:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude:
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: arm64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: amd64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
           - arch: arm
             image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
           - arch: arm
@@ -286,6 +316,16 @@ jobs:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude:
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
+          - arch: arm
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: arm64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
+          - arch: amd64
+            image: "zts-zts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11"
           - arch: arm
             image: "cli-nts-8.1-8.1-alpine-alpine3.15-alpine-alpine3.11"
           - arch: arm
