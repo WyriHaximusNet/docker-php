@@ -3,6 +3,18 @@
 $excludes = [];
 $excludes[] = [
     'arch' => 'arm',
+    'image' => 'cli-nts-8.1-8.1-alpine-alpine3.16-alpine3.16-alpine3.11',
+];
+$excludes[] = [
+    'arch' => 'arm',
+    'image' => 'cli-nts-8.1-8.1-alpine-alpine3.16-alpine-alpine3.11',
+];
+$excludes[] = [
+    'arch' => 'arm',
+    'image' => 'zts-zts-8.1-8.1-alpine-alpine3.16-alpine3.16-alpine3.11',
+];
+$excludes[] = [
+    'arch' => 'arm',
     'image' => 'zts-zts-8.1-8.1-alpine-alpine3.15-alpine3.15-alpine3.11',
 ];
 $excludes[] = [
