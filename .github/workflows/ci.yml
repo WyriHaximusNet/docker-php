@@ -291,10 +291,12 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     needs:
       - push
       - image-matrix
       - supported-arch-matrix
+      - exclude-matrix
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
