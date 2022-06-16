@@ -24,7 +24,11 @@ fi
 if [[ $DOCKER_TAG == *"-slim"* ]]; then
     TEST_SUITE="php_slim or php_slim_$IMAGE_ARCH or $TEST_SUITE"
 else
-    TEST_SUITE="php_not_slim or php_not_slim_$IMAGE_ARCH or $TEST_SUITE"
+    if [[ $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"*  && $IMAGE_BASE_VERSION != *"ALPHA"* && $IMAGE_BASE_VERSION != *"BETA"* && $IMAGE_BASE_VERSION != *"RC"* ]]; then
+        TEST_SUITE="$TEST_SUITE"
+    else
+        TEST_SUITE="php_not_slim and php_not_slim_$IMAGE_ARCH or $TEST_SUITE"
+    fi
 fi
 
 if [[ $DOCKER_TAG == *"-root"* ]]; then
