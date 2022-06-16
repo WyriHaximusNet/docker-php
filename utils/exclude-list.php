@@ -329,6 +329,11 @@ $excludes[] = [
     'image' => 'zts-zts-8.2.0alpha1-8.2-debian-buster-debian-buster',
 ];
 
+$excludesPush = [];
+foreach ($excludes as $exclude) {
+    $excludesPush[] = ['image' => $exclude['image']];
+}
 
 echo 'Excludes: ', json_encode($excludes), PHP_EOL;
 echo '::set-output name=exclude::', json_encode($excludes), PHP_EOL;;
+echo '::set-output name=exclude-push::', json_encode($excludesPush), PHP_EOL;;

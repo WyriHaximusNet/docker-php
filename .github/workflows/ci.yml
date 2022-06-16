@@ -72,6 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       exclude: ${{ steps.exclude-matrix.outputs.exclude }}
+      exclude-push: ${{ steps.exclude-matrix.outputs.exclude-push }}
     steps:
       - uses: actions/checkout@v1
       - id: exclude-matrix
@@ -291,7 +292,7 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude-push) }}
     needs:
       - push
       - image-matrix
