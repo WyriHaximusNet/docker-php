@@ -49,7 +49,7 @@ jobs:
     outputs:
       arch: ${{ steps.supported-arch-matrix.outputs.arch }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - id: supported-arch-matrix
         name: Generate Arch
         run: |
