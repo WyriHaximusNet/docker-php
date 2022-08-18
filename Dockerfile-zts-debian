@@ -68,8 +68,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl \
     && pecl install parallel || (cd /tmp && (yes | apt-get install $PHPIZE_DEPS git) && git clone https://github.com/WyriHaximus-labs/parallel && cd parallel && git fetch && git checkout php-8.1-part-2 && git pull && phpize && ./configure && make install && cd) \
     && docker-php-ext-enable parallel \
-    && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else pecl install eio; fi \
-    && if [ $(php -v | grep "PHP 8." | wc -l) != 0 ] ; then true ; else docker-php-ext-enable eio; fi \
+    && (pecl install eio || pecl install eio-beta) \
+    && docker-php-ext-enable eio \
     && docker-php-ext-enable uv \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && chmod +x /bin/wait-for \
