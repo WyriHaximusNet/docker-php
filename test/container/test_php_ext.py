@@ -10,6 +10,11 @@ def test_bcmath_is_loaded(host):
 def test_eio_is_loaded(host):
     assert 'eio' in host.run('php -m').stdout
 
+@pytest.mark.php_zts
+@pytest.mark.php_nts
+def test_event_is_loaded(host):
+    assert 'event' in host.run('php -m').stdout
+
 @pytest.mark.php_not_slim
 def test_gd_is_loaded(host):
     assert 'gd' in host.run('php -m').stdout

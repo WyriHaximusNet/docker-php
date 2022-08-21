@@ -55,6 +55,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         libzip-dev \
         libuv1-dev \
         libicu-dev \
+        libevent-dev \
+        libssl-dev \
         make \
         git \
         openssh-client \
@@ -65,9 +67,12 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         wget \
         gdb \
         $PHPIZE_DEPS \
-    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl \
+    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
+    && pecl install event \
+    # To ensure ext-socket loads before ext-event
+    && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && yes | apt-get purge wget $PHPIZE_DEPS \
