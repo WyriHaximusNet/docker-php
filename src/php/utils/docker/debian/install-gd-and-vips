@@ -8,5 +8,6 @@ yes | apt-get install  libfreetype6-dev libjpeg62-turbo-dev libpng-dev libvips-d
 (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/)
 install-php-extensions gd
 [ "x86_64" == "$(arch)" ] && install-php-extensions vips
+yes | apt-get purge $PHPIZE_DEPS
 rm -rf /var/cache/apt/*
 rm -rf /tmp/*
