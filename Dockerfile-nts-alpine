@@ -48,15 +48,20 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	apk add --no-cache \
         libuv-dev \
         icu-dev \
+        libevent-dev \
+        openssl-dev \
         coreutils \
         procps \
         git \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
+    && pecl install event \
+    # To ensure ext-socket loads before ext-event
+    && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
     && apk del $PHPIZE_DEPS \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \

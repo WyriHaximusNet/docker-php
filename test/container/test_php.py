@@ -58,6 +58,14 @@ def test_php_ext_parallel_is_functional(host):
     output = host.run('php /tests/container/functional/parallel-multi.php')
     assert output.rc == 65
 
+@pytest.mark.php_nts
+@pytest.mark.php_zts
+def test_php_ext_uv_is_functional(host):
+    output = host.run('php /tests/container/functional/event-timer.php')
+    assert output.stdout == '0123finished'
+    assert output.rc == 0
+
+@pytest.mark.php_nts
 @pytest.mark.php_zts
 def test_php_ext_uv_is_functional(host):
     output = host.run('php /tests/container/functional/uv-timer.php')
