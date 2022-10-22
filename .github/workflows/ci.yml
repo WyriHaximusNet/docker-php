@@ -95,13 +95,13 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "schedule" ] ; then
             echo "This is a scheduled run, scanning for CVE's"
-            php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress  % > /dev/null || echo "%"' > images_with.cves
+            NO_DEBIAN=yes php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress  % > /dev/null || echo "%"' > images_with.cves
 
             if [ -s "images_with.cves" ]
             then
               cat images_with.cves
               echo "Found images with CVE's in them, rebuilding all images"
-              php utils/all-images.php
+              NO_DEBIAN=yes php utils/all-images.php
               exit 0
             fi
 
