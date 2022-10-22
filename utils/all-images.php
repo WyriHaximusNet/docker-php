@@ -66,4 +66,4 @@ $line = array_values(array_filter($line, static fn (string $tag): bool => !in_ar
 ])));
 
 echo 'Found the following images to build: ', PHP_EOL, '- ', implode(PHP_EOL . '- ', $line), PHP_EOL;
-echo '::set-output name=image::', json_encode($line), PHP_EOL;;
+file_put_contents(getenv('GITHUB_OUTPUT'), 'image=' . json_encode($line) . PHP_EOL, FILE_APPEND);
