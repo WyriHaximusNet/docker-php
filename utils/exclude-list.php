@@ -154,5 +154,5 @@ foreach ($excludes as $exclude) {
 }
 
 echo 'Excludes: ', json_encode($excludes), PHP_EOL;
-echo '::set-output name=exclude::', json_encode($excludes), PHP_EOL;;
-echo '::set-output name=exclude-push::', json_encode($excludesPush), PHP_EOL;;
+file_put_contents(getenv('GITHUB_OUTPUT'), 'exclude=' . json_encode($excludes) . PHP_EOL, FILE_APPEND);
+file_put_contents(getenv('GITHUB_OUTPUT'), 'exclude-push=' . json_encode($excludesPush) . PHP_EOL, FILE_APPEND);

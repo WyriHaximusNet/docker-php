@@ -53,7 +53,7 @@ jobs:
       - id: supported-arch-matrix
         name: Generate Arch
         run: |
-          echo "::set-output name=arch::[\"amd64\",\"arm64\",\"arm\"]"
+          echo "arch=[\"amd64\",\"arm64\",\"arm\"]" >> $GITHUB_OUTPUT
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
         run: |
           ls Dockerfile-* | jq -csR '. | rtrimstr("\n") | split("\n")' | php -r "echo str_replace('Dockerfile-', '', stream_get_contents(STDIN));" > types.list
           cat types.list
-          echo "::set-output name=type::$(cat types.list)"
+          echo "type=$(cat types.list)" >> $GITHUB_OUTPUT
   exclude-matrix:
     name: Create Exclude Matrix
     runs-on: ubuntu-latest
@@ -93,6 +93,8 @@ jobs:
       - id: image-matrix
         name: Generate Combined Image Matrix
         run: |
+          NO_DEBIAN=yes php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress  %  || echo "%"'
+          exit 1
           if [ "${{ github.event_name }}" == "schedule" ] ; then
             echo "This is a scheduled run, scanning for CVE's"
             NO_DEBIAN=yes php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress  % > /dev/null || echo "%"' > images_with.cves
