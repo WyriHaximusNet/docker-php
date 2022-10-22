@@ -2,7 +2,7 @@
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'cleaned-up-version.php';
 $upstreamImages = [];
-foreach (range(1, 10) as $i) {
+foreach (range(1, 50) as $i) {
     $upstreamJson = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/library/php/tags?page_size=100&page=' . $i), true);
     foreach ($upstreamJson['results'] as $image) {
         $upstreamImages[$image['name']] = new DateTimeImmutable($image['last_updated']);
@@ -10,74 +10,26 @@ foreach (range(1, 10) as $i) {
 }
 
 $images = [];
-foreach (range(1, 10) as $i) {
+foreach (range(1, 20) as $i) {
     $json = json_decode(file_get_contents('https://hub.docker.com/v2/repositories/wyrihaximusnet/php/tags?page_size=100&page=' . $i), true);
     foreach ($json['results'] as $image) {
         $images[$image['name']] = new DateTimeImmutable($image['last_updated']);
     }
 }
 
-$line = [];
-$latestOSVersion = '1.0';
-foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
-    if (version_compare($alpine, $latestOSVersion, ">=")) {
-        $latestOSVersion = $alpine;
+
+$list = [];
+$fullImageList = json_decode(file_get_contents('all-images.list'), true);
+foreach ($fullImageList as $image) {
+    [$sourceType, $destinatoinType, $destinationPhpVersoin, $sourcePhpVersion, $osType, $osDestinationName, $osDestinationName, $osSource] = explode('-', $image);
+    $name = $destinationPhpVersoin . '-' . $destinatoinType . '-' . $osDestinationName;
+    if (!array_key_exists($name, $images)) {
+        continue;
+    }
+    if (!array_key_exists($name, $upstreamImages)) {
+        continue;
+    }
+    if ($upstreamImages[$name] > $images[$name]) {
+        echo $image, PHP_EOL;
     }
 }
-foreach (json_decode(getenv('PHP'), true) as $php) {
-    foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
-        $name = $php . '-zts-alpine' . $alpine;
-
-        if (array_key_exists($name, $upstreamImages)) {
-            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
-                if ($alpine === $latestOSVersion) {
-                    $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
-                }
-            }
-        }
-        $name = $php . '-cli-alpine' . $alpine;
-
-        if (array_key_exists($name, $upstreamImages)) {
-            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine . '-alpine3.11';
-                if ($alpine === $latestOSVersion) {
-                    $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine-alpine3.11';
-                }
-            }
-        }
-    }
-}
-
-foreach (json_decode(getenv('PHP'), true) as $php) {
-    foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
-        $name = $php . '-zts-debian' . $debian;
-
-        if (array_key_exists($name, $upstreamImages)) {
-            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-buster';
-                if ($debian === 'buster') {
-                    $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian-buster';
-                }
-            }
-        }
-        $name = $php . '-cli-debian' . $debian;
-
-        if (array_key_exists($name, $upstreamImages)) {
-            if (!(array_key_exists($name, $images) && $upstreamImages[$name] < $images[$name])) {
-                $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-buster';
-                if ($debian === 'buster') {
-                    $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian-buster';
-                }
-            }
-        }
-    }
-}
-
-$line = array_values(array_filter($line, static fn (string $tag): bool => !in_array($tag, [
-    'cli-nts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11',
-    'cli-nts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11',
-])));
-
-echo 'Found the following newer images to build: ', PHP_EOL, '- ', implode(PHP_EOL . '- ', $line), PHP_EOL;
-file_put_contents(getenv('GITHUB_OUTPUT'), 'image=' . json_encode($line) . PHP_EOL, FILE_APPEND);
