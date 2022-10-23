@@ -60,10 +60,5 @@ if (getenv('NO_DEBIAN') !== 'yes') {
     }
 }
 
-$line = array_values(array_filter($line, static fn (string $tag): bool => !in_array($tag, [
-    'cli-nts-8.1-8.1-alpine-alpine3.14-alpine-alpine3.11',
-    'cli-nts-8.1-8.1-alpine-alpine3.14-alpine3.14-alpine3.11',
-])));
-
 echo 'Found the following images to build: ', PHP_EOL, '- ', implode(PHP_EOL . '- ', $line), PHP_EOL;
-file_put_contents(getenv('GITHUB_OUTPUT'), 'image=' . json_encode($line) . PHP_EOL, FILE_APPEND);
+file_put_contents('all-images.list', json_encode($line));
