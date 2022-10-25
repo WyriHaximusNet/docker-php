@@ -69,7 +69,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         gdb \
         $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets \
-    && pecl install parallel || (cd /tmp && (yes | apt-get install $PHPIZE_DEPS git) && git clone https://github.com/WyriHaximus-labs/parallel && cd parallel && git fetch && git checkout php-8.1-part-2 && git pull && phpize && ./configure && make install && cd) \
+    && pecl install parallel || pecl install parallel-1.1.4 \
     && docker-php-ext-enable parallel \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
