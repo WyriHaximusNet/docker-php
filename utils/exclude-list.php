@@ -21,11 +21,11 @@ $excludes[] = [
 ];
 $excludes[] = [
     'arch' => 'amd64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.16-alpine3.16-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.16-alpine3.16-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'amd64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.15-alpine3.15-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.15-alpine3.15-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'arm64',
@@ -33,23 +33,23 @@ $excludes[] = [
 ];
 $excludes[] = [
     'arch' => 'amd64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.16-alpine-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.16-alpine-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'arm64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.15-alpine3.15-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.15-alpine3.15-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'arm64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.16-alpine3.16-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.16-alpine3.16-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'amd64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-bullseye-bullseye-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-bullseye-bullseye-buster',
 ];
 $excludes[] = [
     'arch' => 'amd64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-buster-buster-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-buster-buster-buster',
 ];
 $excludes[] = [
     'arch' => 'arm64',
@@ -57,23 +57,23 @@ $excludes[] = [
 ];
 $excludes[] = [
     'arch' => 'arm64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.16-alpine-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.16-alpine-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'amd64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-buster-debian-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-buster-debian-buster',
 ];
 $excludes[] = [
     'arch' => 'arm64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-buster-buster-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-buster-buster-buster',
 ];
 $excludes[] = [
     'arch' => 'arm64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-bullseye-bullseye-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-bullseye-bullseye-buster',
 ];
 $excludes[] = [
     'arch' => 'arm64',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-buster-debian-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-buster-debian-buster',
 ];
 $excludes[] = [
     'arch' => 'arm',
@@ -125,27 +125,27 @@ $excludes[] = [
 ];
 $excludes[] = [
     'arch' => 'arm',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.16-alpine-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.16-alpine-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'arm',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.15-alpine3.15-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.15-alpine3.15-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'arm',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-bullseye-bullseye-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-bullseye-bullseye-buster',
 ];
 $excludes[] = [
     'arch' => 'arm',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-buster-buster-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-buster-buster-buster',
 ];
 $excludes[] = [
     'arch' => 'arm',
-    'image' => 'zts-zts-8.2.0RC5-8.2-alpine-alpine3.16-alpine3.16-alpine3.11',
+    'image' => 'zts-zts-8.2.0-8.2-alpine-alpine3.16-alpine3.16-alpine3.11',
 ];
 $excludes[] = [
     'arch' => 'arm',
-    'image' => 'zts-zts-8.2.0RC5-8.2-debian-buster-debian-buster',
+    'image' => 'zts-zts-8.2.0-8.2-debian-buster-debian-buster',
 ];
 
 $excludesPush = [];
