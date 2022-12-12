@@ -53,7 +53,7 @@ jobs:
       - id: supported-arch-matrix
         name: Generate Arch
         run: |
-          echo "arch=[\"amd64\",\"arm64\",\"arm\"]" >> $GITHUB_OUTPUT
+          echo "arch=[\"amd64\",\"arm64\"]" >> $GITHUB_OUTPUT
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest

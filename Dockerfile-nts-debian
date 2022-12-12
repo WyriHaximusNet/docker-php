@@ -9,6 +9,8 @@ LABEL org.label-schema.name="wyrihaximusnet/php" \
       org.label-schema.vendor="WyriHaximus.net" \
       org.label-schema.schema-version="1.0"
 
+ARG ARCH=amd64
+
 RUN apt-get update \
     && yes | apt-get upgrade \
     && set -x \

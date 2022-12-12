@@ -23,6 +23,7 @@ case "$1" in
 			exit 1
 		fi
 
+    yes | apt-get install "linux-headers-$ARCH"
 		pecl install xdebug-stable
 		docker-php-ext-enable xdebug
 		yes | apt-get purge $PHPIZE_DEPS

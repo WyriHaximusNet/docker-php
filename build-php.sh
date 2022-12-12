@@ -52,6 +52,6 @@ docker pull "php:${IMAGE_TAG}"
 
 for buildTarget in "${target[@]}"
 do
-  sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --platform ${TARGET_ARCH} --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" --target="${DST_IMAGE}${buildTarget}" -f - .
+  sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --build-arg ARCH=${TARGET_ARCH} --platform ${TARGET_ARCH} --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" --target="${DST_IMAGE}${buildTarget}" -f - .
   echo "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" >> "$TAG_FILE"
 done
