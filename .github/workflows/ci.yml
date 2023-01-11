@@ -8,7 +8,7 @@ on:
   push:
     branches:
       - master
-  pull_request:
+#  pull_request:
   schedule:
     - cron:  '13 4 * * *'
 jobs:
@@ -95,7 +95,7 @@ jobs:
         run: |
           echo "Generate full image list"
           php utils/all-images.php
-          
+
           if [ "${{ github.event_name }}" == "schedule" ] ; then
             echo "This is a scheduled run, scanning for CVE's"
             php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress $(php -r "echo explode(\"#\", \"%\")[0];") > /dev/null || echo "%|"' >> images_with.cves
@@ -108,7 +108,7 @@ jobs:
 
             echo "Looking for newer upstream images"
             php utils/newer-upstream-images.php  >> images-that-need-updating.list
-          
+
             printf "image=%s" $(php utils/deduplicate-list.php) >> $GITHUB_OUTPUT
             exit 0
           fi
