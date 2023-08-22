@@ -5,6 +5,7 @@ env:
   DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING: '{"ghcr.io":"GHCR_TOKEN","docker.io":"HUB_PASSCODE"}'
   DOCKER_CLI_EXPERIMENTAL: enabled
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
