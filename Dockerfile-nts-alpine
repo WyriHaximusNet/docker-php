@@ -52,6 +52,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         icu-dev \
         libevent-dev \
         openssl-dev \
+        bash \
         coreutils \
         procps \
         git \
