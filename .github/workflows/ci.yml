@@ -223,7 +223,7 @@ jobs:
         with:
           name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
           path: ./docker-image
-      - run: ls -lasth ./docker-image
+      - run: ls -lasth ./docker-image/
       - run: docker load --input ./docker-image/image.tar
       - run: IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
         env:
@@ -240,7 +240,7 @@ jobs:
     steps:
       - run: echo "✔️"
   push:
-    name: Pushing "${{ matrix.image }}" for ${{ matrix.arch }}
+    name: Push all images
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - check-mark
@@ -248,69 +248,19 @@ jobs:
       - supported-arch-matrix
       - exclude-matrix
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
-        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dbhi/qus/action@main
       - name: Download Images
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
           path: ./docker-image
-      - run: docker load --input ./docker-image/image.tar
-      - name: Login to container registries
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 120
-          retry_wait_seconds: 30
-          max_attempts: 5
-          command: |
-            (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
-        env:
-          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-          HUB_PASSCODE: ${{ secrets.HUB_PASSCODE }}
-      - name: Retag
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 120
-          retry_wait_seconds: 30
-          max_attempts: 5
-          command: |
-            (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker tag % " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
-      - name: Push tags
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 120
-          retry_wait_seconds: 30
-          max_attempts: 5
-          command: |
-            (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % docker push " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
-  push-manifest:
-    name: Push ${{ matrix.image }} manifest
-    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
-    strategy:
-      fail-fast: false
-      matrix:
-        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-    needs:
-      - push
-      - image-matrix
-      - supported-arch-matrix
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: dbhi/qus/action@main
-      - name: Download Images
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image-${{ matrix.image }}-amd64
-          path: ./docker-image
+      - run: ls -lasthR ./docker-image
+      - run: find ./docker-image/ | grep "image.tar"
+      - run: find ./docker-image/ | grep "image.tags"
+      - run: docker images
+      - run: find ./docker-image/ | grep "image.tar" | xargs -I % docker load --input %
+      - run: docker images
       - name: Login to container registries
         uses: nick-invision/retry@v2
         with:
@@ -325,16 +275,27 @@ jobs:
           HUB_PASSCODE: ${{ secrets.HUB_PASSCODE }}
       - name: Docker info
         run: docker info
-      - name: Push manifest to registries
+      - name: Retag
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
           max_attempts: 5
           command: |
+            (jq -r 'to_entries | map("(find ./docker-image/ | grep image.tags | xargs -I $ cat $) | xargs -I % docker tag % " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+      - run: docker images
+      - name: Push all images to registries
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            find ./docker-image/ | grep image.tags | xargs -I $ cat $ > tags-to-push.list
             touch command.sh
-            (jq -r 'to_entries | map("cat ./docker-image/image.tags | xargs -I % php utils/create-manifest-command.php " + .key + " %") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+            (jq -r 'to_entries | map("php utils/create-manifest-command.php " + .key) | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
             chmod +x command.sh
             ./command.sh
         env:
           TARGET_ARCHS: ${{ needs.supported-arch-matrix.outputs.arch }}
+      - run: docker images
