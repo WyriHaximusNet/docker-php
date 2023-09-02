@@ -96,20 +96,21 @@ jobs:
         run: |
           echo "Generate full image list"
           php utils/all-images.php
-          
+
           if [ "${{ github.event_name }}" == "schedule" ] ; then
             echo "This is a scheduled run, scanning for CVE's"
-            php utils/all-image-tags.php | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress $(php -r "echo explode(\"#\", \"%\")[0];") > /dev/null || echo "%|"' >> images_with.cves
+            php utils/all-image-tags.php | grep -v debian  | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress $(php -r "echo explode(\"#\", \"%\")[0];") > /dev/null || echo "%|"' >> images_with.cves
 
             if [ -s "images_with.cves" ]
             then
-              echo "Found images with CVE's in them"
+              printf "Found %s images with CVE's in them" "$(cat images_with.cves | wc -l)"
+              echo ""
               cat images_with.cves | xargs -I % php -r 'echo implode(PHP_EOL, explode("|", "%")), PHP_EOL;' | xargs -I % php -r 'echo explode("#", "%")[1], PHP_EOL;' >> images-that-need-updating.list
             fi
 
             echo "Looking for newer upstream images"
             php utils/newer-upstream-images.php  >> images-that-need-updating.list
-          
+
             printf "image=%s" $(php utils/deduplicate-list.php) >> $GITHUB_OUTPUT
             exit 0
           fi
