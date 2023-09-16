@@ -113,12 +113,19 @@ jobs:
   
             echo "Looking for newer upstream images"
             php utils/newer-upstream-images.php  >> images-that-need-updating.list
+          
+            echo "Building the following images:"
+            php utils/deduplicate-list.php | jq '.[]'
   
             printf "image=%s" $(php utils/deduplicate-list.php) >> $GITHUB_OUTPUT
             exit 0
           fi
 
           echo "Not in a scheduled run, building all images"
+          
+          echo "Building the following images:"
+          cat all-images.list | jq '.[]'
+          
           printf "image=%s" $(cat all-images.list) >> $GITHUB_OUTPUT
           exit 0
         env:
