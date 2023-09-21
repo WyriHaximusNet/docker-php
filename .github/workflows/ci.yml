@@ -269,7 +269,7 @@ jobs:
       - run: find ./docker-image/ | grep "image.tar"
       - run: find ./docker-image/ | grep "image.tags"
       - run: docker images
-      - run: find ./docker-image/ | grep "image.tar" | xargs -I % docker load --input %
+      - run: find ./docker-image/ | grep "image.tar" | xargs -I % sh -c 'docker load --input % && rm %'
       - run: docker images
       - name: Login to container registries
         uses: nick-invision/retry@v2
