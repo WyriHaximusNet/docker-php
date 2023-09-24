@@ -25,13 +25,16 @@ build-all:
 	xargs -I {} -t bash -c './build-php.sh {}'
 
 
-test: test-cli test-fpm test-http
+test: test-nts test-fpm test-zts
 
 test-nts: ./docker-image/image.tags
 	xargs -I % ./test-nts.sh % < ./docker-image/image.tags
 
 test-zts: ./docker-image/image.tags
 	xargs -I % ./test-zts.sh % < ./docker-image/image.tags
+
+test-fpm: ./docker-image/image.tags
+	xargs -I % ./test-fpm.sh % < ./docker-image/image.tags
 
 scan-vulnerability:
 	cat ./docker-image/image.tags | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table % || echo "% is vulnerable"'
