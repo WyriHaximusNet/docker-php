@@ -54,14 +54,14 @@ jobs:
       - id: supported-arch-matrix
         name: Generate Arch
         run: |
-          echo "arch=[\"amd64\",\"arm64\"]" >> $GITHUB_OUTPUT
+          echo "arch=[\\\"amd64\\\",\\\"arm64\\\"]" >> $GITHUB_OUTPUT
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest
     outputs:
       type: ${{ steps.image-type-matrix.outputs.type }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - id: image-type-matrix
         name: Generate Type
         run: |
@@ -75,7 +75,7 @@ jobs:
       exclude: ${{ steps.exclude-matrix.outputs.exclude }}
       exclude-push: ${{ steps.exclude-matrix.outputs.exclude-push }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - id: exclude-matrix
         name: Generate Exclude
         run: |
@@ -91,7 +91,7 @@ jobs:
     outputs:
       image: ${{ steps.image-matrix.outputs.image }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - id: image-matrix
         name: Generate Combined Image Matrix
         run: |
@@ -142,14 +142,14 @@ jobs:
       matrix:
         type: ${{ fromJson(needs.image-type-matrix.outputs.type) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Lint Dockerfile-${{ matrix.type }}
         uses: docker://hadolint/hadolint:latest-debian
         with:
           entrypoint: hadolint
           args: Dockerfile-${{ matrix.type }}
   build:
-    name: Building "${{ matrix.image }}" on ${{ matrix.arch }}
+    name: Building "${{ matrix.image }}"
     needs:
       - lint
       - image-matrix
@@ -160,10 +160,9 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dbhi/qus/action@main
       - run: mkdir ./docker-image/
       - uses: nick-invision/retry@v2
@@ -171,17 +170,17 @@ jobs:
           timeout_minutes: 120
           retry_wait_seconds: 30
           max_attempts: 5
-          command: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') ${{ matrix.arch }}
+          command: (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') %
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
       - run: docker images
       - name: Upload Images
         uses: actions/upload-artifact@v2
         with:
-          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
+          name: docker-image-${{ matrix.image }}
           path: ./docker-image
   scan-vulnerability:
-    name: Scanning "${{ matrix.image }}" for vulnerabilities on ${{ matrix.arch }}
+    name: Scanning "${{ matrix.image }}" for vulnerabilities
     needs:
       - build
       - image-matrix
@@ -192,18 +191,17 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         if: contains(matrix.image, 'alpine')
       - uses: dbhi/qus/action@main
         if: contains(matrix.image, 'alpine')
       - name: Download Images
         if: contains(matrix.image, 'alpine')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
+          name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: docker load --input ./docker-image/image.tar
         if: contains(matrix.image, 'alpine')
@@ -212,7 +210,7 @@ jobs:
       - run: make ci-scan-vulnerability
         if: contains(matrix.image, 'alpine')
   test:
-    name: Testing "${{ matrix.image }}" on ${{ matrix.arch }}
+    name: Testing "${{ matrix.image }}"
     needs:
       - build
       - image-matrix
@@ -223,21 +221,20 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
-        arch: ${{ fromJson(needs.supported-arch-matrix.outputs.arch) }}
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dbhi/qus/action@main
       - name: Download Images
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: docker-image-${{ matrix.image }}-${{ matrix.arch }}
+          name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: ls -lasth ./docker-image/
       - run: docker load --input ./docker-image/image.tar
-      - run: IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];')
-        env:
-          IMAGE_ARCH: ${{ matrix.arch }}
+      - run: |
+          export IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') 
+          (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=%
       - run: rm -Rf ./docker-image/
   check-mark:
     name: ✔️
@@ -250,7 +247,7 @@ jobs:
     steps:
       - run: echo "✔️"
   push:
-    name: Push all images
+    name: Pushing "${{ matrix.image }}"
     if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
     needs:
       - check-mark
@@ -258,12 +255,18 @@ jobs:
       - supported-arch-matrix
       - exclude-matrix
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.image-matrix.outputs.image) }}
+        exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v3
       - uses: dbhi/qus/action@main
       - name: Download Images
         uses: actions/download-artifact@v3
         with:
+          name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: ls -lasthR ./docker-image
       - run: find ./docker-image/ | grep "image.tar"
@@ -305,6 +308,7 @@ jobs:
             touch command.sh
             (jq -r 'to_entries | map("php utils/create-manifest-command.php " + .key) | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
             chmod +x command.sh
+            cat ./command.sh
             ./command.sh
         env:
           TARGET_ARCHS: ${{ needs.supported-arch-matrix.outputs.arch }}
