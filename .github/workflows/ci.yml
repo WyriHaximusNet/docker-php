@@ -262,7 +262,20 @@ jobs:
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v3
-      - uses: dbhi/qus/action@main
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          install: true
+      - name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
       - name: Download Images
         uses: actions/download-artifact@v3
         with:
@@ -296,6 +309,7 @@ jobs:
           max_attempts: 5
           command: |
             (jq -r 'to_entries | map("(find ./docker-image/ | grep image.tags | xargs -I $ cat $) | xargs -I % docker tag % " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+            (jq -r 'to_entries | map("(find ./docker-image/ | grep image.tags | xargs -I $ cat $) | xargs -I % docker push " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
       - run: docker images
       - name: Push all images to registries
         uses: nick-invision/retry@v2
