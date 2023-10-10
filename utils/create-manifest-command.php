@@ -33,7 +33,7 @@ foreach (array_unique(
 file_put_contents(
     './command.sh',
     str_replace(
-        'docker.io',
+        'docker.io/',
         '',
         file_get_contents(
             './command.sh',
