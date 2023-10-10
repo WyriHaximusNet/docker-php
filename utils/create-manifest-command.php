@@ -22,10 +22,21 @@ foreach (array_unique(
         file('tags-to-push.list')
     )
 ) as $image) {
-    file_put_contents("./command.sh", "\ndocker manifest create \"" . $argv[1] . "/" . trim($image) . "\"", \FILE_APPEND);
+    file_put_contents('./command.sh', "\ndocker manifest create \"" . $argv[1] . "/" . trim($image) . "\"", \FILE_APPEND);
 
     foreach ($archs as $arch) {
-        file_put_contents("./command.sh", " --amend " . $argv[1] . "/" . trim($image) . "-" . $arch, \FILE_APPEND);
+        file_put_contents('./command.sh', " --amend " . $argv[1] . "/" . trim($image) . "-" . $arch, \FILE_APPEND);
     }
-    file_put_contents("./command.sh", "\ndocker manifest push \"" . $argv[1] . "/" . trim($image) . "\"\n", \FILE_APPEND);
+    file_put_contents('./command.sh', "\ndocker manifest push \"" . $argv[1] . "/" . trim($image) . "\"\n", \FILE_APPEND);
 }
+
+file_put_contents(
+    './command.sh',
+    str_replace(
+        'docker.io',
+        '',
+        file_get_contents(
+            './command.sh',
+        ),
+    ),
+);
