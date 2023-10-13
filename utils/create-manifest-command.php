@@ -22,12 +22,10 @@ foreach (array_unique(
         file('tags-to-push.list')
     )
 ) as $image) {
-    file_put_contents('./command.sh', "\ndocker manifest create \"" . $argv[1] . "/" . trim($image) . "\"", \FILE_APPEND);
+    $dockerFilename = 'docker-file-' . md5($argv[1] . "/" . trim($image));
+    file_put_contents($dockerFilename, 'FROM ' . $argv[1] . "/" . trim($image) . '-${TARGETARCH}');
 
-    foreach ($archs as $arch) {
-        file_put_contents('./command.sh', " --amend " . $argv[1] . "/" . trim($image) . "-" . $arch, \FILE_APPEND);
-    }
-    file_put_contents('./command.sh', "\ndocker manifest push \"" . $argv[1] . "/" . trim($image) . "\"\n", \FILE_APPEND);
+    file_put_contents('./command.sh', "\ndocker buildx build -f " . $dockerFilename . " --platform=linux/" . implode(",linux/", $archs) . " -t \"" . $argv[1] . "/" . trim($image) . "\" --push .\n", \FILE_APPEND);
 }
 
 file_put_contents(
