@@ -98,35 +98,26 @@ jobs:
           echo "Generate full image list"
           php utils/all-images.php
 
-          if [ "${{ github.event_name }}" == "schedule" ] ; then
-            echo "This is a scheduled run, scanning for CVE's"
-            touch trivy.output
-            php utils/all-image-tags.php | grep -v debian  | xargs -I % sh -c 'docker pull -q $(php -r "echo explode(\"#\", \"%\")[0];") && echo "%|" || true' >> pullable.list
-            cat pullable.list | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress $(php -r "echo explode(\"#\", \"%\")[0];") >> trivy.output || echo "%|"' >> images_with.cves
-            cat trivy.output
-  
-            if [ -s "images_with.cves" ]
-            then
-              echo "Found images with CVE's in them"
-              cat images_with.cves | xargs -I % php -r 'echo implode(PHP_EOL, explode("|", "%")), PHP_EOL;' | xargs -I % php -r 'echo explode("#", "%")[1], PHP_EOL;' >> images-that-need-updating.list
-            fi
-  
-            echo "Looking for newer upstream images"
-            php utils/newer-upstream-images.php  >> images-that-need-updating.list
-          
-            echo "Building the following images:"
-            php utils/deduplicate-list.php | jq '.[]'
-  
-            printf "image=%s" $(php utils/deduplicate-list.php) >> $GITHUB_OUTPUT
-            exit 0
+          echo "This is a scheduled run, scanning for CVE's"
+          touch trivy.output
+          php utils/all-image-tags.php | grep -v debian  | xargs -I % sh -c 'docker pull -q $(php -r "echo explode(\"#\", \"%\")[0];") && echo "%|" || true' >> pullable.list
+          cat pullable.list | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress $(php -r "echo explode(\"#\", \"%\")[0];") >> trivy.output || echo "%|"' >> images_with.cves
+          cat trivy.output
+
+          if [ -s "images_with.cves" ]
+          then
+            echo "Found images with CVE's in them"
+            cat images_with.cves | xargs -I % php -r 'echo implode(PHP_EOL, explode("|", "%")), PHP_EOL;' | xargs -I % php -r 'echo explode("#", "%")[1], PHP_EOL;' >> images-that-need-updating.list
           fi
 
-          echo "Not in a scheduled run, building all images"
-          
+          echo "Looking for newer upstream images"
+          php utils/newer-upstream-images.php  >> images-that-need-updating.list
+        
           echo "Building the following images:"
-          cat all-images.list | jq '.[]'
-          
-          printf "image=%s" $(cat all-images.list) >> $GITHUB_OUTPUT
+          php utils/deduplicate-list.php
+          php utils/deduplicate-list.php | jq '.[]'
+
+          printf "image=%s" $(php utils/deduplicate-list.php) >> $GITHUB_OUTPUT
           exit 0
         env:
           ALPINE: ${{ needs.supported-alpine-versions.outputs.alpine }}
