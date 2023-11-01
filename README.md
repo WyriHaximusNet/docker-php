@@ -38,7 +38,7 @@ In order to provide upgrade path we intend to keep one or more versions of PHP.
 The tag naming strategy consists of (Read as a regex):
 
 - PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine((alpineMajor).(alpineMinor))|bullseye|buster|strech)(-slim)(-dev)(-root)?`
-  - Example: `7.3-fpm-alpine3.12`, `7.4-fpm-alpine3.13-dev`, `8.0-zts-buster-slim`
+  - Example: `8.2-zts-alpine-slim`, `8.3-nts-alpine3.13-dev`, `8.1-zts-buster-slim`
 
 ## Example usage
 
@@ -51,7 +51,7 @@ docker build . -t IMAGE_NAME:TAG --target=runtime
 ```
 
 ```dockerfile
-FROM ghcr.io/wyrihaximusnet/php:7.4-zts-alpine-slim-dev AS install-dependencies
+FROM ghcr.io/wyrihaximusnet/php:8.3-zts-alpine-slim-dev AS install-dependencies
 
 WORKDIR /opt/app
 
@@ -60,7 +60,7 @@ COPY ./composer.json /opt/app/composer.json
 COPY ./src/ /opt/app/src/
 RUN composer install --ansi --no-interaction --prefer-dist --no-dev -o
 
-FROM ghcr.io/wyrihaximusnet/php:7.4-zts-alpine-slim AS runtime
+FROM ghcr.io/wyrihaximusnet/php:8.3-zts-alpine-slim AS runtime
 
 WORKDIR /opt/app
 
