@@ -50,7 +50,7 @@ jobs:
     outputs:
       arch: ${{ steps.supported-arch-matrix.outputs.arch }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: supported-arch-matrix
         name: Generate Arch
         run: |
@@ -261,7 +261,7 @@ jobs:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
