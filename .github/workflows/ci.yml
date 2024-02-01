@@ -165,7 +165,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dbhi/qus/action@main
       - run: mkdir ./docker-image/
-      - uses: nick-invision/retry@v2
+      - uses: nick-invision/retry@v3
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
@@ -288,7 +288,7 @@ jobs:
       - run: find ./docker-image/ | grep "image.tar" | xargs -I % sh -c 'docker load --input % && rm %'
       - run: docker images
       - name: Login to container registries
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
@@ -302,7 +302,7 @@ jobs:
       - name: Docker info
         run: docker info
       - name: Retag
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
@@ -312,7 +312,7 @@ jobs:
             (jq -r 'to_entries | map("(find ./docker-image/ | grep image.tags | xargs -I $ cat $) | xargs -I % docker push " + .key + "/%") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
       - run: docker images
       - name: Push all images to registries
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
