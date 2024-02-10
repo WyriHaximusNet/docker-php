@@ -4,35 +4,20 @@ env:
   DOCKER_BUILDKIT: 1
   DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING: '{"ghcr.io":"GHCR_TOKEN","docker.io":"HUB_PASSCODE"}'
   DOCKER_CLI_EXPERIMENTAL: enabled
+
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
-  pull_request:
-  schedule:
-    - cron:  '13 4 * * *'
+  workflow_call:
+    inputs:
+      alpine:
+        description: JSON string with Alpine versions to build
+        required: true
+        type: string
+      debian:
+        description: JSON string with Debian versions to build
+        required: true
+        type: string
+
 jobs:
-  supported-alpine-versions:
-    name: Supported Alpine versions
-    runs-on: ubuntu-latest
-    outputs:
-      alpine: ${{ steps.supported-alpine-versions.outputs.versions }}
-    steps:
-      - id: supported-alpine-versions
-        name: Generate Alpine
-        uses: wyrihaximus/github-action-supported-alpine-linux-versions@v1
-        with:
-          maxVersions: 2
-  supported-debian-versions:
-    name: Supported Debian versions
-    runs-on: ubuntu-latest
-    outputs:
-      debian: ${{ steps.supported-debian-versions.outputs.versions }}
-    steps:
-      - id: supported-debian-versions
-        name: Generate Debian
-        uses: wyrihaximus/github-action-supported-debian-linux-versions@v1
   supported-php-versions:
     name: Supported PHP versions
     runs-on: ubuntu-latest
@@ -85,8 +70,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - lint
-      - supported-alpine-versions
-      - supported-debian-versions
       - supported-php-versions
     outputs:
       image: ${{ steps.image-matrix.outputs.image }}
@@ -129,8 +112,8 @@ jobs:
           printf "image=%s" $(cat all-images.list) >> $GITHUB_OUTPUT
           exit 0
         env:
-          ALPINE: ${{ needs.supported-alpine-versions.outputs.alpine }}
-          DEBIAN: ${{ needs.supported-debian-versions.outputs.debian }}
+          ALPINE: ${{ inputs.alpine }}
+          DEBIAN: ${{ inputs.debian }}
           PHP: ${{ needs.supported-php-versions.outputs.php }}
   lint:
     name: Linting Dockerfile-${{ matrix.type }}
