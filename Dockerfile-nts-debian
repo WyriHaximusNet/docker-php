@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM php:7.4-cli-buster AS base
+FROM php:8.2-cli-buster AS base
 
 # Build-time metadata as defined at http://label-schema.org
 LABEL org.label-schema.name="wyrihaximusnet/php" \
