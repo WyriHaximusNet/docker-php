@@ -182,7 +182,7 @@ jobs:
         if: contains(matrix.image, 'alpine')
       - name: Download Images
         if: contains(matrix.image, 'alpine')
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
@@ -209,7 +209,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dbhi/qus/action@main
       - name: Download Images
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
@@ -260,7 +260,7 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
       - name: Download Images
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
