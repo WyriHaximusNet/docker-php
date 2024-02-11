@@ -30,9 +30,28 @@ on:
         type: string
 
 jobs:
+  ensure-we-can-push:
+    name: Ensure we can push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to container registries
+#        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 5
+          command: |
+            (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+        env:
+          DOCKER_USER: ${{ inputs.docker_user }}
+          GHCR_TOKEN: ${{ inputs.ghcr_token }}
+          HUB_PASSCODE: ${{ inputs.hub_passcode }}
   supported-php-versions:
     name: Supported PHP versions
     runs-on: ubuntu-latest
+    needs:
+      - ensure-we-can-push
     outputs:
       php: ${{ steps.supported-php-versions.outputs.versions }}
     steps:

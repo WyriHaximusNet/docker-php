@@ -17,14 +17,29 @@ jobs:
       - id: supported-alpine-versions
         name: Generate Alpine
         uses: wyrihaximus/github-action-supported-alpine-linux-versions@v1
+  secret-passthrough:
+    name: Secret Passthrough
+    runs-on: ubuntu-latest
+    outputs:
+      docker_user: ${{ steps.passthrough.outputs.docker_user }}
+      ghcr_token: ${{ steps.passthrough.outputs.ghcr_token }}
+      hub_passcode: ${{ steps.passthrough.outputs.hub_passcode }}
+    steps:
+      - id: passthrough
+        name: Passthrough
+        run: |
+          echo "docker_user=${{ secrets.HUB_USERNAME }}" >> $GITHUB_OUTPUT
+          echo "ghcr_token=${{ secrets.GHCR_TOKEN }}" >> $GITHUB_OUTPUT
+          echo "docker_user=${{ secrets.HUB_PASSCODE }}" >> $GITHUB_OUTPUT
   ci:
     needs:
       - supported-alpine-versions
+      - secret-passthrough
     name: Continuous Integration
     uses: ./.github/workflows/ci.yml
     with:
       alpine: ${{ needs.supported-alpine-versions.outputs.alpine }}
       debian: "[]"
-      docker_user: secrets.HUB_USERNAME
-      ghcr_token: secrets.GHCR_TOKEN
-      hub_passcode: secrets.HUB_PASSCODE
+      docker_user: ${{ needs.secret-passthrough.outputs.docker_user }}
+      ghcr_token: ${{ needs.secret-passthrough.outputs.ghcr_token }}
+      hub_passcode: ${{ needs.secret-passthrough.outputs.hub_passcode }}
