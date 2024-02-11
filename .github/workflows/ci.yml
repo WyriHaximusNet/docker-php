@@ -16,6 +16,18 @@ on:
         description: JSON string with Debian versions to build
         required: true
         type: string
+      docker_user:
+        description: Auth
+        required: true
+        type: string
+      ghcr_token:
+        description: Auth
+        required: true
+        type: string
+      hub_passcode:
+        description: Auth
+        required: true
+        type: string
 
 jobs:
   supported-php-versions:
@@ -279,9 +291,9 @@ jobs:
           command: |
             (jq -r 'to_entries | map("echo \"$" + .value + "\" | docker login " + .key + " --username \"${{ env.DOCKER_USER }}\" --password-stdin") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
         env:
-          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-          HUB_PASSCODE: ${{ secrets.HUB_PASSCODE }}
+          DOCKER_USER: ${{ inputs.docker_user }}
+          GHCR_TOKEN: ${{ inputs.ghcr_token }}
+          HUB_PASSCODE: ${{ inputs.hub_passcode }}
       - name: Docker info
         run: docker info
       - name: Retag
