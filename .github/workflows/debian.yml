@@ -22,9 +22,7 @@ jobs:
       - supported-debian-versions
     name: Continuous Integration
     uses: ./.github/workflows/ci.yml
+    secrets: inherit
     with:
       alpine: "[]"
       debian: ${{ needs.supported-debian-versions.outputs.debian }}
-      docker_user: secrets.HUB_USERNAME
-      ghcr_token: secrets.GHCR_TOKEN
-      hub_passcode: secrets.HUB_PASSCODE
