@@ -21,7 +21,7 @@ foreach (range(1, 20) as $i) {
 $list = [];
 $fullImageList = json_decode(file_get_contents('all-images.list'), true);
 foreach ($fullImageList as $image) {
-    [$sourceType, $destinatoinType, $destinationPhpVersoin, $sourcePhpVersion, $osType, $osDestinationName, $osDestinationName, $osSource] = explode('-', $image);
+    [$sourceType, $destinatoinType, $destinationPhpVersoin, $sourcePhpVersion, $osType, $osDestinationName, $osSource] = explode('-', $image);
     $name = $destinationPhpVersoin . '-' . $destinatoinType . '-' . $osDestinationName;
     if (!array_key_exists($name, $images)) {
         continue;
