@@ -73,7 +73,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         gdb \
         $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets \
-    && (docker-php-ext-install -j$(nproc) random || true) \
     && pecl install parallel || pecl install parallel-1.1.4 \
     && docker-php-ext-enable parallel \
     && (pecl install eio || pecl install eio-beta) \
