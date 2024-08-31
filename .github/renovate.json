@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>WyriHaximus/renovate-config:php-package"
+    "github>WyriHaximus/renovate-config:docker-image"
   ]
 }
