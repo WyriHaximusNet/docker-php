@@ -229,7 +229,7 @@ jobs:
       - run: echo "✔️"
   push:
     name: Pushing "${{ matrix.image }}"
-    if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     needs:
       - check-mark
       - image-matrix
