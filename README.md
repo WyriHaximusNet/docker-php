@@ -3,7 +3,7 @@
 [![Github Actions](https://github.com/WyriHaximusNet/docker-php/workflows/Continuous%20Integration/badge.svg?event=push)](https://github.com/wyrihaximusnet/docker-php/actions)
 [![Docker hub](https://img.shields.io/badge/Docker%20Hub-00a5c9.svg?logo=docker&style=flat&color=00a5c9&labelColor=00a5c9&logoColor=white)](https://hub.docker.com/r/wyrihaximusnet/php/)
 [![Docker hub](https://img.shields.io/docker/pulls/wyrihaximusnet/php.svg?color=00a5c9&labelColor=03566a)](https://hub.docker.com/r/wyrihaximusnet/php/)
-[![Docker hub](https://img.shields.io/docker/image-size/wyrihaximusnet/php/8.3-zts-alpine-slim)](https://hub.docker.com/r/wyrihaximusnet/php/)
+[![Docker hub](https://img.shields.io/docker/image-size/wyrihaximusnet/php/8.4-zts-alpine-slim)](https://hub.docker.com/r/wyrihaximusnet/php/)
 
 # Images
 
@@ -38,7 +38,7 @@ In order to provide upgrade path we intend to keep one or more versions of PHP.
 The tag naming strategy consists of (Read as a regex):
 
 - PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine((alpineMajor).(alpineMinor))|bullseye|buster|strech)(-slim)(-dev)(-root)?`
-  - Example: `8.2-zts-alpine-slim`, `8.3-nts-alpine3.13-dev`, `8.1-zts-buster-slim`
+  - Example: `8.2-zts-alpine-slim`, `8.4-nts-alpine3.13-dev`, `8.1-zts-buster-slim`
 
 ## Example usage
 
@@ -51,7 +51,7 @@ docker build . -t IMAGE_NAME:TAG --target=runtime
 ```
 
 ```dockerfile
-FROM ghcr.io/wyrihaximusnet/php:8.3-zts-alpine-slim-dev AS install-dependencies
+FROM ghcr.io/wyrihaximusnet/php:8.4-zts-alpine-slim-dev AS install-dependencies
 
 WORKDIR /opt/app
 
@@ -60,7 +60,7 @@ COPY ./composer.json /opt/app/composer.json
 COPY ./src/ /opt/app/src/
 RUN composer install --ansi --no-interaction --prefer-dist --no-dev -o
 
-FROM ghcr.io/wyrihaximusnet/php:8.3-zts-alpine-slim AS runtime
+FROM ghcr.io/wyrihaximusnet/php:8.4-zts-alpine-slim AS runtime
 
 WORKDIR /opt/app
 
