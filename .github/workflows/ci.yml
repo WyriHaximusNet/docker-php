@@ -75,6 +75,13 @@ jobs:
       image: ${{ steps.image-matrix.outputs.image }}
     steps:
       - uses: actions/checkout@v4
+      - name: Preload Trivy DB
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 1
+          max_attempts: 13
+          command: docker pull ghcr.io/aquasecurity/trivy-db:2
       - id: image-matrix
         name: Generate Combined Image Matrix
         run: |
@@ -176,6 +183,13 @@ jobs:
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
+      - name: Preload Trivy DB
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 1
+          max_attempts: 13
+          command: docker pull ghcr.io/aquasecurity/trivy-db:2
       - uses: actions/checkout@v4
         if: contains(matrix.image, 'alpine')
       - uses: dbhi/qus/action@main
