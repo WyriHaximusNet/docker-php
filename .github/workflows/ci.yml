@@ -186,10 +186,14 @@ jobs:
         with:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
-      - run: docker load --input ./docker-image/image.tar
+      - name: Run Trivy vulnerability scanner in tarball mode
         if: contains(matrix.image, 'alpine')
-      - run: make ci-scan-vulnerability
-        if: contains(matrix.image, 'alpine')
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          input: ./docker-image/image.tar
+          format: 'github'
+          exit-code: '1'
+          hide-progress: true
   test:
     name: Testing "${{ matrix.image }}"
     needs:
