@@ -59,6 +59,11 @@ def test_pgsql_is_loaded(host):
 def test_uv_is_loaded(host):
     assert 'uv' in host.run('php -m').stdout
 
+@pytest.mark.php_zts
+@pytest.mark.php_nts
+def test_mrloop_is_loaded(host):
+    assert 'mrloop' in host.run('php -m').stdout
+
 @pytest.mark.php_not_slim_amd64
 def test_vips_is_loaded(host):
     assert 'vips' in host.run('php -m').stdout
