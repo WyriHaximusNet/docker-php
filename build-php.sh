@@ -45,6 +45,17 @@ docker pull "php:${IMAGE_TAG}"
 
 for buildTarget in "${target[@]}"
 do
-  docker build --build-arg ARCH=${TARGET_ARCH} --build-arg PHP_VERSION=${VERSION_PHP} --build-arg OS_VERSION=${VERSION_OS} --platform ${TARGET_ARCH} --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" --target="${DST_IMAGE}${buildTarget}" -f "Dockerfile-${DST_IMAGE}-${OS}" .
+  docker build --no-cache \
+    --build-arg ARCH=${TARGET_ARCH} \
+    --build-arg PHP_VERSION=${VERSION_PHP} \
+    --build-arg OS_VERSION=${VERSION_OS} \
+    --platform ${TARGET_ARCH} \
+    --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` \
+    --label org.opencontainers.image.revision-ref=`git rev-parse --short HEAD` \
+    -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" \
+    --target="${DST_IMAGE}${buildTarget}" \
+    -f "Dockerfile-${DST_IMAGE}-${OS}" .
   echo "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" >> "$TAG_FILE"
 done
