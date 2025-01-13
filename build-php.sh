@@ -45,7 +45,7 @@ docker pull "php:${IMAGE_TAG}"
 
 for buildTarget in "${target[@]}"
 do
-  docker build --no-cache \
+  docker build \
     --build-arg ARCH=${TARGET_ARCH} \
     --build-arg PHP_VERSION=${VERSION_PHP} \
     --build-arg OS_VERSION=${VERSION_OS} \
