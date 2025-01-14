@@ -1,14 +1,14 @@
 name: Debian
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - 'README.md'
-    branches:
-      - master
-  pull_request:
-  schedule:
-    - cron:  '13 4 * * *'
+#  push:
+#    paths-ignore:
+#      - 'README.md'
+#    branches:
+#      - master
+#  pull_request:
+#  schedule:
+#    - cron:  '13 4 * * *'
 jobs:
   supported-debian-versions:
     name: Supported Debian versions
