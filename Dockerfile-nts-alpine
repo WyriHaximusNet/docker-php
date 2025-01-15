@@ -22,7 +22,8 @@ LABEL org.label-schema.title="Opinionated ReactPHP optimised PHP Docker images" 
       org.opencontainers.image.description="PHP Version: $PHP_VERSION Type: zts OS Version: $OS_VERSION" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.base.name="php:$PHP_VERSION-cli-$OS_VERSION" \
-      org.opencontainers.image.vendor="WyriHaximus.net"
+      org.opencontainers.image.vendor="WyriHaximus.net" \
+      org.opencontainers.image.authors="Cees-Jan Kiewiet <docker-php@ceesjankiewiet.nl>"
 
 RUN apk update \
     && apk upgrade \
