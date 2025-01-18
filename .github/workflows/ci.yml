@@ -29,17 +29,17 @@ jobs:
         uses: wyrihaximus/github-action-supported-php-versions@v1
         with:
           upcomingReleases: true
-  supported-arch-matrix:
-    name: Supported processor architectures
+  supported-platform-matrix:
+    name: Supported processor platforms
     runs-on: ubuntu-latest
     outputs:
-      arch: ${{ steps.supported-arch-matrix.outputs.arch }}
+      platform: ${{ steps.supported-platform-matrix.outputs.platform }}
     steps:
-      - uses: actions/checkout@v4
-      - id: supported-arch-matrix
-        name: Generate Arch
-        run: |
-          echo "arch=[\\\"amd64\\\",\\\"arm64\\\"]" >> $GITHUB_OUTPUT
+      - id: supported-platform-matrix
+        name: Generate platform
+        uses: wyrihaximus/github-action-oci-image-supported-platforms@main
+        with:
+          image: "php:8.4-cli-alpine3.21"
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-latest
@@ -136,7 +136,7 @@ jobs:
     needs:
       - lint
       - image-matrix
-      - supported-arch-matrix
+      - supported-platform-matrix
       - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
@@ -153,7 +153,7 @@ jobs:
           timeout_minutes: 120
           retry_wait_seconds: 30
           max_attempts: 5
-          command: (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') %
+          command: (echo "${{ toJson(fromJson(needs.supported-platform-matrix.outputs.platform)) }}" | jq -r '.[]') | xargs -I % ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') %
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
       - run: docker images
@@ -167,7 +167,7 @@ jobs:
     needs:
       - build
       - image-matrix
-      - supported-arch-matrix
+      - supported-platform-matrix
       - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
@@ -195,7 +195,7 @@ jobs:
     needs:
       - build
       - image-matrix
-      - supported-arch-matrix
+      - supported-platform-matrix
       - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
@@ -215,7 +215,7 @@ jobs:
       - run: docker load --input ./docker-image/image.tar
       - run: |
           export IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') 
-          (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=%
+          (echo "${{ needs.supported-platform-matrix.outputs.platform }}" | jq -r '.[]') | xargs -I % make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=%
       - run: rm -Rf ./docker-image/
   check-mark:
     name: ✔️
@@ -233,7 +233,7 @@ jobs:
     needs:
       - check-mark
       - image-matrix
-      - supported-arch-matrix
+      - supported-platform-matrix
       - exclude-matrix
     runs-on: ubuntu-latest
     strategy:
@@ -306,5 +306,5 @@ jobs:
             cat ./command.sh
             ./command.sh
         env:
-          TARGET_ARCHS: ${{ needs.supported-arch-matrix.outputs.arch }}
+          TARGET_ARCHS: ${{ needs.supported-platform-matrix.outputs.platform }}
       - run: docker images
