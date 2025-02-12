@@ -20,7 +20,7 @@ on:
 jobs:
   supported-php-versions:
     name: Supported PHP versions
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       php: ${{ steps.supported-php-versions.outputs.versions }}
     steps:
@@ -31,7 +31,7 @@ jobs:
           upcomingReleases: true
   supported-arch-matrix:
     name: Supported processor architectures
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       arch: ${{ steps.supported-arch-matrix.outputs.arch }}
     steps:
@@ -42,7 +42,7 @@ jobs:
           echo "arch=[\\\"amd64\\\",\\\"arm64\\\"]" >> $GITHUB_OUTPUT
   image-type-matrix:
     name: Create Image Type Matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       type: ${{ steps.image-type-matrix.outputs.type }}
     steps:
@@ -55,7 +55,7 @@ jobs:
           echo "type=$(cat types.list)" >> $GITHUB_OUTPUT
   exclude-matrix:
     name: Create Exclude Matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       exclude: ${{ steps.exclude-matrix.outputs.exclude }}
       exclude-push: ${{ steps.exclude-matrix.outputs.exclude-push }}
@@ -67,7 +67,7 @@ jobs:
           php utils/exclude-list.php
   image-matrix:
     name: Create Image Matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
       - lint
       - supported-php-versions
@@ -117,7 +117,7 @@ jobs:
           PHP: ${{ needs.supported-php-versions.outputs.php }}
   lint:
     name: Linting Dockerfile-${{ matrix.type }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
       - image-type-matrix
     strategy:
@@ -138,7 +138,7 @@ jobs:
       - image-matrix
       - supported-arch-matrix
       - exclude-matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -169,7 +169,7 @@ jobs:
       - image-matrix
       - supported-arch-matrix
       - exclude-matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -197,7 +197,7 @@ jobs:
       - image-matrix
       - supported-arch-matrix
       - exclude-matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -224,7 +224,7 @@ jobs:
       - build
       - scan-vulnerability
       - test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "✔️"
   push:
@@ -235,7 +235,7 @@ jobs:
       - image-matrix
       - supported-arch-matrix
       - exclude-matrix
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
