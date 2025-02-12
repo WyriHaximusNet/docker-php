@@ -77,8 +77,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets \
-    && (install-php-extensions random || true) \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets random \
     && pecl install parallel || pecl install parallel-1.1.4 \
     && docker-php-ext-enable parallel \
     && (pecl install eio || pecl install eio-beta) \

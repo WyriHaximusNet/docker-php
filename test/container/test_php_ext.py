@@ -81,4 +81,4 @@ def test_zip_is_loaded(host):
 def test_zip_is_loaded(host):
     output = host.run('php -r "exit(function_exists(\'mt_rand\') ? 0 : 255);"')
     assert output.rc == 0
-#     assert 'random' in host.run('php -m').stdout
+    assert 'random' in host.run('php -m').stdout
