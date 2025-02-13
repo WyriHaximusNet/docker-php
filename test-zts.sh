@@ -37,25 +37,4 @@ else
     TEST_SUITE="php_app or $TEST_SUITE"
 fi
 
-printf "Starting a container for '%s'\\n" "$DOCKER_TAG"
-
-DOCKER_CONTAINER=$(docker run --rm -v "$(pwd)/test:/tests" -t -d "$DOCKER_TAG" php)
-readonly DOCKER_CONTAINER
-
-# Let's register a trap function, if our tests fail, finish or the script gets
-# interrupted, we'll still be able to remove the running container
-function tearDown {
-    docker rm -f "$DOCKER_CONTAINER" &>/dev/null &
-}
-trap tearDown EXIT TERM ERR
-
-# Finally, run the tests!
-echo "Running test suite: $TEST_SUITE"
-docker run --rm -t \
-    -v "$(pwd)/test:/tests" \
-    -v "$(pwd)/tmp/test-results:/results" \
-    -v /var/run/docker.sock:/var/run/docker.sock:ro \
-    renatomefi/docker-testinfra:5 \
-    -m "$TEST_SUITE" --junitxml="/results/php-zts-$DOCKER_TAG.xml" \
-    --disable-pytest-warnings \
-    --verbose --hosts="docker://$DOCKER_CONTAINER"
+echo $TEST_SUITE
