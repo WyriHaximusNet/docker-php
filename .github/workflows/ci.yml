@@ -39,7 +39,8 @@ jobs:
       - id: supported-arch-matrix
         name: Generate Arch
         run: |
-          echo "arch=[\\\"amd64\\\",\\\"arm64\\\"]" >> $GITHUB_OUTPUT
+          echo "arch=[\\\"amd64\\\"]" >> $GITHUB_OUTPUT
+#          echo "arch=[\\\"amd64\\\",\\\"arm64\\\"]" >> $GITHUB_OUTPUT
   image-type-matrix:
     name: Create Image Type Matrix
     runs-on: ubuntu-22.04
@@ -191,7 +192,7 @@ jobs:
       - run: make ci-scan-vulnerability
         if: contains(matrix.image, 'alpine')
   test:
-    name: Testing "${{ matrix.image }}"
+    name: Testing "${{ matrix.image }}" on "${{ matrix.arch }}"
     needs:
       - build
       - image-matrix
@@ -201,6 +202,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        arch:
+          - linux/amd64
         image: ${{ fromJson(needs.image-matrix.outputs.image) }}
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
@@ -212,11 +215,23 @@ jobs:
           name: docker-image-${{ matrix.image }}
           path: ./docker-image
       - run: ls -lasth ./docker-image/
+      - run: printf "images=%s" $(awk '{printf("%s,",$0)} END { printf "\n" }' ./docker-image/image.tags)  >> $GITHUB_OUTPUT
+        id: images
       - run: docker load --input ./docker-image/image.tar
-      - run: |
+      - run: docker image ls -a
+      - name: Determine test suite
+        id: test_suite
+        run: |
           export IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') 
-          (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=%
+          printf "test_suite=%s" $(make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=${{ matrix.arch }}) >> $GITHUB_OUTPUT
       - run: rm -Rf ./docker-image/
+      - uses: WyriHaximus/github-action-testinfra@main
+        with:
+          cmd: php
+          image: "${{ steps.images.outputs.images }}"
+          flags: --platform="${{ matrix.arch }}"
+          testsPath: test
+          testSuite: "${{ steps.test_suite.outputs.test_suite }}"
   check-mark:
     name: ✔️
     needs:
