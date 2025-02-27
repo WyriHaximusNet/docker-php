@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:experimental
-FROM php:7.4-zts-buster AS base
+ARG PHP_VERSION=7.4
+ARG OS_VERSION=buster
+FROM php:$PHP_VERSION-zts-$OS_VERSION AS base
 
 # Build-time metadata as defined at http://label-schema.org
 LABEL org.label-schema.name="wyrihaximusnet/php" \
@@ -8,6 +10,8 @@ LABEL org.label-schema.name="wyrihaximusnet/php" \
       org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
       org.label-schema.vendor="WyriHaximus.net" \
       org.label-schema.schema-version="1.0"
+
+ARG ARCH=amd64
 
 RUN apt-get update \
     && yes | apt-get upgrade \
@@ -69,6 +73,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         gdb \
         $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets \
+    && (docker-php-ext-install -j$(nproc) random || true) \
     && pecl install parallel || pecl install parallel-1.1.4 \
     && docker-php-ext-enable parallel \
     && (pecl install eio || pecl install eio-beta) \

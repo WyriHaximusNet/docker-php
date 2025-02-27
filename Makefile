@@ -28,10 +28,10 @@ build-all:
 test: test-nts test-fpm test-zts
 
 test-nts: ./docker-image/image.tags
-	xargs -I % ./test-nts.sh % < ./docker-image/image.tags
+	IMAGE_ARCH=$(IMAGE_ARCH) xargs -I % ./test-nts.sh % < ./docker-image/image.tags
 
 test-zts: ./docker-image/image.tags
-	xargs -I % ./test-zts.sh % < ./docker-image/image.tags
+	IMAGE_ARCH=$(IMAGE_ARCH) xargs -I % ./test-zts.sh % < ./docker-image/image.tags
 
 test-fpm: ./docker-image/image.tags
 	xargs -I % ./test-fpm.sh % < ./docker-image/image.tags

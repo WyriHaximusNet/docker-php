@@ -1,13 +1,29 @@
 # syntax=docker/dockerfile:experimental
-FROM php:7.4-zts-alpine3.11 AS base
+ARG PHP_VERSION=7.4
+ARG OS_VERSION=alpine3.11
+FROM php:$PHP_VERSION-zts-$OS_VERSION AS base
+ARG ARCH=amd64
+ARG PHP_VERSION=7.4
+ARG OS_VERSION=alpine3.11
+ENV PHP_VERSION=$PHP_VERSION
+ENV OS_VERSION=$OS_VERSION
 
-# Build-time metadata as defined at http://label-schema.org
-LABEL org.label-schema.name="wyrihaximusnet/php" \
-      org.label-schema.description="Opinionated ReactPHP optimised PHP Docker images" \
+# Build-time metadata as defined at http://label-schema.org and https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
+LABEL org.label-schema.title="Opinionated ReactPHP optimised PHP Docker images" \
+      org.label-schema.description="PHP Version: $PHP_VERSION Type: zts OS Version: $OS_VERSION" \
       org.label-schema.url="https://github.com/wyrihaximusnet/docker-php" \
       org.label-schema.vcs-url="https://github.com/wyrihaximusnet/docker-php" \
       org.label-schema.vendor="WyriHaximus.net" \
-      org.label-schema.schema-version="1.0"
+      org.label-schema.schema-version="1.0" \
+      org.opencontainers.image.source="https://github.com/wyrihaximusnet/docker-php" \
+      org.opencontainers.image.url="https://github.com/wyrihaximusnet/docker-php" \
+      org.opencontainers.image.documentation="https://github.com/wyrihaximusnet/docker-php" \
+      org.opencontainers.image.title="Opinionated ReactPHP optimised PHP Docker images" \
+      org.opencontainers.image.description="PHP Version: $PHP_VERSION Type: zts OS Version: $OS_VERSION" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.base.name="php:$PHP_VERSION-zts-$OS_VERSION" \
+      org.opencontainers.image.vendor="WyriHaximus.net" \
+      org.opencontainers.image.authors="Cees-Jan Kiewiet <docker-php@ceesjankiewiet.nl>"
 
 RUN apk update \
     && apk upgrade \
@@ -62,6 +78,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
     && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets \
+    && (install-php-extensions random || true) \
     && pecl install parallel || pecl install parallel-1.1.4 \
     && docker-php-ext-enable parallel \
     && (pecl install eio || pecl install eio-beta) \

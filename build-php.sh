@@ -16,14 +16,7 @@ declare -r VERSION_OS=$6
 
 declare -r VERSION_OS_TAG=$7
 
-declare -r VERSION_OS_FROM=$8
-
-declare -r TARGET_ARCH=$9
-
-# I could create a placeholder like php:x.y-image-alpinex.y in the Dockerfile itself,
-# but I think it wouldn't be a good experience if you try to build the image yourself
-# thus that's the way I opted to have dynamic base images
-declare -r IMAGE_ORIGINAL_TAG="7.[0-9]-${SRC_IMAGE}-${VERSION_OS_FROM}"
+declare -r TARGET_ARCH=$8
 
 declare -r IMAGE_TAG="${VERSION_PHP}-${SRC_IMAGE}-${VERSION_OS}"
 declare -r WYRIHAXIMUSNET_TAG="wyrihaximusnet/php:${VERSION_PHP_ALIAS}-${DST_IMAGE}-${VERSION_OS_TAG}"
@@ -52,6 +45,17 @@ docker pull "php:${IMAGE_TAG}"
 
 for buildTarget in "${target[@]}"
 do
-  sed -E "s/${IMAGE_ORIGINAL_TAG}/${IMAGE_TAG}/g" "Dockerfile-${DST_IMAGE}-${OS}" | docker build --platform ${TARGET_ARCH} --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" --target="${DST_IMAGE}${buildTarget}" -f - .
+  docker build \
+    --build-arg ARCH=${TARGET_ARCH} \
+    --build-arg PHP_VERSION=${VERSION_PHP} \
+    --build-arg OS_VERSION=${VERSION_OS} \
+    --platform ${TARGET_ARCH} \
+    --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+    --label org.label-schema.vcs-ref=`git rev-parse --short HEAD` \
+    --label org.opencontainers.image.revision-ref=`git rev-parse --short HEAD` \
+    -t "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" \
+    --target="${DST_IMAGE}${buildTarget}" \
+    -f "Dockerfile-${DST_IMAGE}-${OS}" .
   echo "${WYRIHAXIMUSNET_TAG}${buildTarget}-${TARGET_ARCH}" >> "$TAG_FILE"
 done

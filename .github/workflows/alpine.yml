@@ -1,0 +1,30 @@
+name: Alpine
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - 'README.md'
+    branches:
+      - master
+  pull_request:
+  schedule:
+    - cron:  '13 3 * * *'
+jobs:
+  supported-alpine-versions:
+    name: Supported Alpine versions
+    runs-on: ubuntu-22.04
+    outputs:
+      alpine: ${{ steps.supported-alpine-versions.outputs.versions }}
+    steps:
+      - id: supported-alpine-versions
+        name: Generate Alpine
+        uses: wyrihaximus/github-action-supported-alpine-linux-versions@v1
+  ci:
+    needs:
+      - supported-alpine-versions
+    name: Continuous Integration
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      alpine: ${{ needs.supported-alpine-versions.outputs.alpine }}
+      debian: "[]"

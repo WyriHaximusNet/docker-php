@@ -1,0 +1,30 @@
+name: Debian
+on:
+  workflow_dispatch:
+#  push:
+#    paths-ignore:
+#      - 'README.md'
+#    branches:
+#      - master
+#  pull_request:
+#  schedule:
+#    - cron:  '13 4 * * *'
+jobs:
+  supported-debian-versions:
+    name: Supported Debian versions
+    runs-on: ubuntu-22.04
+    outputs:
+      debian: ${{ steps.supported-debian-versions.outputs.versions }}
+    steps:
+      - id: supported-debian-versions
+        name: Generate Debian
+        uses: wyrihaximus/github-action-supported-debian-linux-versions@v1
+  ci:
+    needs:
+      - supported-debian-versions
+    name: Continuous Integration
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      alpine: "[]"
+      debian: ${{ needs.supported-debian-versions.outputs.debian }}
