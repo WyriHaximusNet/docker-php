@@ -12,7 +12,7 @@ on:
 jobs:
   supported-debian-versions:
     name: Supported Debian versions
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       debian: ${{ steps.supported-debian-versions.outputs.versions }}
     steps:
