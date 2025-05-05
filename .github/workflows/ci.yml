@@ -152,7 +152,7 @@ jobs:
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
-          max_attempts: 5
+          max_attempts: 50
           command: (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') %
       - run: cat ./docker-image/image.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
       - run: docker save "${DOCKER_IMAGE}" | gzip -9 > ./docker-image/image.tar
