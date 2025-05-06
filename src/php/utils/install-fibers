@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -xe
+
+php -v
+
+if [ $(php -v | grep "PHP 8.0" | wc -l) != 0 ] ; then
+  git clone https://github.com/amphp/ext-fiber.git /usr/src/php/ext/fiber && \
+  cd /usr/src/php/ext/fiber && \
+  docker-php-source extract && \
+  docker-php-ext-install fiber && \
+  make test
+fi
+
