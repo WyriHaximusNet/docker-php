@@ -1,0 +1,107 @@
+package:
+  name: php-81-slim
+  version: 0.1.0
+  description: PHP 8.1 Slim
+  target-architecture:
+    - all
+  copyright:
+    - license: MIT
+      paths:
+        - "*"
+  dependencies:
+    runtime:
+      - php81
+      - php81-common
+      - php81-curl
+      - php81-openssl
+      - php81-dev
+      - php81-pear
+      - php81-xml
+      - php81-dom
+      - php81-pcntl
+      - php81-pgsql
+      - php81-pdo
+      - php81-pdo_pgsql
+      - php81-bcmath
+      - php81-zip
+      - php81-gmp
+      - php81-iconv
+      - php81-opcache
+      - php81-intl
+      - php81-sockets
+      - libuv-dev
+      - icu-dev
+#      - libevent-dev
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+    packages:
+      - ca-certificates-bundle
+      - curl
+      - git
+      - php81
+      - php81-common
+      - php81-curl
+      - php81-openssl
+      - php81-dev
+      - php81-pear
+      - php81-xml
+      - php81-dom
+      - autoconf
+      - dpkg-dev
+      - file
+      - g++
+      - gcc
+      - libc-dev
+      - make
+      - re2c
+      - composer
+      - libuv-dev
+      - icu-dev
+#      - libevent-dev
+      - openssl-dev
+      - coreutils
+      - procps
+
+pipeline:
+  - name: install pear
+    runs: |
+      set -x
+      wget -q pear.php.net/go-pear.phar
+      php go-pear.phar
+      mkdir -p $(php-config --extension-dir 2>/dev/null)
+      mkdir -p "${{targets.destdir}}$(php-config --extension-dir 2>/dev/null)"
+      mkdir -p "${{targets.destdir}}$(php-config --ini-dir 2>/dev/null)"
+  - name: ext-uv
+    runs: |
+      git clone https://github.com/amphp/ext-uv uv
+      cd uv
+      git fetch
+      git pull
+      phpize
+      ./configure
+      cat Makefile
+      make install
+      echo "extension=uv.so" > "${{targets.destdir}}$(php-config --ini-dir 2>/dev/null)/uv.ini"
+      cp "$(php-config --extension-dir 2>/dev/null)/uv.so" "${{targets.destdir}}$(php-config --extension-dir 2>/dev/null)/uv.so"
+  - name: ext-eio
+    runs: |
+      pecl install eio || pecl install eio-beta
+      echo "extension=eio.so" > "${{targets.destdir}}$(php-config --ini-dir 2>/dev/null)/eio.ini"
+      cp "$(php-config --extension-dir 2>/dev/null)/eio.so" "${{targets.destdir}}$(php-config --extension-dir 2>/dev/null)/eio.so"
+#  - name: ext-event
+#    runs: |
+#      pecl install event
+#      echo "extension=event.so" > "${{targets.destdir}}$(php-config --ini-dir 2>/dev/null)/event.ini"
+#      cp "$(php-config --extension-dir 2>/dev/null)/event.so" "${{targets.destdir}}$(php-config --extension-dir 2>/dev/null)/event.so"
+  - name: wait-for
+    runs: |
+      mkdir -p "${{targets.destdir}}/bin"
+      wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > "${{targets.destdir}}/bin/wait-for"
+  - name: clean up pear
+    runs: |
+      rm go-pear.phar
+  - uses: strip
