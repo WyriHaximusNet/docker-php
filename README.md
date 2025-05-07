@@ -1,6 +1,6 @@
 # Opinionated ReactPHP optimised PHP Docker images
 
-[![Github Actions](https://github.com/WyriHaximusNet/docker-php/workflows/Continuous%20Integration/badge.svg?event=push)](https://github.com/wyrihaximusnet/docker-php/actions)
+[![Alpine](https://github.com/WyriHaximusNet/docker-php/actions/workflows/alpine.yml/badge.svg)](https://github.com/WyriHaximusNet/docker-php/actions/workflows/alpine.yml)
 [![Docker hub](https://img.shields.io/badge/Docker%20Hub-00a5c9.svg?logo=docker&style=flat&color=00a5c9&labelColor=00a5c9&logoColor=white)](https://hub.docker.com/r/wyrihaximusnet/php/)
 [![Docker hub](https://img.shields.io/docker/pulls/wyrihaximusnet/php.svg?color=00a5c9&labelColor=03566a)](https://hub.docker.com/r/wyrihaximusnet/php/)
 [![Docker hub](https://img.shields.io/docker/image-size/wyrihaximusnet/php/8.4-zts-alpine-slim)](https://hub.docker.com/r/wyrihaximusnet/php/)
