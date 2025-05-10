@@ -146,7 +146,6 @@ jobs:
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dbhi/qus/action@main
       - run: mkdir ./docker-image/
       - uses: nick-invision/retry@v3
         with:
@@ -178,8 +177,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         if: contains(matrix.image, 'alpine')
-      - uses: dbhi/qus/action@main
-        if: contains(matrix.image, 'alpine')
       - name: Download Images
         if: contains(matrix.image, 'alpine')
         uses: actions/download-artifact@v4
@@ -205,7 +202,6 @@ jobs:
         exclude: ${{ fromJson(needs.exclude-matrix.outputs.exclude) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dbhi/qus/action@main
       - name: Download Images
         uses: actions/download-artifact@v4
         with:
