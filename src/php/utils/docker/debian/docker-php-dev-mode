@@ -24,7 +24,7 @@ case "$1" in
 		fi
 
     yes | apt-get install "linux-headers-$ARCH"
-		pecl install xdebug-stable
+		pecl install xdebug-3.4.1
 		docker-php-ext-enable xdebug
 		yes | apt-get purge $PHPIZE_DEPS
 
