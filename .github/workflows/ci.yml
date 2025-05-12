@@ -216,9 +216,14 @@ jobs:
           path: ./docker-image
       - run: ls -lasth ./docker-image/
       - run: docker load --input ./docker-image/image.tar
-      - run: |
-          export IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') 
-          (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=%
+      - uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 120
+          retry_wait_seconds: 30
+          max_attempts: 50
+          command: |
+            export IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];') 
+            (echo "${{ needs.supported-arch-matrix.outputs.arch }}" | jq -r '.[]') | xargs -I % make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=%
       - run: rm -Rf ./docker-image/
   check-mark:
     name: ✔️
