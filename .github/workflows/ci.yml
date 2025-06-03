@@ -192,6 +192,7 @@ jobs:
       - run: ls -lasth ./docker-image/
       - run: docker load --input ./docker-image/docker_image-${{ env.PLATFORM_PAIR }}.tar
       - run: make ci-scan-vulnerability
+      - run: ls -lasthR ./clair/
   test:
     name: Testing "${{ matrix.image }}" on ${{ matrix.platform }}
     needs:
