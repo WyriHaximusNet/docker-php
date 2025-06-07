@@ -104,11 +104,13 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * curl
 * date
 * dom
+* ffi 
 * fileinfo
 * filter
 * ftp
 * gd
 * gmp
+* grpc
 * hash
 * iconv
 * json
@@ -116,6 +118,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * mbstring
 * mysqlnd
 * openssl
+* opentelemetry
 * pcre
 * PDO
 * pdo_pgsql

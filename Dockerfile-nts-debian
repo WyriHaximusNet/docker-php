@@ -71,7 +71,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         wget \
         gdb \
         $PHPIZE_DEPS \
-    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets \
+    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi opentelemetry grpc \
     && (docker-php-ext-install -j$(nproc) random || true) \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
