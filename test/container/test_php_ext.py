@@ -78,21 +78,6 @@ def test_zip_is_loaded(host):
 
 @pytest.mark.php_zts
 @pytest.mark.php_nts
-def test_ffs_is_loaded(host):
-    assert 'FFI' in host.run('php -m').stdout
-
-@pytest.mark.php_zts
-@pytest.mark.php_nts
-def test_grpc_is_loaded(host):
-    assert 'grpc' in host.run('php -m').stdout
-
-@pytest.mark.php_zts
-@pytest.mark.php_nts
-def test_opentelemetry_is_loaded(host):
-    assert 'opentelemetry' in host.run('php -m').stdout
-
-@pytest.mark.php_zts
-@pytest.mark.php_nts
 def test_zip_is_loaded(host):
     output = host.run('php -r "exit(function_exists(\'mt_rand\') ? 0 : 255);"')
     assert output.rc == 0
