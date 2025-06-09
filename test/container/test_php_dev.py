@@ -16,3 +16,15 @@ def composer_is_functional(host):
     assert output.strerr == ''
     assert u'version 2' in output.stdout
     assert output.rc == 0
+
+@pytest.mark.php_dev
+def test_ffs_is_loaded(host):
+    assert 'FFI' not in host.run('php -m').stdout
+
+@pytest.mark.php_dev
+def test_grpc_is_loaded(host):
+    assert 'grpc' not in host.run('php -m').stdout
+
+@pytest.mark.php_dev
+def test_opentelemetry_is_loaded(host):
+    assert 'opentelemetry' not in host.run('php -m').stdout
