@@ -147,7 +147,7 @@ jobs:
         with:
           timeout_minutes: 120
           retry_wait_seconds: 30
-          max_attempts: 50
+          max_attempts: 5
           command: ./build-php.sh $(echo "${{ matrix.image }}" | tr '-' ' ') $(echo "${{ matrix.platform }}" | cut -d "/" -f 2)
       - run: mv ./docker-image/image.tags ./docker-image/image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}.tags
       - run: cat ./docker-image/image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}.tags | xargs -I % docker inspect --format='%={{.Id}}:{{index .Config.Env 7}}' %
