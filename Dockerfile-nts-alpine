@@ -73,7 +73,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry grpc \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets \
     && (install-php-extensions random || true) \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
@@ -146,7 +146,9 @@ USER app
 
 ## NTS stage ##
 FROM nts-slim-root AS nts-slim
+RUN install-php-extensions ffi opentelemetry grpc
 USER app
 
 FROM nts-root AS nts
+RUN install-php-extensions ffi opentelemetry grpc
 USER app
