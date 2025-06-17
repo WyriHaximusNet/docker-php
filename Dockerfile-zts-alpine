@@ -49,7 +49,7 @@ RUN git fetch \
     && cp "$EXTENSION_DIR/uv.so" /uv.so \
     && sha256sum /uv.so
 
-FROM base AS zts-slim-root
+FROM base AS zts-pre-slim-root
 
 COPY --from=build-uv /uv.so /uv.so
 
@@ -97,16 +97,24 @@ STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
+FROM zts-pre-slim-root AS zts-slim-root
+
+RUN install-php-extensions ffi opentelemetry grpc
+
 ## ZTS-DEV STAGE ##
-FROM zts-slim-root AS zts-root
+FROM zts-pre-slim-root AS zts-pre-root
 
 # Install ext-gd and ext-vips
 COPY src/php/utils/docker/alpine/install-gd-and-vips /usr/local/bin/install-gd-and-vips
 RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
      && rm -rf /usr/local/bin/install-gd-and-vips
 
+FROM zts-pre-root AS zts-root
+
+RUN install-php-extensions ffi opentelemetry grpc
+
 ## ZTS-DEV STAGE ##
-FROM zts-slim-root AS zts-slim-dev-root
+FROM zts-pre-slim-root AS zts-slim-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
@@ -121,7 +129,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## ZTS-DEV STAGE ##
-FROM zts-root AS zts-dev-root
+FROM zts-pre-root AS zts-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
@@ -144,9 +152,7 @@ USER app
 
 ## ZTS stage ##
 FROM zts-slim-root AS zts-slim
-RUN install-php-extensions ffi opentelemetry grpc
 USER app
 
 FROM zts-root AS zts
-RUN install-php-extensions ffi opentelemetry grpc
 USER app
