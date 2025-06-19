@@ -49,7 +49,7 @@ RUN git fetch \
     && cp "$EXTENSION_DIR/uv.so" /uv.so \
     && sha256sum /uv.so
 
-FROM base AS nts-pre-slim-root
+FROM base AS nts-slim-root
 
 COPY --from=build-uv /uv.so /uv.so
 
@@ -73,7 +73,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry grpc \
     && (install-php-extensions random || true) \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
@@ -91,24 +91,16 @@ STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
-FROM nts-pre-slim-root AS nts-slim-root
-
-RUN install-php-extensions ffi opentelemetry grpc
-
 ## NTS-DEV STAGE ##
-FROM nts-pre-slim-root  AS nts-pre-root
+FROM nts-slim-root  AS nts-root
 
 # Install ext-gd and ext-vips
 COPY src/php/utils/docker/alpine/install-gd-and-vips /usr/local/bin/install-gd-and-vips
 RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
      && rm -rf /usr/local/bin/install-gd-and-vips
 
-FROM nts-pre-root AS nts-root
-
-RUN install-php-extensions ffi opentelemetry grpc
-
 ## NTS-DEV STAGE ##
-FROM nts-pre-slim-root AS nts-slim-dev-root
+FROM nts-slim-root AS nts-slim-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
@@ -127,7 +119,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 ENTRYPOINT ["docker-php-entrypoint"]
 
 ## NTS-DEV STAGE ##
-FROM nts-pre-root AS nts-dev-root
+FROM nts-root AS nts-dev-root
 
 RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
