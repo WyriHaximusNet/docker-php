@@ -62,6 +62,13 @@ jobs:
       image: ${{ steps.image-matrix.outputs.image }}
     steps:
       - uses: actions/checkout@v4
+      - run: mkdir /tmp/trivy
+      - name: Cache Trivy Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/trivy
+          key: cache-trivy-${{ runner.environment }}-${{ runner.arch }}-${{ runner.os }}
+          restore-keys: cache-trivy-
       - id: image-matrix
         name: Generate Combined Image Matrix
         run: |
@@ -158,12 +165,33 @@ jobs:
         with:
           name: docker-image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
           path: ./docker-image
+  update-trivy-db:
+    name: Scanning "${{ matrix.image }}" on ${{ matrix.platform }} for vulnerabilities
+    needs:
+      - build
+      - image-matrix
+      - supported-platform-matrix
+    runs-on: ${{ contains(matrix.platform, 'arm') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(needs.supported-platform-matrix.outputs.platform) }}
+    steps:
+      - run: mkdir /tmp/trivy
+      - name: Cache Trivy Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/trivy
+          key: cache-trivy-${{ runner.environment }}-${{ runner.arch }}-${{ runner.os }}
+          restore-keys: cache-trivy-
+      - run: docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --download-db-only
   scan-vulnerability:
     name: Scanning "${{ matrix.image }}" on ${{ matrix.platform }} for vulnerabilities
     needs:
       - build
       - image-matrix
       - supported-platform-matrix
+      - update-trivy-db
     runs-on: ${{ contains(matrix.platform, 'arm') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
@@ -191,6 +219,14 @@ jobs:
       - run: mv ./docker-image/image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}.tags ./docker-image/image.tags
       - run: ls -lasth ./docker-image/
       - run: docker load --input ./docker-image/docker_image-${{ env.PLATFORM_PAIR }}.tar
+      - run: docker pull aquasec/trivy:latest
+      - run: mkdir /tmp/trivy
+      - name: Cache Trivy Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/trivy
+          key: cache-trivy-${{ runner.environment }}-${{ runner.arch }}-${{ runner.os }}
+          restore-keys: cache-trivy-
       - run: make ci-scan-vulnerability
   test:
     name: Testing "${{ matrix.image }}" on ${{ matrix.platform }}
