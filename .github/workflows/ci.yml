@@ -16,7 +16,6 @@ on:
         description: JSON string with Debian versions to build
         required: true
         type: string
-
 jobs:
   supported-php-versions:
     name: Supported PHP versions
@@ -87,13 +86,13 @@ jobs:
               echo "Found images with CVE's in them"
               cat images_with.cves | xargs -I % php -r 'echo implode(PHP_EOL, explode("|", "%")), PHP_EOL;' | xargs -I % php -r 'echo explode("#", "%")[1], PHP_EOL;' >> images-that-need-updating.list
             fi
-  
+
             echo "Looking for newer upstream images"
             php utils/newer-upstream-images.php  >> images-that-need-updating.list
           
             echo "Building the following images:"
             php utils/deduplicate-list.php | jq '.[]'
-  
+
             printf "image=%s" $(php utils/deduplicate-list.php) >> $GITHUB_OUTPUT
             exit 0
           fi
