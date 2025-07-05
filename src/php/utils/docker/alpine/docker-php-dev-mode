@@ -39,6 +39,7 @@ case "$1" in
 
 	config)
 		cp /usr/local/etc/php/conf.d/available/dev.ini /usr/local/etc/php/conf.d/zzz_dev.ini
+		rm /usr/local/etc/php/conf.d/zzz_prod.ini
 		;;
 
 	*)
