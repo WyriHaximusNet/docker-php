@@ -16,3 +16,12 @@ def composer_is_functional(host):
     assert output.strerr == ''
     assert u'version 2' in output.stdout
     assert output.rc == 0
+
+@pytest.mark.php_dev
+def test_configuration_has_assertions_enabled(host):
+    config = get_config(host)
+
+    assert u'zend.assertions => 1 => 1' in config
+
+def get_config(host):
+    return host.run('php -i').stdout
