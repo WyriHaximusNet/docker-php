@@ -66,6 +66,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk add --no-cache \
         libuv-dev \
+        zlib-dev  \
         icu-dev \
         libevent-dev \
         openssl-dev \
