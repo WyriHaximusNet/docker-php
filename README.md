@@ -150,6 +150,10 @@ Slim images include all the above extensions except the following, as those noto
 * gd
 * vips
 
+# Installing extensions
+
+These images come with both [`PECL`](https://www.php.net/manual/en/install.pecl.php) and [`PIE`](https://github.com/php/pie/blob/main/docs/usage.md) for any additional extension needs.
+
 # Credits
 
 This project is based on [Usabilla](https://usabilla.com/)'s [PHP Docker Template](https://github.com/usabilla/php-docker-template).
