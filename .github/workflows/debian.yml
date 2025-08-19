@@ -18,7 +18,7 @@ jobs:
     steps:
       - id: supported-debian-versions
         name: Generate Debian
-        uses: wyrihaximus/github-action-supported-debian-linux-versions@v1
+        uses: wyrihaximus/github-action-supported-debian-linux-versions@108cd011bdd4578c0c7acce1debe6df6dacbb16c # v1
   ci:
     needs:
       - supported-debian-versions
