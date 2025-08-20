@@ -45,7 +45,7 @@ jobs:
     outputs:
       type: ${{ steps.image-type-matrix.outputs.type }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - id: image-type-matrix
         name: Generate Type
         run: |
@@ -61,7 +61,7 @@ jobs:
     outputs:
       image: ${{ steps.image-matrix.outputs.image }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - run: mkdir /tmp/trivy
       - name: Cache Trivy Cache
         uses: actions/cache@v4
@@ -119,7 +119,7 @@ jobs:
       matrix:
         type: ${{ fromJson(needs.image-type-matrix.outputs.type) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Lint Dockerfile-${{ matrix.type }}
         uses: docker://hadolint/hadolint:latest-debian
         with:
@@ -148,7 +148,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         if: ${{ !contains(matrix.platform, 'arm') && !contains(matrix.platform, 'amd64') }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - run: mkdir ./docker-image/
       - uses: nick-invision/retry@v3
         with:
@@ -209,7 +209,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         if: ${{ !contains(matrix.platform, 'arm') && !contains(matrix.platform, 'amd64') }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Download Images
         uses: actions/download-artifact@v4
         with:
@@ -251,7 +251,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 #        if: ${{ !contains(matrix.platform, 'arm') && !contains(matrix.platform, 'amd64') }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - name: Download Images
         uses: actions/download-artifact@v4
         with:
@@ -308,7 +308,7 @@ jobs:
           echo "Status:    ${{ steps.buildx.outputs.status }}"
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       - uses: actions/download-artifact@v4
         with:
           pattern: docker-image-${{ matrix.image }}-*
