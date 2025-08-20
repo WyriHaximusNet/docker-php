@@ -18,7 +18,7 @@ jobs:
     steps:
       - id: supported-alpine-versions-og
         name: Generate Alpine
-        uses: wyrihaximus/github-action-supported-alpine-linux-versions@v1
+        uses: wyrihaximus/github-action-supported-alpine-linux-versions@88408abff983d8920864f7e9ea846b732c48cd51 # v1.4.1
       - id: supported-alpine-versions
         uses: mad9000/actions-find-and-replace-string@5
         with:
