@@ -35,7 +35,7 @@ RUN apk update \
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 FROM base AS base-build
-RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev
+RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev liburing-dev linux-headers
 
 FROM base-build AS build-uv
 RUN git clone https://github.com/amphp/ext-uv uv
@@ -49,9 +49,26 @@ RUN git fetch \
     && cp "$EXTENSION_DIR/uv.so" /uv.so \
     && sha256sum /uv.so
 
+FROM base-build AS build-mrloop
+
+RUN git clone https://github.com/ace411/mrloop.git /mrloop \
+    && git clone https://github.com/h2o/picohttpparser.git /picohttpparser \
+    && git clone https://github.com/ringphp/php-mrloop.git /ext-mrloop
+WORKDIR /ext-mrloop
+RUN git fetch \
+    && git pull \
+    && phpize \
+    && ./configure --with-mrloop=/mrloop --with-picohttp=/picohttpparser \
+    && make \
+    && make install \
+    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+    && cp "$EXTENSION_DIR/mrloop.so" /mrloop.so \
+    && sha256sum /mrloop.so
+
 FROM base AS zts-slim-root
 
 COPY --from=build-uv /uv.so /uv.so
+COPY --from=build-mrloop /mrloop.so /mrloop.so
 
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/ /usr/local/bin/
@@ -67,6 +84,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	mv /*.so "$EXTENSION_DIR/" && \
 	apk add --no-cache \
         libuv-dev \
+         liburing-dev \
         icu-dev \
         libevent-dev \
         openssl-dev \
@@ -90,6 +108,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
+    && docker-php-ext-enable mrloop \
     && apk del $PHPIZE_DEPS \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
