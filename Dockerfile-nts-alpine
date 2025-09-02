@@ -76,7 +76,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry grpc \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry \
+    && if [ $(php -v | grep "PHP 8.5" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
     && (install-php-extensions random || true) \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
