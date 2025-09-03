@@ -20,8 +20,14 @@ foreach (range(1, 10) as $i) {
 
 $line = [];
 foreach (json_decode(getenv('PHP'), true) as $php) {
+    if ($php === '8.1') {
+        continue;
+    }
     $latestOSVersion = '1.0';
     foreach (json_decode(getenv('ALPINE'), true) as $alpine) {
+        if ($php === '8.1' && $alpine === '3.22') {
+            continue;
+        }
         if (version_compare($alpine, $latestOSVersion, ">=")) {
             $latestOSVersion = $alpine;
         }
