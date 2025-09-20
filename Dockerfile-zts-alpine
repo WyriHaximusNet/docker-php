@@ -25,9 +25,9 @@ LABEL org.label-schema.title="Opinionated ReactPHP optimised PHP Docker images" 
       org.opencontainers.image.vendor="WyriHaximus.net" \
       org.opencontainers.image.authors="Cees-Jan Kiewiet <docker-php@ceesjankiewiet.nl>"
 
-RUN apk update \
-    && apk upgrade \
-    && set -x \
+RUN set -x \
+    && apk update \
+    && apk upgrade --no-cache \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
