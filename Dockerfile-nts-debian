@@ -86,7 +86,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && yes | apt-get purge wget $PHPIZE_DEPS \
     && yes | apt-get install make \
     && chmod +x /bin/wait-for \
-    && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
 
 STOPSIGNAL SIGTERM

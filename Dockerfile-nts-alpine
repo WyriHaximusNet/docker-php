@@ -91,7 +91,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && apk add --no-cache make git \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
-    && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
 
 STOPSIGNAL SIGTERM

@@ -6,5 +6,3 @@ apk add --no-cache make git openssh-client bash strace gdb
 # Install Xdebug and development specific configuration
 docker-php-dev-mode xdebug
 docker-php-dev-mode config
-# Forcefully clear API cache
-rm -rf /var/cache/apk/*

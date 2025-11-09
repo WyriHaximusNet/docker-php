@@ -9,5 +9,4 @@ apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev vips-dev $PHPIZE_DE
 install-php-extensions gd
 install-php-extensions vips
 apk del $PHPIZE_DEPS
-rm -rf /var/cache/apk/*
 rm -rf /tmp/*
