@@ -88,6 +88,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
     && apk del $PHPIZE_DEPS \
+    && apk add --no-cache make git \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /var/cache/apk/* \
