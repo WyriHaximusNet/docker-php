@@ -27,7 +27,7 @@ LABEL org.label-schema.title="Opinionated ReactPHP optimised PHP Docker images" 
 
 RUN set -x \
     && apk upgrade --no-cache \
-    && apk add --no-cache moreutils \
+    && apk add --no-cache moreutils make \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
@@ -71,7 +71,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         icu-dev \
         libevent-dev \
         openssl-dev \
-        make \
         git \
         openssh-client \
         bash \

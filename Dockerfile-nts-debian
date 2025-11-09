@@ -13,9 +13,9 @@ LABEL org.label-schema.name="wyrihaximusnet/php" \
 
 ARG ARCH=amd64
 
-RUN apt-get update \
+RUN set -x \
+    && apt-get update \
     && yes | apt-get upgrade \
-    && set -x \
     && addgroup --gid 1000 app \
     && adduser --uid 1000 --gid 1000 --disabled-password app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
