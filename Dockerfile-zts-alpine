@@ -27,7 +27,20 @@ LABEL org.label-schema.title="Opinionated ReactPHP optimised PHP Docker images" 
 
 RUN set -x \
     && apk upgrade --no-cache \
-    && apk add --no-cache moreutils make \
+    && apk add --no-cache \
+        moreutils \
+        make \
+        libuv-dev \
+        zlib-dev  \
+        icu-dev \
+        libevent-dev \
+        openssl-dev \
+        git \
+        openssh-client \
+        bash \
+        coreutils \
+        procps \
+        git \
     && addgroup -g 1000 app \
     && adduser -u 1000 -D -G app app --home /opt/app \
     && touch /.you-are-in-a-wyrihaximus.net-php-docker-image
@@ -65,19 +78,7 @@ COPY --from=ghcr.io/php/pie:1.2.1-bin /pie /usr/bin/pie
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
   rm /usr/local/etc/php/conf.d/jit.ini && \
 	mv /*.so "$EXTENSION_DIR/" && \
-	apk add --no-cache \
-        libuv-dev \
-        zlib-dev  \
-        icu-dev \
-        libevent-dev \
-        openssl-dev \
-        git \
-        openssh-client \
-        bash \
-        coreutils \
-        procps \
-        git \
-        $PHPIZE_DEPS \
+	apk add --no-cache $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
     && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry \
