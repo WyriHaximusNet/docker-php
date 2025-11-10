@@ -92,8 +92,8 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
-    && apk del $PHPIZE_DEPS \
-    && apk add --no-cache make git \
+    && apk del --no-network --no-cache $PHPIZE_DEPS \
+    && apk add --no-cache make \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /tmp/*

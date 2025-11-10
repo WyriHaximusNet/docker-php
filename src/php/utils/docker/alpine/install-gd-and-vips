@@ -2,11 +2,11 @@
 
 set -xe
 
-apk update
 apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev vips-dev $PHPIZE_DEPS
 ## Initially this was an if statement to check for PHP 7.4, but since then the situation change so we're just going to try both to avoid the conditional growing out of hand
 (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/)
 install-php-extensions gd
 install-php-extensions vips
-apk del $PHPIZE_DEPS
+apk del --no-network --no-cache $PHPIZE_DEPS
+apk add --no-cache make
 rm -rf /tmp/*
