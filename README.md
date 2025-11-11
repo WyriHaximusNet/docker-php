@@ -119,6 +119,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * mysqlnd
 * openssl
 * opentelemetry
+* pcov
 * pcre
 * PDO
 * pdo_pgsql

@@ -15,10 +15,14 @@ declare TEST_SUITE
 
 TEST_SUITE="php_$IMAGE_ARCH"
 
-if [[ $DOCKER_TAG == *"-dev"* && $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"*  && $IMAGE_BASE_VERSION != *"ALPHA"* && $IMAGE_BASE_VERSION != *"BETA"* && $IMAGE_BASE_VERSION != *"RC"* ]]; then
-    TEST_SUITE="php_zts or php_dev"
+if [[ $DOCKER_TAG == *"-dev"* ]]; then
+    if [[ $IMAGE_BASE_VERSION != *"alpha"* && $IMAGE_BASE_VERSION != *"beta"* && $IMAGE_BASE_VERSION != *"rc"*  && $IMAGE_BASE_VERSION != *"ALPHA"* && $IMAGE_BASE_VERSION != *"BETA"* && $IMAGE_BASE_VERSION != *"RC"* ]]; then
+        TEST_SUITE="php_nts or php_no_dev or php_dev_pcov and not php_dev"
+    else
+        TEST_SUITE="php_nts or php_dev or php_dev_pcov"
+    fi
 else
-    TEST_SUITE="php_zts or php_no_dev and not php_dev"
+    TEST_SUITE="php_nts or php_no_dev or php_no_dev_pcov and not php_dev"
 fi
 
 if [[ $DOCKER_TAG == *"-slim"* ]]; then

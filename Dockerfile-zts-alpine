@@ -117,7 +117,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi && rm -rf /usr/local/bin/dev-mode
+RUN dev-mode && rm -rf /usr/local/bin/dev-mode
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
@@ -132,7 +132,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi && rm -rf /usr/local/bin/dev-mode
+RUN dev-mode && rm -rf /usr/local/bin/dev-mode
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer

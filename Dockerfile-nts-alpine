@@ -113,7 +113,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
+RUN dev-mode \
     && rm -rf /usr/local/bin/dev-mode  \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && rm /usr/local/etc/php/conf.d/jit.ini
@@ -132,7 +132,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
+RUN dev-mode \
     && rm -rf /usr/local/bin/dev-mode  \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && rm /usr/local/etc/php/conf.d/jit.ini

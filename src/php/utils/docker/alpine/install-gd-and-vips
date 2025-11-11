@@ -7,6 +7,7 @@ apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev vips-dev $PHPIZE_DE
 (docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ || docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/)
 install-php-extensions gd
 install-php-extensions vips
+# Clean up
 apk del --no-network --no-cache $PHPIZE_DEPS
 apk add --no-cache make
 rm -rf /tmp/*

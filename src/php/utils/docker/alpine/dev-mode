@@ -1,8 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
 set -xe
 
-apk add --no-cache make git openssh-client bash strace gdb
-# Install Xdebug and development specific configuration
-docker-php-dev-mode xdebug
-docker-php-dev-mode config
+if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ]; then
+  true
+else
+  # Install Xdebug and development specific configuration
+  docker-php-dev-mode xdebug
+  docker-php-dev-mode config
+fi
+
+apk add --no-cache make git openssh-client bash strace gdb $PHPIZE_DEPS
+pecl install pcov
+docker-php-ext-enable pcov
+apk del --no-network --no-cache $PHPIZE_DEPS
+apk add --no-cache make
+rm -rf /tmp/*

@@ -71,6 +71,14 @@ def test_xdebug_is_loaded(host):
 def test_xdebug_is_not_loaded(host):
     assert 'Xdebug' not in host.run('php -m').stdout
 
+@pytest.mark.php_dev_pcov
+def test_pcov_is_loaded(host):
+    assert 'pcov' in host.run('php -m').stdout
+
+@pytest.mark.php_no_dev_pcov
+def test_pcov_is_not_loaded(host):
+    assert 'pcov' not in host.run('php -m').stdout
+
 @pytest.mark.php_zts
 @pytest.mark.php_nts
 def test_zip_is_loaded(host):
