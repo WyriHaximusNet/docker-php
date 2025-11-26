@@ -51,7 +51,7 @@ COPY src/php/conf/ /usr/local/etc/php/conf.d/
 COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
 COPY src/php/conf/available/prod.ini /usr/local/etc/php/conf.d/zzz_prod.ini
 
-COPY --from=ghcr.io/php/pie:1.2.1-bin /pie /usr/bin/pie
+COPY --from=ghcr.io/php/pie:1.3.0-bin /pie /usr/bin/pie
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
   rm /usr/local/etc/php/conf.d/jit.ini && \
