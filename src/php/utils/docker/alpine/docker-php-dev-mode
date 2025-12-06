@@ -30,7 +30,7 @@ case "$1" in
 		fi
 
     apk add --no-cache linux-headers
-		pecl install xdebug-3.4.1
+		pie install xdebug/xdebug
 		docker-php-ext-enable xdebug
 		apk del $apkDel
 
