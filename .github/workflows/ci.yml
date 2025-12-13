@@ -351,6 +351,14 @@ jobs:
           cat /tmp/tags-to-push.list | xargs -I % sh -c 'echo "FROM localhost:5000/${{ env.DOCKER_IMAGE }}:%-\${TARGETARCH}" >> docker-file-%'
           cat docker-file-*
           ls -lasth docker-file-*
+      - name: Create build and sleep bash scripts
+        run: |
+          PLATFORM="${{ join(fromJson(needs.supported-platform-matrix.outputs.platform), ',') }}" php utils/map-tags-and-registries-to-docker-build-command-line.php
+          cat build-and-sleep-*.sh
+          echo "------"
+          chmod +x build-and-sleep-*.sh
+          echo "------"
+          ls -lasth build-and-sleep-*.sh
       - name: Push all images to registries
         run: |
-          (jq -r 'to_entries | map("cat /tmp/tags-to-push.list | xargs -I % docker buildx build -f docker-file-% -t " + .key + "/${{ env.DOCKER_IMAGE }}:% --platform=${{ join(fromJson(needs.supported-platform-matrix.outputs.platform), ',') }} --push  .") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+          (jq -r 'to_entries | map("cat /tmp/tags-to-push.list | xargs -I % bash build-and-sleep-" + .key + "-%.sh") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
