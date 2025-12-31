@@ -161,7 +161,7 @@ jobs:
       - run: docker save "${DOCKER_IMAGE}" -o ./docker-image/docker_image-${{ env.PLATFORM_PAIR }}.tar
       - run: docker images
       - name: Upload Images
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: docker-image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
           path: ./docker-image
@@ -211,7 +211,7 @@ jobs:
         if: ${{ !contains(matrix.platform, 'arm') && !contains(matrix.platform, 'amd64') }}
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Download Images
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: docker-image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
           path: ./docker-image
@@ -253,7 +253,7 @@ jobs:
 #        if: ${{ !contains(matrix.platform, 'arm') && !contains(matrix.platform, 'amd64') }}
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Download Images
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: docker-image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
           path: ./docker-image
@@ -309,7 +309,7 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           pattern: docker-image-${{ matrix.image }}-*
           path: /tmp/docker-image
