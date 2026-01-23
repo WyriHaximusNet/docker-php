@@ -12,7 +12,7 @@ on:
 jobs:
   supported-alpine-versions:
     name: Supported Alpine versions
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       alpine: ${{ steps.supported-alpine-versions.outputs.versions }}
     steps:
