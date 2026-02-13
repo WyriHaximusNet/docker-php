@@ -1,8 +1,8 @@
-name: Alpine
+name: Clean up untagged versions
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '13 0 * * *'
+    - cron:  "13 0 * * *"
 jobs:
   clean-up-untagged-images:
     name: Clean up untagged versions
@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/delete-package-versions@v5
         with:
-          package-name: php
-          package-type: container
-          min-versions-to-keep: 13
-          delete-only-untagged-versions: true
+          package-owner: "WyriHaximusNet"
+          package-name: "php"
+          package-type: "container"
+          delete-only-untagged-versions: "true"
