@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/delete-package-versions@v5
         with:
-          package-owner: "WyriHaximusNet"
+          owner: "wyrihaximusnet"
           package-name: "php"
           package-type: "container"
           delete-only-untagged-versions: "true"
