@@ -121,6 +121,7 @@ RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; th
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
+RUN apk add --no-cache docker && addgroup app docker
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
@@ -140,6 +141,7 @@ RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; th
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
+RUN apk add --no-cache docker && addgroup app docker
 
 ENTRYPOINT ["docker-php-entrypoint"]
 
