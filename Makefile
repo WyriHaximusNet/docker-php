@@ -34,9 +34,9 @@ test-zts: ./docker-image/image.tags
 	IMAGE_ARCH=$(IMAGE_ARCH) xargs -I % ./test-zts.sh % < ./docker-image/image.tags
 
 scan-vulnerability:
-	cat ./docker-image/image.tags | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table % || echo "% is vulnerable"'
+	cat ./docker-image/image.tags | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:0.69.3 --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table % || echo "% is vulnerable"'
 
 ci-scan-vulnerability:
-	cat ./docker-image/image.tags | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table %'; \
+	cat ./docker-image/image.tags | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:0.69.3 --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table %'; \
 	XARGS_EXIT=$$?; \
 	exit $${XARGS_EXIT}
