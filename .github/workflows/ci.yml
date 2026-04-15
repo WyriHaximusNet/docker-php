@@ -166,7 +166,7 @@ jobs:
           name: docker-image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
           path: ./docker-image
   update-trivy-db:
-    name: Scanning "${{ matrix.image }}" on ${{ matrix.platform }} for vulnerabilities
+    name: Updated Trivy Database for ${{ matrix.platform }}
     needs:
       - build
       - image-matrix
@@ -184,7 +184,7 @@ jobs:
           path: /tmp/trivy
           key: cache-trivy-${{ runner.environment }}-${{ runner.arch }}-${{ runner.os }}
           restore-keys: cache-trivy-
-      - run: docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --download-db-only
+      - run: docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:0.69.3 --cache-dir /var/lib/trivy image --download-db-only
   scan-vulnerability:
     name: Scanning "${{ matrix.image }}" on ${{ matrix.platform }} for vulnerabilities
     needs:
@@ -219,7 +219,7 @@ jobs:
       - run: mv ./docker-image/image-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}.tags ./docker-image/image.tags
       - run: ls -lasth ./docker-image/
       - run: docker load --input ./docker-image/docker_image-${{ env.PLATFORM_PAIR }}.tar
-      - run: docker pull aquasec/trivy:latest
+      - run: docker pull aquasec/trivy:0.69.3
       - run: mkdir /tmp/trivy
       - name: Cache Trivy Cache
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
