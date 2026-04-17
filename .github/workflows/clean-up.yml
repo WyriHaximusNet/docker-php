@@ -8,7 +8,7 @@ jobs:
     name: Clean up untagged versions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/delete-package-versions@v5
+      - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
         with:
           owner: "wyrihaximusnet"
           package-name: "php"
