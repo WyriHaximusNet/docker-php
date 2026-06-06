@@ -78,7 +78,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	apk add --no-cache $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry protobuf \
     && if [ $(php -v | grep "PHP 8.5" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
     && (install-php-extensions random || true) \
     && (pecl install eio || pecl install eio-beta) \
@@ -87,7 +87,6 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
-    && pie install pie-extensions/protobuf \
     && apk del --no-network --no-cache $PHPIZE_DEPS \
     && apk add --no-cache make \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
