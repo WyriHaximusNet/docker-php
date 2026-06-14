@@ -6,7 +6,7 @@ on:
 #      - 'README.md'
 #    branches:
 #      - master
-#  pull_request:
+  pull_request:
 #  schedule:
 #    - cron:  '13 4 * * *'
 jobs:
