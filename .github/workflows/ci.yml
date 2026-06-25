@@ -228,6 +228,7 @@ jobs:
           key: cache-trivy-${{ runner.environment }}-${{ runner.arch }}-${{ runner.os }}
           restore-keys: cache-trivy-
       - run: make ci-scan-vulnerability
+      - run: ls -lasthR ./clair/
   test:
     name: Testing "${{ matrix.image }}" on ${{ matrix.platform }}
     needs:
