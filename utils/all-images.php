@@ -52,13 +52,13 @@ if (getenv('NO_DEBIAN') !== 'yes') {
         foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
             if (array_key_exists($php . '-zts-' . $debian, $upstreamImages)) {
                 $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
-                if ($debian === 'buster') {
+                if ($debian === 'trixie') {
                     $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
                 }
             }
             if (array_key_exists($php . '-cli-' . $debian, $upstreamImages)) {
                 $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
-                if ($debian === 'buster') {
+                if ($debian === 'trixie') {
                     $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
                 }
             }

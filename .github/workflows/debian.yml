@@ -1,14 +1,22 @@
 name: Debian
 on:
   workflow_dispatch:
-#  push:
-#    paths-ignore:
-#      - 'README.md'
-#    branches:
-#      - master
-#  pull_request:
-#  schedule:
-#    - cron:  '13 4 * * *'
+  push:
+    paths-ignore:
+      - '.github/workflows/alpine.yml'
+      - 'src/php/utils/docker/alpine/**'
+      - 'Dockerfile-**-alpine'
+      - 'README.md'
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/alpine.yml'
+      - 'src/php/utils/docker/alpine/**'
+      - 'Dockerfile-**-alpine'
+      - 'README.md'
+  schedule:
+    - cron:  '13 4 * * *'
 jobs:
   supported-debian-versions:
     name: Supported Debian versions
@@ -17,8 +25,12 @@ jobs:
       debian: ${{ steps.supported-debian-versions.outputs.versions }}
     steps:
       - id: supported-debian-versions
-        name: Generate Debian
-        uses: wyrihaximus/github-action-supported-debian-linux-versions@7f7386518c18ad0a1ff50c8654043b8aab0b215f # v1.2.1
+        name: Generate Dewbian list
+        run: |
+          echo "versions=[\"trixie\"]" >> $GITHUB_OUTPUT
+#      - id: supported-debian-versions
+#        name: Generate Debian
+#        uses: wyrihaximus/github-action-supported-debian-linux-versions@7f7386518c18ad0a1ff50c8654043b8aab0b215f # v1.2.1
   ci:
     needs:
       - supported-debian-versions
