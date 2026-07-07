@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   push:
     paths-ignore:
+      - '.github/workflows/debian.yml'
+      - 'src/php/utils/docker/debian/**'
+      - 'Dockerfile-**-debian'
       - 'README.md'
     branches:
       - master
