@@ -10,6 +10,11 @@ on:
     branches:
       - master
   pull_request:
+    paths-ignore:
+      - '.github/workflows/debian.yml'
+      - 'src/php/utils/docker/debian/**'
+      - 'Dockerfile-**-debian'
+      - 'README.md'
   schedule:
     - cron:  '13 3 * * *'
 jobs:
