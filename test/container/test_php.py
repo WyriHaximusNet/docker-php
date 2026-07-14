@@ -18,6 +18,7 @@ def test_php_runs_as_root(host):
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
+@pytest.mark.php_fpm
 def test_php_pcntl_is_enabled(host):
     output = host.run('php -r "exit(function_exists(\'pcntl_signal\') ? 0 : 255);"')
     assert output.rc == 0
@@ -27,6 +28,7 @@ def test_php_pcntl_is_enabled(host):
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
+@pytest.mark.php_fpm
 def test_php_ext_uv_is_enabled(host):
     output = host.run('php -r "exit(function_exists(\'uv_loop_new\') ? 0 : 255);"')
     assert output.rc == 0
@@ -43,6 +45,7 @@ def test_php_ext_parallel_is_enabled(host):
     assert output.rc == 0
 
 @pytest.mark.php_nts
+@pytest.mark.php_fpm
 def test_php_ext_parallel_is_not_enabled(host):
     output = host.run('php -r "exit(class_exists(\'parallel\\Runtime\') ? 0 : 255);"')
     assert output.rc == 255
@@ -60,6 +63,7 @@ def test_php_ext_parallel_is_functional(host):
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
+@pytest.mark.php_fpm
 def test_php_ext_uv_is_functional(host):
     output = host.run('php /tests/container/functional/event-timer.php')
     assert output.stdout == '0123finished'
@@ -67,6 +71,7 @@ def test_php_ext_uv_is_functional(host):
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
+@pytest.mark.php_fpm
 def test_php_ext_uv_is_functional(host):
     output = host.run('php /tests/container/functional/uv-timer.php')
     assert output.stdout == '0123finished'
@@ -74,6 +79,7 @@ def test_php_ext_uv_is_functional(host):
 
 @pytest.mark.php_nts
 @pytest.mark.php_zts
+@pytest.mark.php_fpm
 def test_php_ext_eio_is_functional(host):
     output = host.run('php /tests/container/functional/eio-file-size.php')
     assert output.stdout == '114'
