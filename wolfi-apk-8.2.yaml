@@ -1,0 +1,18 @@
+package:
+  name: php-82
+  version: 0.1.0
+  description: PHP 8.2
+  target-architecture:
+    - all
+  copyright:
+    - license: MIT
+      paths:
+        - "*"
+  dependencies:
+    runtime:
+      - php82-slim
+      - php82-gd
+      - php82-vips
+
+pipeline:
+  - uses: strip
