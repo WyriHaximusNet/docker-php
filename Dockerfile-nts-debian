@@ -64,6 +64,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         libicu-dev \
         libevent-dev \
         libssl-dev \
+        libffi-dev \
         make \
         git \
         openssh-client \
@@ -73,18 +74,21 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         git \
         wget \
         gdb \
+        moreutils \
         $PHPIZE_DEPS \
-    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets \
+    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi \
     && (docker-php-ext-install -j$(nproc) random || true) \
     && (pecl install eio || pecl install eio-beta) \
     && docker-php-ext-enable eio \
-    && pecl install event \
+    && pecl install event protobuf \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
-    && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
-    && yes | apt-get purge wget $PHPIZE_DEPS \
+    && docker-php-ext-enable protobuf \
+    && pie install open-telemetry/ext-opentelemetry \
+    && yes | apt-get purge $PHPIZE_DEPS \
     && yes | apt-get install make \
+    && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /tmp/*
 
@@ -148,9 +152,7 @@ USER app
 
 ## NTS stage ##
 FROM nts-slim-root AS nts-slim
-RUN docker-php-ext-install -j$(nproc) ffi opentelemetry grpc
 USER app
 
 FROM nts-root AS nts
-RUN docker-php-ext-install -j$(nproc) ffi opentelemetry grpc
 USER app
