@@ -26,9 +26,13 @@ jobs:
     steps:
       - id: supported-php-versions
         name: Generate PHP
-        uses: wyrihaximus/github-action-supported-php-versions@b7cf766dbdaea16060c785cde9d938cb81b2b031 # v1.38.0
-        with:
-          upcomingReleases: true
+        run: |
+          echo "versions=[\"8.6.0alpha1\"]" >> $GITHUB_OUTPUT
+#      - id: supported-php-versions
+#        name: Generate PHP
+#        uses: wyrihaximus/github-action-supported-php-versions@b7cf766dbdaea16060c785cde9d938cb81b2b031 # v1.38.0
+#        with:
+#          upcomingReleases: true
   supported-platform-matrix:
     name: Supported platforms
     runs-on: ubuntu-latest

@@ -25,21 +25,21 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 FROM base AS base-build
 RUN yes | apt-get install $PHPIZE_DEPS git libuv1-dev
 
-FROM base-build AS build-uv
-RUN git clone https://github.com/amphp/ext-uv uv
-WORKDIR /uv
-RUN git fetch \
-    && git pull \
-    && phpize \
-    && ./configure \
-    && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
-    && cp "$EXTENSION_DIR/uv.so" /uv.so \
-    && sha256sum /uv.so
+#FROM base-build AS build-uv
+#RUN git clone https://github.com/amphp/ext-uv uv
+#WORKDIR /uv
+#RUN git fetch \
+#    && git pull \
+#    && phpize \
+#    && ./configure \
+#    && make install \
+#    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+#    && cp "$EXTENSION_DIR/uv.so" /uv.so \
+#    && sha256sum /uv.so
 
 FROM base AS nts-slim-root
 
-COPY --from=build-uv /uv.so /uv.so
+#COPY --from=build-uv /uv.so /uv.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
 RUN yes | apt-get upgrade curl libxml2 openssl
@@ -54,7 +54,7 @@ COPY src/php/conf/available/prod.ini /usr/local/etc/php/conf.d/zzz_prod.ini
 COPY --from=ghcr.io/php/pie:1.4.8-bin /pie /usr/bin/pie
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-	mv /*.so "$EXTENSION_DIR/" && \
+#	mv /*.so "$EXTENSION_DIR/" && \
     yes | apt-get install \
         libgmp-dev \
         zlib1g-dev \
@@ -78,14 +78,14 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi \
     && (docker-php-ext-install -j$(nproc) random || true) \
-    && (pecl install eio || pecl install eio-beta) \
-    && docker-php-ext-enable eio \
-    && pecl install event protobuf \
+#    && (pecl install eio || pecl install eio-beta) \
+#    && docker-php-ext-enable eio \
+#    && pecl install event protobuf \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
-    && docker-php-ext-enable uv \
-    && docker-php-ext-enable protobuf \
-    && pie install open-telemetry/ext-opentelemetry \
+#    && docker-php-ext-enable uv \
+#    && docker-php-ext-enable protobuf \
+#    && pie install open-telemetry/ext-opentelemetry \
     && yes | apt-get purge $PHPIZE_DEPS \
     && yes | apt-get install make \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
