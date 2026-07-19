@@ -48,21 +48,21 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 FROM base AS base-build
 RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev
 
-FROM base-build AS build-uv
-RUN git clone https://github.com/amphp/ext-uv uv
-WORKDIR /uv
-RUN git fetch \
-    && git pull \
-    && phpize \
-    && ./configure \
-    && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
-    && cp "$EXTENSION_DIR/uv.so" /uv.so \
-    && sha256sum /uv.so
+#FROM base-build AS build-uv
+#RUN git clone https://github.com/amphp/ext-uv uv
+#WORKDIR /uv
+#RUN git fetch \
+#    && git pull \
+#    && phpize \
+#    && ./configure \
+#    && make install \
+#    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
+#    && cp "$EXTENSION_DIR/uv.so" /uv.so \
+#    && sha256sum /uv.so
 
 FROM base AS nts-slim-root
 
-COPY --from=build-uv /uv.so /uv.so
+#COPY --from=build-uv /uv.so /uv.so
 
 # Install docker help scripts
 COPY src/php/utils/docker/ /usr/local/bin/
@@ -74,19 +74,20 @@ COPY src/php/conf/available/prod.ini /usr/local/etc/php/conf.d/zzz_prod.ini
 COPY --from=ghcr.io/php/pie:1.4.8-bin /pie /usr/bin/pie
 
 RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-	mv /*.so "$EXTENSION_DIR/" && \
+#	mv /*.so "$EXTENSION_DIR/" && \
 	apk add --no-cache $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry protobuf \
-    && if [ $(php -v | grep "PHP 8.5" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
+#    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry protobuf \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi \
+    && if [ $(php -v | grep "PHP 8\.[56789]" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
     && (install-php-extensions random || true) \
-    && (pecl install eio || pecl install eio-beta) \
-    && docker-php-ext-enable eio \
+#    && (pecl install eio || pecl install eio-beta) \
+#    && docker-php-ext-enable eio \
     && pecl install event \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
-    && docker-php-ext-enable uv \
+#    && docker-php-ext-enable uv \
     && apk del --no-network --no-cache $PHPIZE_DEPS \
     && apk add --no-cache make \
     && wget -q -O - https://raw.githubusercontent.com/eficode/wait-for/master/wait-for > /bin/wait-for \
@@ -102,7 +103,7 @@ FROM nts-slim-root  AS nts-root
 
 # Install ext-gd and ext-vips
 COPY src/php/utils/docker/alpine/install-gd-and-vips /usr/local/bin/install-gd-and-vips
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
+RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC\|PHP 8\.[56]" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
      && rm -rf /usr/local/bin/install-gd-and-vips
 
 ## NTS-DEV STAGE ##
@@ -113,7 +114,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
+RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC\|PHP 8\.[56]" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
     && rm -rf /usr/local/bin/dev-mode  \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && rm /usr/local/etc/php/conf.d/jit.ini
@@ -133,7 +134,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
+RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC\|PHP 8\.[56]" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
     && rm -rf /usr/local/bin/dev-mode  \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && rm /usr/local/etc/php/conf.d/jit.ini
