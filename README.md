@@ -29,11 +29,9 @@ Currently Alpine and Debian images are treated differently, this matrix defines 
 
 ## The available tags
 
-The docker registry prefix is `wyrihaximusnet/php`, thus `wyrihaximusnet/php:OUR-TAGS`
+These images are published to [Docker Hub](https://hub.docker.com/r/wyrihaximusnet/php/tags/) as `wyrihaximusnet/php:OUR-TAGS` and to the [GitHub Container Registry](https://github.com/WyriHaximusNet/docker-php/pkgs/container/php) as `ghcr.io/wyrihaximusnet/php:OUR-TAGS`.
 
 In order to provide upgrade path we intend to keep one or more versions of PHP.
-
-[Currently Available tags on Docker hub](https://hub.docker.com/r/wyrihaximusnet/php/tags/)
 
 The tag naming strategy consists of (Read as a regex):
 
@@ -154,6 +152,197 @@ Slim images include all the above extensions except the following, as those noto
 # Installing extensions
 
 These images come with both [`PECL`](https://www.php.net/manual/en/install.pecl.php) and [`PIE`](https://github.com/php/pie/blob/main/docs/usage.md) for any additional extension needs.
+
+### Tag last pushed
+
+The following table lists when each base tag was last pushed to [Docker Hub](https://hub.docker.com/r/wyrihaximusnet/php/tags/) and the [GitHub Container Registry](https://github.com/WyriHaximusNet/docker-php/pkgs/container/php). Timestamps are sourced from Docker Hub; both registries are updated in the same CI push. Variant tags such as `-dev`, `-slim`, and `-root` are omitted as they are all built and pushed at the same moment.
+
+<!-- tag-last-pushed-table-start -->
+
+| Tag | Last pushed (UTC) |
+|-----|-------------------|
+| `8.5-nts-alpine` | 2026-07-19 20:03 UTC |
+| `8.5-nts-alpine3.24` | 2026-07-19 19:56 UTC |
+| `8.5-nts-alpine3.23` | 2026-07-19 19:56 UTC |
+| `8.5-nts-alpine3.22` | 2026-07-19 20:03 UTC |
+| `8.5-nts-alpine3.21` | 2026-02-28 06:30 UTC |
+| `8.5-nts-debian` | 2026-07-18 16:28 UTC |
+| `8.5-nts-trixie` | 2026-07-18 16:22 UTC |
+| `8.5-zts-alpine` | 2026-07-19 19:56 UTC |
+| `8.5-zts-alpine3.24` | 2026-07-19 20:03 UTC |
+| `8.5-zts-alpine3.23` | 2026-07-19 19:55 UTC |
+| `8.5-zts-alpine3.22` | 2026-07-19 19:56 UTC |
+| `8.5-zts-alpine3.21` | 2026-03-19 06:45 UTC |
+| `8.5-zts-debian` | 2026-07-18 16:26 UTC |
+| `8.5-zts-trixie` | 2026-07-18 16:22 UTC |
+| `8.4-nts-alpine` | 2026-07-19 20:04 UTC |
+| `8.4-nts-alpine3.24` | 2026-07-19 19:55 UTC |
+| `8.4-nts-alpine3.23` | 2026-07-19 20:03 UTC |
+| `8.4-nts-alpine3.22` | 2026-07-19 19:55 UTC |
+| `8.4-nts-alpine3.21` | 2026-03-19 06:52 UTC |
+| `8.4-nts-alpine3.20` | 2025-09-13 03:31 UTC |
+| `8.4-nts-alpine3.19` | 2025-02-22 05:57 UTC |
+| `8.4-nts-debian` | 2026-07-18 16:27 UTC |
+| `8.4-nts-trixie` | 2026-07-18 16:21 UTC |
+| `8.4-zts-alpine` | 2026-07-19 20:02 UTC |
+| `8.4-zts-alpine3.24` | 2026-07-19 19:56 UTC |
+| `8.4-zts-alpine3.23` | 2026-07-19 19:56 UTC |
+| `8.4-zts-alpine3.22` | 2026-07-19 19:56 UTC |
+| `8.4-zts-alpine3.21` | 2026-03-19 06:46 UTC |
+| `8.4-zts-alpine3.20` | 2025-09-13 03:30 UTC |
+| `8.4-zts-alpine3.19` | 2025-02-22 06:00 UTC |
+| `8.4-zts-debian` | 2026-07-18 16:22 UTC |
+| `8.4-zts-trixie` | 2026-07-18 16:26 UTC |
+| `8.3-nts-alpine` | 2026-07-19 19:56 UTC |
+| `8.3-nts-alpine3.24` | 2026-07-19 19:55 UTC |
+| `8.3-nts-alpine3.23` | 2026-07-19 19:56 UTC |
+| `8.3-nts-alpine3.22` | 2026-07-19 20:02 UTC |
+| `8.3-nts-alpine3.21` | 2026-03-19 06:45 UTC |
+| `8.3-nts-alpine3.20` | 2025-09-13 03:23 UTC |
+| `8.3-nts-alpine3.19` | 2025-02-22 05:57 UTC |
+| `8.3-nts-alpine3.18` | 2024-09-22 09:38 UTC |
+| `8.3-nts-alpine3.17` | 2024-04-11 05:46 UTC |
+| `8.3-nts-bullseye` | 2024-01-23 01:17 UTC |
+| `8.3-nts-debian` | 2026-07-18 16:24 UTC |
+| `8.3-nts-trixie` | 2026-07-18 16:19 UTC |
+| `8.3-zts-alpine` | 2026-07-19 19:55 UTC |
+| `8.3-zts-alpine3.24` | 2026-07-19 20:03 UTC |
+| `8.3-zts-alpine3.23` | 2026-07-19 19:56 UTC |
+| `8.3-zts-alpine3.22` | 2026-07-19 20:03 UTC |
+| `8.3-zts-alpine3.21` | 2026-03-19 06:45 UTC |
+| `8.3-zts-alpine3.20` | 2025-09-13 03:20 UTC |
+| `8.3-zts-alpine3.19` | 2025-02-22 06:00 UTC |
+| `8.3-zts-alpine3.18` | 2024-09-22 09:37 UTC |
+| `8.3-zts-alpine3.17` | 2024-04-11 05:50 UTC |
+| `8.3-zts-bullseye` | 2024-02-02 06:19 UTC |
+| `8.3-zts-debian` | 2026-07-18 16:22 UTC |
+| `8.3-zts-trixie` | 2026-07-18 16:13 UTC |
+| `8.2-nts-alpine` | 2026-07-19 20:03 UTC |
+| `8.2-nts-alpine3.24` | 2026-07-19 19:55 UTC |
+| `8.2-nts-alpine3.23` | 2026-07-19 19:55 UTC |
+| `8.2-nts-alpine3.22` | 2026-07-19 20:03 UTC |
+| `8.2-nts-alpine3.21` | 2025-12-31 22:47 UTC |
+| `8.2-nts-alpine3.20` | 2025-07-27 12:36 UTC |
+| `8.2-nts-alpine3.19` | 2025-02-22 05:58 UTC |
+| `8.2-nts-alpine3.18` | 2024-09-22 09:34 UTC |
+| `8.2-nts-alpine3.17` | 2024-04-11 05:46 UTC |
+| `8.2-nts-alpine3.16` | 2023-08-05 09:04 UTC |
+| `8.2-nts-alpine3.15` | 2022-12-13 10:37 UTC |
+| `8.2-nts-bullseye` | 2024-01-23 01:15 UTC |
+| `8.2-nts-buster` | 2023-09-02 08:31 UTC |
+| `8.2-nts-debian` | 2026-07-18 16:18 UTC |
+| `8.2-nts-trixie` | 2026-07-18 16:18 UTC |
+| `8.2-zts-alpine` | 2026-07-19 19:55 UTC |
+| `8.2-zts-alpine3.24` | 2026-07-19 19:56 UTC |
+| `8.2-zts-alpine3.23` | 2026-07-19 20:03 UTC |
+| `8.2-zts-alpine3.22` | 2026-07-19 19:56 UTC |
+| `8.2-zts-alpine3.21` | 2025-12-31 22:45 UTC |
+| `8.2-zts-alpine3.20` | 2025-07-27 12:36 UTC |
+| `8.2-zts-alpine3.19` | 2025-02-22 05:59 UTC |
+| `8.2-zts-alpine3.18` | 2024-09-22 09:33 UTC |
+| `8.2-zts-alpine3.17` | 2024-04-11 05:47 UTC |
+| `8.2-zts-alpine3.16` | 2023-08-05 09:06 UTC |
+| `8.2-zts-bullseye` | 2024-02-02 06:17 UTC |
+| `8.2-zts-buster` | 2023-09-02 08:33 UTC |
+| `8.2-zts-debian` | 2026-07-18 16:18 UTC |
+| `8.2-zts-trixie` | 2026-07-18 16:16 UTC |
+| `8.1-nts-alpine` | 2025-08-21 05:02 UTC |
+| `8.1-nts-alpine3.21` | 2025-08-21 05:02 UTC |
+| `8.1-nts-alpine3.20` | 2025-07-27 12:37 UTC |
+| `8.1-nts-alpine3.19` | 2025-02-22 05:59 UTC |
+| `8.1-nts-alpine3.18` | 2024-08-28 05:13 UTC |
+| `8.1-nts-alpine3.17` | 2024-04-11 05:45 UTC |
+| `8.1-nts-alpine3.16` | 2024-03-31 21:30 UTC |
+| `8.1-nts-alpine3.15` | 2023-05-26 10:07 UTC |
+| `8.1-nts-alpine3.14` | 2021-11-24 09:39 UTC |
+| `8.1-nts-alpine3.13` | 2021-11-24 09:34 UTC |
+| `8.1-nts-bullseye` | 2023-09-02 08:32 UTC |
+| `8.1-nts-buster` | 2023-09-02 08:32 UTC |
+| `8.1-nts-debian` | 2023-09-02 08:32 UTC |
+| `8.1-zts-alpine` | 2025-08-21 05:03 UTC |
+| `8.1-zts-alpine3.21` | 2025-08-21 05:02 UTC |
+| `8.1-zts-alpine3.20` | 2025-07-27 12:37 UTC |
+| `8.1-zts-alpine3.19` | 2025-02-22 05:57 UTC |
+| `8.1-zts-alpine3.18` | 2024-08-28 05:14 UTC |
+| `8.1-zts-alpine3.17` | 2024-04-11 05:46 UTC |
+| `8.1-zts-alpine3.16` | 2024-03-31 21:32 UTC |
+| `8.1-zts-bullseye` | 2023-09-09 06:19 UTC |
+| `8.1-zts-buster` | 2023-09-02 08:32 UTC |
+| `8.1-zts-debian` | 2023-09-02 08:33 UTC |
+| `8.0-nts-alpine` | 2022-11-07 16:09 UTC |
+| `8.0-nts-alpine3.16` | 2023-11-21 05:42 UTC |
+| `8.0-nts-alpine3.15` | 2023-05-26 10:08 UTC |
+| `8.0-nts-alpine3.14` | 2022-05-23 09:46 UTC |
+| `8.0-nts-alpine3.13` | 2021-11-24 09:33 UTC |
+| `8.0-nts-alpine3.12` | 2021-09-28 09:57 UTC |
+| `8.0-nts-bullseye` | 2023-11-01 13:12 UTC |
+| `8.0-nts-buster` | 2023-11-01 13:12 UTC |
+| `8.0-nts-debian` | 2023-11-01 13:12 UTC |
+| `8.0-zts-alpine` | 2022-11-17 09:42 UTC |
+| `8.0-zts-alpine3.16` | 2023-11-21 05:40 UTC |
+| `8.0-zts-alpine3.15` | 2023-05-26 10:08 UTC |
+| `8.0-zts-alpine3.14` | 2022-05-23 09:48 UTC |
+| `8.0-zts-bullseye` | 2023-11-23 05:48 UTC |
+| `8.0-zts-buster` | 2023-11-22 06:11 UTC |
+| `8.0-zts-debian` | 2023-11-01 13:11 UTC |
+| `7.4-nts-alpine` | 2022-11-07 16:09 UTC |
+| `7.4-nts-alpine3.16` | 2022-11-07 16:09 UTC |
+| `7.4-nts-alpine3.15` | 2022-11-07 16:10 UTC |
+| `7.4-nts-alpine3.14` | 2022-05-23 09:46 UTC |
+| `7.4-nts-alpine3.13` | 2021-11-24 09:33 UTC |
+| `7.4-nts-alpine3.12` | 2021-09-28 09:57 UTC |
+| `7.4-nts-alpine3.11` | 2021-09-23 04:06 UTC |
+| `7.4-nts-alpine3.10` | 2021-01-12 07:46 UTC |
+| `7.4-nts-bullseye` | 2022-11-27 08:35 UTC |
+| `7.4-nts-buster` | 2022-11-27 08:35 UTC |
+| `7.4-nts-debian` | 2022-11-27 08:36 UTC |
+| `7.4-zts-alpine` | 2022-11-17 09:41 UTC |
+| `7.4-zts-alpine3.16` | 2022-11-17 09:41 UTC |
+| `7.4-zts-alpine3.15` | 2022-11-17 09:41 UTC |
+| `7.4-zts-alpine3.14` | 2022-05-23 09:46 UTC |
+| `7.4-zts-alpine3.13` | 2021-11-24 09:40 UTC |
+| `7.4-zts-alpine3.12` | 2021-09-28 09:59 UTC |
+| `7.4-zts-alpine3.11` | 2021-09-23 04:09 UTC |
+| `7.4-zts-alpine3.10` | 2021-01-12 07:46 UTC |
+| `7.4-zts-bullseye` | 2022-11-27 08:36 UTC |
+| `7.4-zts-buster` | 2022-11-27 08:36 UTC |
+| `7.4-zts-debian` | 2022-11-27 08:35 UTC |
+| `7.3-nts-alpine` | 2021-11-24 09:33 UTC |
+| `7.3-nts-alpine3.14` | 2021-11-29 08:05 UTC |
+| `7.3-nts-alpine3.13` | 2021-11-24 09:33 UTC |
+| `7.3-nts-alpine3.12` | 2021-09-28 09:57 UTC |
+| `7.3-nts-alpine3.11` | 2021-09-23 04:06 UTC |
+| `7.3-nts-alpine3.10` | 2021-01-12 07:46 UTC |
+| `7.3-nts-alpine3.9` | 2019-07-11 03:28 UTC |
+| `7.3-nts-alpine3.8` | 2019-05-18 16:25 UTC |
+| `7.3-nts-bullseye` | 2021-11-29 08:05 UTC |
+| `7.3-nts-buster` | 2021-11-29 08:05 UTC |
+| `7.3-nts-debian` | 2021-11-29 08:05 UTC |
+| `7.3-nts-stretch` | 2021-11-29 08:06 UTC |
+| `7.3-zts-alpine` | 2021-11-24 09:40 UTC |
+| `7.3-zts-alpine3.14` | 2021-11-29 08:05 UTC |
+| `7.3-zts-alpine3.13` | 2021-11-24 09:40 UTC |
+| `7.3-zts-alpine3.12` | 2021-09-28 09:58 UTC |
+| `7.3-zts-alpine3.11` | 2021-09-23 04:08 UTC |
+| `7.3-zts-alpine3.10` | 2021-01-12 07:46 UTC |
+| `7.3-zts-alpine3.9` | 2019-07-11 03:28 UTC |
+| `7.3-zts-alpine3.8` | 2019-05-18 16:25 UTC |
+| `7.3-zts-bullseye` | 2021-11-29 08:06 UTC |
+| `7.3-zts-buster` | 2021-11-29 08:06 UTC |
+| `7.3-zts-debian` | 2021-11-29 08:06 UTC |
+| `7.3-zts-stretch` | 2021-11-29 08:05 UTC |
+| `7.2-nts-alpine3.12` | 2020-11-29 18:39 UTC |
+| `7.2-nts-alpine3.11` | 2020-11-29 18:39 UTC |
+| `7.2-nts-alpine3.10` | 2020-11-29 18:39 UTC |
+| `7.2-nts-buster` | 2020-11-29 18:40 UTC |
+| `7.2-nts-stretch` | 2020-11-29 18:40 UTC |
+| `7.2-zts-alpine3.12` | 2020-11-29 18:40 UTC |
+| `7.2-zts-alpine3.11` | 2020-11-29 18:40 UTC |
+| `7.2-zts-alpine3.10` | 2020-11-29 18:40 UTC |
+| `7.2-zts-buster` | 2020-11-29 18:42 UTC |
+| `7.2-zts-stretch` | 2020-11-29 18:42 UTC |
+
+<!-- tag-last-pushed-table-end -->
 
 # Credits
 

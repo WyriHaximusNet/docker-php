@@ -371,3 +371,32 @@ jobs:
       - name: Push all images to registries
         run: |
           (jq -r 'to_entries | map("cat /tmp/tags-to-push.list | xargs -I % bash build-and-sleep-" + .key + "-%.sh") | .[]' <<<"$DOCKER_IMAGE_REGISTRIES_SECRET_MAPPING") | sh
+  update-readme:
+    name: Update README tag push table
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    needs:
+      - push
+      - image-matrix
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          sparse-checkout: |
+            README.md
+            utils/update-readme-tag-push-table.php
+          sparse-checkout-cone-mode: false
+      - name: Update README tag last pushed table
+        run: php utils/update-readme-tag-push-table.php
+        env:
+          IMAGE_MATRIX: ${{ needs.image-matrix.outputs.image }}
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          if ! git diff --staged --quiet; then
+            git commit -m "Update README tag last pushed table"
+            git push
+          fi
