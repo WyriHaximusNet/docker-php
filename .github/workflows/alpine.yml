@@ -31,6 +31,8 @@ jobs:
     needs:
       - supported-alpine-versions
     name: Continuous Integration
+    permissions:
+      contents: write
     uses: ./.github/workflows/ci.yml
     secrets: inherit
     with:
