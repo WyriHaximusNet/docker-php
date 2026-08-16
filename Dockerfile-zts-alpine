@@ -143,14 +143,18 @@ ENTRYPOINT ["docker-php-entrypoint"]
 
 ## ZTS-DEV stage ##
 FROM zts-slim-dev-root AS zts-slim-dev
+# hadolint ignore=DL3066
 USER app
 
 FROM zts-dev-root AS zts-dev
+# hadolint ignore=DL3066
 USER app
 
 ## ZTS stage ##
 FROM zts-slim-root AS zts-slim
+# hadolint ignore=DL3066
 USER app
 
 FROM zts-root AS zts
+# hadolint ignore=DL3066
 USER app
