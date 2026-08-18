@@ -400,7 +400,7 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add README.md
           if ! git diff --staged --quiet; then
-            git pull --rebase origin master
             git commit -m "Update README tag last pushed table"
+            git pull --rebase origin master
             git push origin HEAD:master
           fi
