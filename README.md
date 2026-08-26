@@ -173,8 +173,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.5-zts-alpine3.23` | 2026-08-19 10:10 UTC |
 | `8.5-zts-alpine3.22` | 2026-08-19 10:05 UTC |
 | `8.5-zts-alpine3.21` | 2026-03-19 06:45 UTC |
-| `8.5-zts-debian` | 2026-08-25 05:12 UTC |
-| `8.5-zts-trixie` | 2026-08-25 05:12 UTC |
+| `8.5-zts-debian` | 2026-08-26 05:16 UTC |
+| `8.5-zts-trixie` | 2026-08-26 05:15 UTC |
 | `8.4-nts-alpine` | 2026-08-19 10:05 UTC |
 | `8.4-nts-alpine3.24` | 2026-08-19 10:03 UTC |
 | `8.4-nts-alpine3.23` | 2026-08-19 10:10 UTC |
@@ -191,8 +191,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.4-zts-alpine3.21` | 2026-03-19 06:46 UTC |
 | `8.4-zts-alpine3.20` | 2025-09-13 03:30 UTC |
 | `8.4-zts-alpine3.19` | 2025-02-22 06:00 UTC |
-| `8.4-zts-debian` | 2026-08-25 05:12 UTC |
-| `8.4-zts-trixie` | 2026-08-25 05:12 UTC |
+| `8.4-zts-debian` | 2026-08-26 05:15 UTC |
+| `8.4-zts-trixie` | 2026-08-26 05:15 UTC |
 | `8.3-nts-alpine` | 2026-08-19 10:12 UTC |
 | `8.3-nts-alpine3.24` | 2026-08-19 10:03 UTC |
 | `8.3-nts-alpine3.23` | 2026-08-19 10:03 UTC |
@@ -215,8 +215,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.3-zts-alpine3.18` | 2024-09-22 09:37 UTC |
 | `8.3-zts-alpine3.17` | 2024-04-11 05:50 UTC |
 | `8.3-zts-bullseye` | 2024-02-02 06:19 UTC |
-| `8.3-zts-debian` | 2026-08-25 05:14 UTC |
-| `8.3-zts-trixie` | 2026-08-25 05:12 UTC |
+| `8.3-zts-debian` | 2026-08-26 05:15 UTC |
+| `8.3-zts-trixie` | 2026-08-26 05:16 UTC |
 | `8.2-nts-alpine` | 2026-08-19 10:10 UTC |
 | `8.2-nts-alpine3.24` | 2026-08-19 10:11 UTC |
 | `8.2-nts-alpine3.23` | 2026-08-19 10:12 UTC |
@@ -244,8 +244,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.2-zts-alpine3.16` | 2023-08-05 09:06 UTC |
 | `8.2-zts-bullseye` | 2024-02-02 06:17 UTC |
 | `8.2-zts-buster` | 2023-09-02 08:33 UTC |
-| `8.2-zts-debian` | 2026-08-25 05:11 UTC |
-| `8.2-zts-trixie` | 2026-08-25 05:17 UTC |
+| `8.2-zts-debian` | 2026-08-26 05:16 UTC |
+| `8.2-zts-trixie` | 2026-08-26 05:16 UTC |
 | `8.1-nts-alpine` | 2025-08-21 05:02 UTC |
 | `8.1-nts-alpine3.21` | 2025-08-21 05:02 UTC |
 | `8.1-nts-alpine3.20` | 2025-07-27 12:37 UTC |
