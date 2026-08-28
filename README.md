@@ -191,8 +191,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.4-zts-alpine3.21` | 2026-03-19 06:46 UTC |
 | `8.4-zts-alpine3.20` | 2025-09-13 03:30 UTC |
 | `8.4-zts-alpine3.19` | 2025-02-22 06:00 UTC |
-| `8.4-zts-debian` | 2026-08-27 15:52 UTC |
-| `8.4-zts-trixie` | 2026-08-27 15:59 UTC |
+| `8.4-zts-debian` | 2026-08-28 16:56 UTC |
+| `8.4-zts-trixie` | 2026-08-28 16:56 UTC |
 | `8.3-nts-alpine` | 2026-08-27 16:07 UTC |
 | `8.3-nts-alpine3.24` | 2026-08-27 16:00 UTC |
 | `8.3-nts-alpine3.23` | 2026-08-27 16:07 UTC |
