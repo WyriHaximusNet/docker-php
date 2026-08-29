@@ -1,0 +1,29 @@
+package:
+  name: php-81
+  version: 0.1.0
+  description: PHP 8.1
+  target-architecture:
+    - all
+  copyright:
+    - license: MIT
+      paths:
+        - "*"
+  dependencies:
+    runtime:
+      - php81-slim
+      - php81-gd
+      - php81-vips
+
+environment:
+  contents:
+    keyring:
+      - /work/melange.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+      - '@local /work/packages'
+    packages:
+      - php81-slim@local
+
+pipeline:
+  - uses: strip
