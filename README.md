@@ -168,9 +168,9 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.5-nts-alpine3.21` | 2026-02-28 06:30 UTC |
 | `8.5-nts-debian` | 2026-08-19 10:05 UTC |
 | `8.5-nts-trixie` | 2026-08-19 10:02 UTC |
-| `8.5-zts-alpine` | 2026-09-03 09:26 UTC |
-| `8.5-zts-alpine3.24` | 2026-09-03 09:25 UTC |
-| `8.5-zts-alpine3.23` | 2026-09-01 09:55 UTC |
+| `8.5-zts-alpine` | 2026-09-04 08:31 UTC |
+| `8.5-zts-alpine3.24` | 2026-09-04 08:29 UTC |
+| `8.5-zts-alpine3.23` | 2026-09-04 08:30 UTC |
 | `8.5-zts-alpine3.22` | 2026-09-02 09:57 UTC |
 | `8.5-zts-alpine3.21` | 2026-03-19 06:45 UTC |
 | `8.5-zts-debian` | 2026-09-02 09:35 UTC |
