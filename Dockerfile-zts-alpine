@@ -51,10 +51,14 @@ FROM base AS base-build
 RUN apk add --no-cache $PHPIZE_DEPS git libuv-dev
 
 FROM base-build AS build-uv
+ARG PHP_VERSION
 RUN git clone https://github.com/amphp/ext-uv uv
 WORKDIR /uv
-RUN git fetch \
-    && git pull \
+# amphp/ext-uv#120: PHP 8.6 removed XtOffsetOf and zval_dtor
+RUN case "$PHP_VERSION" in \
+        8.6*) git fetch origin 6cc9588827fd5b87e298f1ec326f2f414539703e && git checkout FETCH_HEAD ;; \
+        *) git fetch && git pull ;; \
+    esac \
     && phpize \
     && ./configure \
     && make install \
@@ -63,6 +67,7 @@ RUN git fetch \
     && sha256sum /uv.so
 
 FROM base AS zts-slim-root
+ARG PHP_VERSION
 
 COPY --from=build-uv /uv.so /uv.so
 
@@ -81,12 +86,12 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
 	apk add --no-cache $PHPIZE_DEPS \
     ## Install PECL
     && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
-    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi opentelemetry protobuf \
+    && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi \
+    && case "$PHP_VERSION" in 8.6*|8.7*|8.8*|8.9*) true ;; *) install-php-extensions opentelemetry protobuf ;; esac \
     && if [ $(php -v | grep "PHP 8\.[56789]" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
     && (install-php-extensions random || true) \
     && pie install pecl/parallel \
-    && (pecl install eio || pecl install eio-beta) \
-    && docker-php-ext-enable eio \
+    && case "$PHP_VERSION" in 8.6*) true ;; *) (pecl install eio || pecl install eio-beta) && docker-php-ext-enable eio ;; esac \
     && pecl install event \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
