@@ -81,16 +81,16 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
         gdb \
         moreutils \
         $PHPIZE_DEPS \
-    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi \
-    && case "$PHP_VERSION" in 8.6*) true ;; *) (docker-php-ext-install -j$(nproc) random || true) ;; esac \
-    && case "$PHP_VERSION" in 8.6*) wget -q pear.php.net/go-pear.phar && php go-pear.phar ;; esac \
-    && case "$PHP_VERSION" in 8.6*) true ;; *) (pecl install eio || pecl install eio-beta) && docker-php-ext-enable eio ;; esac \
+    && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi mbstring \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (docker-php-ext-install -j$(nproc) random || true) ; fi \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then wget -q pear.php.net/go-pear.phar && php go-pear.phar ; else true ; fi \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable eio ; fi \
     && pecl install event \
-    && case "$PHP_VERSION" in 8.6*|8.7*|8.8*|8.9*) true ;; *) pecl install protobuf ;; esac \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else pecl install protobuf ; fi \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && docker-php-ext-enable uv \
-    && case "$PHP_VERSION" in 8.6*|8.7*|8.8*|8.9*) true ;; *) docker-php-ext-enable protobuf && pie install open-telemetry/ext-opentelemetry ;; esac \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else docker-php-ext-enable protobuf && pie install open-telemetry/ext-opentelemetry ; fi \
     && yes | apt-get purge $PHPIZE_DEPS \
     && yes | apt-get install make \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
