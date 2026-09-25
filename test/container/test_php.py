@@ -1,6 +1,6 @@
 import pytest
 
-from conftest import skip_if_php_at_least_86
+from conftest import skip_if_php_pre_release
 
 @pytest.mark.php_app
 def test_php_runs_as_app(host):
@@ -77,7 +77,7 @@ def test_php_ext_uv_is_functional(host):
 @pytest.mark.php_nts
 @pytest.mark.php_zts
 def test_php_ext_eio_is_functional(host):
-    skip_if_php_at_least_86(host, 'ext-eio')
+    skip_if_php_pre_release(host, 'ext-eio')
     output = host.run('php /tests/container/functional/eio-file-size.php')
     assert output.stdout == '114'
     assert output.rc == 0
