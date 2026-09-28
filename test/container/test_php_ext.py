@@ -1,6 +1,6 @@
 import pytest
 
-from conftest import skip_if_php_at_least_86
+from conftest import skip_if_php_pre_release
 
 @pytest.mark.php_zts
 @pytest.mark.php_nts
@@ -9,8 +9,13 @@ def test_bcmath_is_loaded(host):
 
 @pytest.mark.php_zts
 @pytest.mark.php_nts
+def test_mbstring_is_loaded(host):
+    assert 'mbstring' in host.run('php -m').stdout
+
+@pytest.mark.php_zts
+@pytest.mark.php_nts
 def test_eio_is_loaded(host):
-    skip_if_php_at_least_86(host, 'ext-eio')
+    skip_if_php_pre_release(host, 'ext-eio')
     assert 'eio' in host.run('php -m').stdout
 
 @pytest.mark.php_zts
