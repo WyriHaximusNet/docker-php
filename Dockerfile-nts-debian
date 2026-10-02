@@ -22,29 +22,8 @@ RUN set -x \
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-FROM base AS base-build
-RUN yes | apt-get install $PHPIZE_DEPS git libuv1-dev
-
-FROM base-build AS build-uv
-ARG PHP_VERSION
-RUN git clone https://github.com/amphp/ext-uv uv
-WORKDIR /uv
-# amphp/ext-uv#120: PHP 8.6 removed XtOffsetOf and zval_dtor
-RUN case "$PHP_VERSION" in \
-        8.6*) git fetch origin 6cc9588827fd5b87e298f1ec326f2f414539703e && git checkout FETCH_HEAD ;; \
-        *) git fetch && git pull ;; \
-    esac \
-    && phpize \
-    && ./configure \
-    && make install \
-    && EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` \
-    && cp "$EXTENSION_DIR/uv.so" /uv.so \
-    && sha256sum /uv.so
-
 FROM base AS nts-slim-root
 ARG PHP_VERSION
-
-COPY --from=build-uv /uv.so /uv.so
 
 # Patch CVE-2018-14618 (curl), CVE-2018-16842 (libxml2), CVE-2019-1543 (openssl)
 RUN yes | apt-get upgrade curl libxml2 openssl
@@ -58,9 +37,7 @@ COPY src/php/conf/available/prod.ini /usr/local/etc/php/conf.d/zzz_prod.ini
 
 COPY --from=ghcr.io/php/pie:1.5.1-bin /pie /usr/bin/pie
 
-RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
-	mv /*.so "$EXTENSION_DIR/" && \
-    yes | apt-get install \
+RUN yes | apt-get install \
         libgmp-dev \
         zlib1g-dev \
         libpq-dev \
@@ -90,7 +67,7 @@ RUN EXTENSION_DIR=`php-config --extension-dir 2>/dev/null` && \
     && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else pecl install protobuf ; fi \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
-    && docker-php-ext-enable uv \
+    && pie install amphp/uv \
     && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else docker-php-ext-enable protobuf && pie install open-telemetry/ext-opentelemetry ; fi \
     && yes | apt-get purge $PHPIZE_DEPS \
     && yes | apt-get install make \
