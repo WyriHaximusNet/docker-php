@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+ulimit -s 102400
+
+exec docker-php-entrypoint "$@"

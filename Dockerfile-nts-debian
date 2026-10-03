@@ -30,6 +30,7 @@ RUN yes | apt-get upgrade curl libxml2 openssl
 
 # Install docker help scripts
 COPY src/php/utils/docker/debian/ /usr/local/bin/
+COPY src/php/utils/docker/docker-php-entrypoint-with-stack /usr/local/bin/docker-php-entrypoint-with-stack
 
 COPY src/php/conf/ /usr/local/etc/php/conf.d/
 COPY src/php/cli/conf/*.ini /usr/local/etc/php/conf.d/
@@ -73,11 +74,12 @@ RUN yes | apt-get install \
     && yes | apt-get install make \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && chmod +x /bin/wait-for \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    && chmod +x /usr/local/bin/docker-php-entrypoint-with-stack
 
 STOPSIGNAL SIGTERM
 
-ENTRYPOINT ["docker-php-entrypoint"]
+ENTRYPOINT ["docker-php-entrypoint-with-stack"]
 
 ## NTS-DEV STAGE ##
 FROM nts-slim-root AS nts-root
@@ -105,7 +107,7 @@ RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; th
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 
-ENTRYPOINT ["docker-php-entrypoint"]
+ENTRYPOINT ["docker-php-entrypoint-with-stack"]
 
 ## NTS-DEV STAGE ##
 FROM nts-root AS nts-dev-root
@@ -124,7 +126,7 @@ RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; th
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-ENTRYPOINT ["docker-php-entrypoint"]
+ENTRYPOINT ["docker-php-entrypoint-with-stack"]
 
 ## NTS-DEV stage ##
 FROM nts-slim-dev-root AS nts-slim-dev
