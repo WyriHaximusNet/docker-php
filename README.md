@@ -183,8 +183,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.5-zts-alpine3.23` | 2026-10-03 10:29 UTC |
 | `8.5-zts-alpine3.22` | 2026-09-24 07:08 UTC |
 | `8.5-zts-alpine3.21` | 2026-03-19 06:45 UTC |
-| `8.5-zts-debian` | 2026-10-06 11:38 UTC |
-| `8.5-zts-trixie` | 2026-10-06 11:38 UTC |
+| `8.5-zts-debian` | 2026-10-07 11:31 UTC |
+| `8.5-zts-trixie` | 2026-10-07 11:31 UTC |
 | `8.4-nts-alpine` | 2026-10-03 10:29 UTC |
 | `8.4-nts-alpine3.24` | 2026-10-03 10:22 UTC |
 | `8.4-nts-alpine3.23` | 2026-10-03 10:22 UTC |
@@ -201,8 +201,8 @@ The following table lists when each base tag was last pushed to [Docker Hub](htt
 | `8.4-zts-alpine3.21` | 2026-03-19 06:46 UTC |
 | `8.4-zts-alpine3.20` | 2025-09-13 03:30 UTC |
 | `8.4-zts-alpine3.19` | 2025-02-22 06:00 UTC |
-| `8.4-zts-debian` | 2026-10-06 11:38 UTC |
-| `8.4-zts-trixie` | 2026-10-06 11:39 UTC |
+| `8.4-zts-debian` | 2026-10-07 11:31 UTC |
+| `8.4-zts-trixie` | 2026-10-07 11:31 UTC |
 | `8.3-nts-alpine` | 2026-10-03 10:22 UTC |
 | `8.3-nts-alpine3.24` | 2026-10-03 10:28 UTC |
 | `8.3-nts-alpine3.23` | 2026-10-03 10:29 UTC |
