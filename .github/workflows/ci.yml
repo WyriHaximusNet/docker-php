@@ -26,7 +26,7 @@ jobs:
     steps:
       - id: supported-php-versions
         name: Generate PHP
-        uses: wyrihaximus/github-action-supported-php-versions@c905b89b67c938a67dd35742db1bcab142995f80 # v1.40.0
+        uses: wyrihaximus/github-action-supported-php-versions@b6f7e41293e444b8df9a68e53906f89a523bc3c3 # v1.41.0
         with:
           upcomingReleases: true
   supported-platform-matrix:
