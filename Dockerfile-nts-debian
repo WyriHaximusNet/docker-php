@@ -63,7 +63,7 @@ RUN yes | apt-get install \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi mbstring \
     && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (docker-php-ext-install -j$(nproc) random || true) ; fi \
     && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then wget -q pear.php.net/go-pear.phar && php go-pear.phar ; else true ; fi \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable eio ; fi \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable --ini-name zzz-eio.ini eio ; fi \
     && pecl install event \
     && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else pecl install protobuf ; fi \
     # To ensure ext-socket loads before ext-event

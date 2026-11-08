@@ -69,7 +69,7 @@ RUN rm /usr/local/etc/php/conf.d/jit.ini && \
     && if [ $(php -v | grep "PHP 8\.[56789]" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
     && (install-php-extensions random || true) \
     && pie install pecl/parallel \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable eio ; fi \
+    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable --ini-name zzz-eio.ini eio ; fi \
     && pecl install event \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
