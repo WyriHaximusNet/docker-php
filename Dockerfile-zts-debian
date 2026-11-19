@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:experimental
 ARG PHP_VERSION=7.4
 ARG OS_VERSION=buster
-FROM php:$PHP_VERSION-zts-$OS_VERSION AS base
+ARG SRC_IMAGE=zts
+FROM php:$PHP_VERSION-$SRC_IMAGE-$OS_VERSION AS base
 
 # Build-time metadata as defined at http://label-schema.org
 LABEL org.label-schema.name="wyrihaximusnet/php" \
@@ -63,18 +64,17 @@ RUN rm /usr/local/etc/php/conf.d/jit.ini && \
         moreutils \
         $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv intl sockets ffi mbstring \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (docker-php-ext-install -j$(nproc) random || true) ; fi \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then wget -q pear.php.net/go-pear.phar && php go-pear.phar ; else true ; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else (docker-php-ext-install -j$(nproc) random || true) ; fi \
     && pie install pecl/parallel \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable --ini-name zzz-eio.ini eio ; fi \
-    && pecl install event \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else pecl install protobuf ; fi \
-    # To ensure ext-socket loads before ext-event
-    && docker-php-ext-enable --ini-name zzzzz-event.ini event \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else install-php-extensions opentelemetry event ; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else if [ $(php -v | grep "PHP 8\.[6789]" | wc -l) != 0 ] ; then true ; else install-php-extensions protobuf ; fi ; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else install-php-extensions eio || true ; fi \
+    && if [ $(php -v | grep "PHP 8\.[56789]" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else docker-php-ext-enable --ini-name zzz-eio.ini eio ; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else docker-php-ext-enable --ini-name zzzzz-event.ini event ; fi \
     && pie install amphp/uv \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else docker-php-ext-enable protobuf && pie install open-telemetry/ext-opentelemetry ; fi \
     && yes | apt-get purge $PHPIZE_DEPS \
-    && yes | apt-get install make \
+    && apt-get update && yes | apt-get install make \
     && wget -q -O - https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /bin/wait-for \
     && chmod +x /bin/wait-for \
     && rm -rf /tmp/* \
@@ -89,7 +89,7 @@ FROM zts-slim-root AS zts-root
 
 # Install ext-gd and ext-vips
 COPY src/php/utils/docker/debian/install-gd-and-vips /usr/local/bin/install-gd-and-vips
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
+RUN if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
      && rm -rf /usr/local/bin/install-gd-and-vips
 
 ## ZTS-DEV STAGE ##
@@ -100,7 +100,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/debian/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/debian/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi \
+RUN if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi \
     && rm -rf /usr/local/bin/dev-mode \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && yes | apt-get install make patch
@@ -119,7 +119,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/debian/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/debian/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi \
+RUN if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi \
     && rm -rf /usr/local/bin/dev-mode \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && yes | apt-get install make patch

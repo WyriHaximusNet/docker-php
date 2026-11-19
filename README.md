@@ -8,7 +8,7 @@
 # Images
 
 This repo builds two different images, plus a `-dev` image for each containing [`composer`](https://getcomposer.org/), 
-bash, git, ssh, strace, gdb, and make, and a `-root` image for all `*(-dev)` images where the default user is root. All the images 
+bash, git, ssh, strace, gdb, make, and [`xdebug`](https://xdebug.org/) (up to PHP 8.5), and a `-root` image for all `*(-dev)` images where the default user is root. All the images
 are based on [`Alpine Linux`](https://alpinelinux.org/) and [`Debian Linux`](https://www.debian.org/). All images come with 
 extensions used to increase the performance of [`ReactPHP`](https://reactphp.org/) (such as event loop extensions). Such extensions 
 are highlighted **build** in the extensions list below. All the `Alpine Linux` images are scanned for vulnerabilities, and not pushed 
@@ -37,6 +37,8 @@ The tag naming strategy consists of (Read as a regex):
 
 - PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine((alpineMajor).(alpineMinor))|bullseye|buster|strech)(-slim)(-dev)(-root)?`
   - Example: `8.2-zts-alpine-slim`, `8.4-nts-alpine3.13-dev`, `8.1-zts-buster-slim`
+
+**Note:** Starting with PHP 8.6, the upstream `docker-library/php` no longer provides separate NTS images. All PHP 8.6+ images are ZTS (Zend Thread Safe) by default. Only `zts` tags are available for PHP 8.6 and above; no `nts` variant exists. Any existing PHP 8.6 `-nts` images correspond to the PHP `8.6.0RC*` release candidate tags and will not be updated. PHP 8.5 and below continue to provide both `nts` and `zts` variants.
 
 ## Example usage
 
@@ -108,7 +110,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * ftp
 * gd
 * gmp
-* grpc
+* grpc (Up to PHP 8.5)
 * hash
 * iconv
 * json
@@ -116,7 +118,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * mbstring
 * mysqlnd
 * openssl
-* opentelemetry
+* opentelemetry (Up to PHP 8.5)
 * pcre
 * PDO
 * pdo_pgsql
@@ -124,7 +126,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * pgsql
 * Phar
 * posix
-* protobuf
+* protobuf (Up to PHP 8.5)
 * random
 * readline
 * Reflection
@@ -135,7 +137,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * sqlite3
 * standard
 * tokenizer
-* vips
+* vips (Up to PHP 8.5)
 * xml
 * xmlreader
 * xmlwriter

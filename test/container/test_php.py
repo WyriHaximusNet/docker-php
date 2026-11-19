@@ -1,6 +1,6 @@
 import pytest
 
-from conftest import skip_if_php_pre_release
+from conftest import skip_if_php_pre_release, skip_if_php_86_plus
 
 @pytest.mark.php_app
 def test_php_runs_as_app(host):
@@ -84,5 +84,6 @@ def test_php_ext_eio_is_functional(host):
 
 @pytest.mark.php_not_slim_amd64
 def test_php_ext_vips_is_enabled(host):
+    skip_if_php_86_plus(host, 'ext-vips')
     output = host.run('php -r "exit(function_exists(\'vips_version\') ? 0 : 255);"')
     assert output.rc == 0

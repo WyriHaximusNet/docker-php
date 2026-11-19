@@ -272,7 +272,7 @@ jobs:
       - run: docker load --input ./docker-image/docker_image-${{ env.PLATFORM_PAIR }}.tar
       - run: |
           export IMAGE_BASE_VERSION=$(php -r 'echo explode("-", "${{ matrix.image }}")[2];')
-          make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts"], ["zts", "nts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=$(echo "${PLATFORM_ARCH}")
+          make $(php -r 'echo "test-", explode("-", str_replace(["zts-zts", "cli-nts", "cli-zts"], ["zts", "nts", "zts"], "${{ matrix.image }}"))[0];') IMAGE_ARCH=$(echo "${PLATFORM_ARCH}")
       - run: rm -Rf ./docker-image/
   check-mark:
     name: ✔️

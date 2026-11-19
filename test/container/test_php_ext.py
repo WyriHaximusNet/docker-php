@@ -1,6 +1,6 @@
 import pytest
 
-from conftest import skip_if_php_pre_release
+from conftest import skip_if_php_pre_release, skip_if_php_86_plus
 
 @pytest.mark.php_zts
 @pytest.mark.php_nts
@@ -69,10 +69,12 @@ def test_uv_is_loaded(host):
 
 @pytest.mark.php_not_slim_amd64
 def test_vips_is_loaded(host):
+    skip_if_php_86_plus(host, 'ext-vips')
     assert 'vips' in host.run('php -m').stdout
 
 @pytest.mark.php_dev
 def test_xdebug_is_loaded(host):
+    skip_if_php_86_plus(host, 'xdebug')
     assert 'Xdebug' in host.run('php -m').stdout
 
 @pytest.mark.php_no_dev
