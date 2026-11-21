@@ -49,6 +49,7 @@ do
     --build-arg ARCH=${TARGET_ARCH} \
     --build-arg PHP_VERSION=${VERSION_PHP} \
     --build-arg OS_VERSION=${VERSION_OS} \
+    --build-arg SRC_IMAGE=${SRC_IMAGE} \
     --platform ${TARGET_ARCH} \
     --label org.label-schema.build-date=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
     --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \

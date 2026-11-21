@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:experimental
 ARG PHP_VERSION=7.4
 ARG OS_VERSION=alpine3.11
-FROM php:$PHP_VERSION-cli-$OS_VERSION AS base
+ARG SRC_IMAGE=cli
+FROM php:$PHP_VERSION-$SRC_IMAGE-$OS_VERSION AS base
 ARG ARCH=amd64
 ARG PHP_VERSION=7.4
 ARG OS_VERSION=alpine3.11
@@ -21,7 +22,7 @@ LABEL org.label-schema.title="Opinionated ReactPHP optimised PHP Docker images" 
       org.opencontainers.image.title="Opinionated ReactPHP optimised PHP Docker images" \
       org.opencontainers.image.description="PHP Version: $PHP_VERSION Type: zts OS Version: $OS_VERSION" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.base.name="php:$PHP_VERSION-cli-$OS_VERSION" \
+      org.opencontainers.image.base.name="php:$PHP_VERSION-$SRC_IMAGE-$OS_VERSION" \
       org.opencontainers.image.vendor="WyriHaximus.net" \
       org.opencontainers.image.authors="Cees-Jan Kiewiet <docker-php@ceesjankiewiet.nl>"
 
@@ -59,14 +60,14 @@ COPY src/php/conf/available/prod.ini /usr/local/etc/php/conf.d/zzz_prod.ini
 COPY --from=ghcr.io/php/pie:1.5.5-bin /pie /usr/bin/pie
 
 RUN apk add --no-cache $PHPIZE_DEPS oniguruma-dev \
-    ## Install PECL
-    && wget -q pear.php.net/go-pear.phar && php go-pear.phar \
     && install-php-extensions pcntl pgsql pdo pdo_pgsql bcmath zip gmp iconv opcache intl sockets ffi mbstring \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-php-extensions opentelemetry protobuf ; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else install-php-extensions opentelemetry ; fi \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else if [ $(php -v | grep "PHP 8\.[6789]" | wc -l) != 0 ] ; then true ; else install-php-extensions protobuf ; fi ; fi \
     && if [ $(php -v | grep "PHP 8\.[56789]" | wc -l) != 0 ] ; then true ; else install-php-extensions grpc; fi \
     && (install-php-extensions random || true) \
-    && if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else (pecl install eio || pecl install eio-beta) && docker-php-ext-enable --ini-name zzz-eio.ini eio ; fi \
-    && pecl install event \
+    && if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else pie install osmanov/pecl-eio && rm -f /usr/local/etc/php/conf.d/docker-php-ext-eio.ini && docker-php-ext-enable --ini-name zzz-eio.ini eio ; fi \
+    && pie install osmanov/pecl-event \
+    && rm -f /usr/local/etc/php/conf.d/docker-php-ext-event.ini \
     # To ensure ext-socket loads before ext-event
     && docker-php-ext-enable --ini-name zzzzz-event.ini event \
     && pie install amphp/uv \
@@ -86,7 +87,7 @@ FROM nts-slim-root  AS nts-root
 
 # Install ext-gd and ext-vips
 COPY src/php/utils/docker/alpine/install-gd-and-vips /usr/local/bin/install-gd-and-vips
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
+RUN if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else install-gd-and-vips; fi \
      && rm -rf /usr/local/bin/install-gd-and-vips
 
 ## NTS-DEV STAGE ##
@@ -97,7 +98,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
+RUN if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
     && rm -rf /usr/local/bin/dev-mode  \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && rm /usr/local/etc/php/conf.d/jit.ini
@@ -117,7 +118,7 @@ RUN touch /.you-are-in-a-wyrihaximus.net-php-docker-image-dev
 # Install docker help scripts
 COPY src/php/utils/docker/alpine/dev-mode /usr/local/bin/dev-mode
 COPY src/php/utils/docker/alpine/docker-php-dev-mode /usr/local/bin/docker-php-dev-mode
-RUN if [ $(php -v | grep "alpha\|ALPHA\|beta\|BETA\|rc\|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
+RUN if [ $(php -v | head -1 | grep -E "alpha|ALPHA|beta|BETA|rc|RC" | wc -l) != 0 ] ; then true ; else dev-mode; fi  \
     && rm -rf /usr/local/bin/dev-mode  \
     && rm -rf /usr/local/bin/docker-php-dev-mode \
     && rm /usr/local/etc/php/conf.d/jit.ini

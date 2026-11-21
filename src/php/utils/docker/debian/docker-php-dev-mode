@@ -14,21 +14,25 @@ usage() {
 }
 
 case "$1" in
-	xdebug)
-		if [ -n "$PHPIZE_DEPS" ]; then
-      # shellcheck disable=SC2086
-      yes | apt-get install $PHPIZE_DEPS
+ xdebug)
+		if [ $(php -v | grep "PHP 8\.[6789]" | wc -l) != 0 ] ; then
+			>&2 echo "xdebug is not supported on PHP 8.6+ yet, skipping"
 		else
-			>&2 echo "\$PHPIZE_DEPS env variable is necessary to run this script"
-			exit 1
+			if [ -n "$PHPIZE_DEPS" ]; then
+          # shellcheck disable=SC2086
+          yes | apt-get install $PHPIZE_DEPS
+			else
+				>&2 echo "\$PHPIZE_DEPS env variable is necessary to run this script"
+				exit 1
+			fi
+
+		    yes | apt-get install "linux-headers-$ARCH"
+			pie install xdebug/xdebug
+			docker-php-ext-enable xdebug
+			yes | apt-get purge $PHPIZE_DEPS
+
+			cp /usr/local/etc/php/conf.d/available/xdebug.ini /usr/local/etc/php/conf.d/zzz_xdebug.ini
 		fi
-
-    yes | apt-get install "linux-headers-$ARCH"
-		pie install xdebug/xdebug
-		docker-php-ext-enable xdebug
-		yes | apt-get purge $PHPIZE_DEPS
-
-		cp /usr/local/etc/php/conf.d/available/xdebug.ini /usr/local/etc/php/conf.d/zzz_xdebug.ini
 		;;
 
 	config)

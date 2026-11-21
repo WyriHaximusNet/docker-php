@@ -31,35 +31,56 @@ foreach (json_decode(getenv('PHP'), true) as $php) {
         if (version_compare($alpine, $latestOSVersion, ">=")) {
             $latestOSVersion = $alpine;
         }
-        if (array_key_exists($php . '-zts-alpine' . $alpine, $upstreamImages)) {
-            $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine;
-        }
-        if (array_key_exists($php . '-cli-alpine' . $alpine, $upstreamImages)) {
-            $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine;
+        if (version_compare($php, '8.6', '>=')) {
+            if (array_key_exists($php . '-cli-alpine' . $alpine, $upstreamImages)) {
+                $line[] = 'cli-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine;
+            }
+        } else {
+            if (array_key_exists($php . '-zts-alpine' . $alpine, $upstreamImages)) {
+                $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine;
+            }
+            if (array_key_exists($php . '-cli-alpine' . $alpine, $upstreamImages)) {
+                $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $alpine . '-alpine' . $alpine;
+            }
         }
     }
 
-    if (array_key_exists($php . '-zts-alpine' . $latestOSVersion, $upstreamImages)) {
-        $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $latestOSVersion . '-alpine';
-    }
-    if (array_key_exists($php . '-cli-alpine' . $latestOSVersion, $upstreamImages)) {
-        $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $latestOSVersion . '-alpine';
+    if (version_compare($php, '8.6', '>=')) {
+        if (array_key_exists($php . '-cli-alpine' . $latestOSVersion, $upstreamImages)) {
+            $line[] = 'cli-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $latestOSVersion . '-alpine';
+        }
+    } else {
+        if (array_key_exists($php . '-zts-alpine' . $latestOSVersion, $upstreamImages)) {
+            $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $latestOSVersion . '-alpine';
+        }
+        if (array_key_exists($php . '-cli-alpine' . $latestOSVersion, $upstreamImages)) {
+            $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-alpine-alpine' . $latestOSVersion . '-alpine';
+        }
     }
 }
 
 if (getenv('NO_DEBIAN') !== 'yes') {
     foreach (json_decode(getenv('PHP'), true) as $php) {
         foreach (json_decode(getenv('DEBIAN'), true) as $debian) {
-            if (array_key_exists($php . '-zts-' . $debian, $upstreamImages)) {
-                $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
-                if ($debian === 'trixie') {
-                    $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
+            if (version_compare($php, '8.6', '>=')) {
+                if (array_key_exists($php . '-cli-' . $debian, $upstreamImages)) {
+                    $line[] = 'cli-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
+                    if ($debian === 'trixie') {
+                        $line[] = 'cli-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
+                    }
                 }
-            }
-            if (array_key_exists($php . '-cli-' . $debian, $upstreamImages)) {
-                $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
-                if ($debian === 'trixie') {
-                    $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
+            } else {
+                if (array_key_exists($php . '-zts-' . $debian, $upstreamImages)) {
+                    $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
+                    if ($debian === 'trixie') {
+                        $line[] = 'zts-zts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
+                    }
+                }
+                if (array_key_exists($php . '-cli-' . $debian, $upstreamImages)) {
+                    $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-' . $debian . '';
+                    if ($debian === 'trixie') {
+                        $line[] = 'cli-nts-' . $php . '-' . cleanUpVersion($php) . '-debian-' . $debian . '-debian';
+                    }
                 }
             }
         }

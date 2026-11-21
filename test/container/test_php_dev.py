@@ -1,8 +1,11 @@
 import pytest
 
+from conftest import skip_if_php_86_plus
+
 @pytest.mark.php_dev
 def test_configuration_is_present(host):
-    assert host.file('/usr/local/etc/php/conf.d/zzz_xdebug.ini').exists is True
+    if not skip_if_php_86_plus(host, 'xdebug'):
+        assert host.file('/usr/local/etc/php/conf.d/zzz_xdebug.ini').exists is True
     assert host.file('/usr/local/etc/php/conf.d/zzz_dev.ini').exists is True
 
 @pytest.mark.php_no_dev
