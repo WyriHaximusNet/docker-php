@@ -38,8 +38,6 @@ The tag naming strategy consists of (Read as a regex):
 - PHP: `(phpMajor).(phpMinor)-(nts|zts)-(alpine((alpineMajor).(alpineMinor))|bullseye|buster|strech)(-slim)(-dev)(-root)?`
   - Example: `8.2-zts-alpine-slim`, `8.4-nts-alpine3.13-dev`, `8.1-zts-buster-slim`
 
-**Note:** Starting with PHP 8.6, the upstream `docker-library/php` no longer provides separate NTS images. All PHP 8.6+ images are ZTS (Zend Thread Safe) by default. Only `zts` tags are available for PHP 8.6 and above; no `nts` variant exists. Any existing PHP 8.6 `-nts` images correspond to the PHP `8.6.0RC*` release candidate tags and will not be updated. PHP 8.5 and below continue to provide both `nts` and `zts` variants.
-
 ## Example usage
 
 The following example has two build staging, the first for leading in any required dependencies, and the second the 
@@ -118,7 +116,7 @@ Both versions come with the following list of non-non-blocking related (core-) e
 * mbstring
 * mysqlnd
 * openssl
-* opentelemetry (Up to PHP 8.5)
+* opentelemetry
 * pcre
 * PDO
 * pdo_pgsql
